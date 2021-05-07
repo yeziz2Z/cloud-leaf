@@ -9,6 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>cloud-leaf-sms</module>
+        <module>cloud-leaf-common</module>
     </modules>
     <packaging>pom</packaging>
 

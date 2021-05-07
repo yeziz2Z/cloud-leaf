@@ -2,3 +2,5 @@
 /.idea/
 /cloud-leaf.iml
 /cloud-leaf-sms/target/
+/cloud-leaf-common/cloud-leaf-common.iml
+/cloud-leaf-common/target/classes/com/leaf/common/result/Result.class

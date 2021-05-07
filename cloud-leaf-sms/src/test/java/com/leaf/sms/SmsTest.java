@@ -1,6 +1,8 @@
 package com.leaf.sms;
 
 import com.alibaba.cloud.spring.boot.sms.AbstractSmsService;
+import com.aliyuncs.dysmsapi.model.v20170525.QuerySendDetailsRequest;
+import com.aliyuncs.dysmsapi.model.v20170525.QuerySendDetailsResponse;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.exceptions.ClientException;
@@ -38,5 +40,19 @@ public class SmsTest {
             log.info("【短信服务】 发送短信失败, phoneNumber:{}, 原因:{}", "phoneNumber", sendSmsResponse.getMessage());
         }
 
+
+    }
+
+    @Test
+    public void testQuery() throws ClientException {
+        QuerySendDetailsRequest request = new QuerySendDetailsRequest();
+        request.setPhoneNumber("18634416025");
+        request.setSendDate("20210506");
+//        request.setOwnerId(1000L);
+        request.setPageSize(10L);
+        request.setCurrentPage(1L);
+        QuerySendDetailsResponse response = smsService.querySendDetails(request);
+        log.info("response code: {},details:{}",response.getCode(),response.getSmsSendDetailDTOs());
+        log.info("account{}",request.getResourceOwnerAccount());
     }
 }
