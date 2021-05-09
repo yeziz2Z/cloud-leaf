@@ -1,0 +1,12 @@
+# nacos 配置
+alibaba:
+  cloud:
+    secret-key: your alibab cloud sk.
+    access-key: your alibab cloud ak.
+spring:
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: sms
+    password: sms
+    virtual-host: /sms
