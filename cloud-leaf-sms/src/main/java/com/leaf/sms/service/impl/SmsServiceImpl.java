@@ -27,8 +27,8 @@ public class SmsServiceImpl implements ISmsService {
     public void send(String phoneNumber, String code) {
         SendSmsRequest request = new SendSmsRequest();
         request.setPhoneNumbers(phoneNumber);
-        request.setSignName("白芍专业商城");
-        request.setTemplateCode("SMS_183245579");
+        request.setSignName("阿里云签名");// aliyun sign.
+        request.setTemplateCode("******");// aliyun templateCode.
         request.setSysMethod(MethodType.POST);
         Map<String, String> msg = new HashMap<>();
         msg.put("code", code);

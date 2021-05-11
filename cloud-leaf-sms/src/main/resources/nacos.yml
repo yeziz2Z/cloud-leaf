@@ -10,3 +10,9 @@ spring:
     username: sms
     password: sms
     virtual-host: /sms
+  mail:
+    host: smtp.163.com
+    # 你的邮箱地址
+    username: xxxx@163.com
+    # 你的邮箱授权码
+    password: xxxxxxxxx

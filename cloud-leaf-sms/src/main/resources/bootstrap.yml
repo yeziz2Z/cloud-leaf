@@ -9,4 +9,9 @@ spring:
         file-extension: yml
         server-addr: ${spring.cloud.nacos.discovery.server-addr}
         group: DEFAULT_GROUP
+  rabbitmq:
+    listener:
+      direct:
+        acknowledge-mode: manual
+#        name:
 #        shared-configs:
