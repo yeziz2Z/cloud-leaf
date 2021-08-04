@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
-import java.sql.Blob;
 import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -43,7 +42,7 @@ public class SysNotice implements Serializable {
     /**
      * 公告内容
      */
-//    private Blob content;
+    private String content;
 
     /**
      * 公告状态（0正常 1关闭）
