@@ -12,7 +12,7 @@ import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 
 public class GenerateCode {
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         // 数据源配置
         DataSourceConfig dataSourceConfig = new DataSourceConfig.Builder("jdbc:mysql://127.0.0.1:3306/cloud-leaf-admin",
                 "root",
@@ -69,5 +69,5 @@ public class GenerateCode {
         ag.execute(new FreemarkerTemplateEngine());
 
 
-    }
+    }*/
 }
