@@ -2,11 +2,11 @@ spring:
   application:
     name: cloud-lead-admin
   redis:
-    host: 127.0.0.1
+    host: 192.170.2.167
     port: 6379
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/cloud-leaf-admin?characterEncoding=utf8&useSSL=false&useTimezone=true&serverTimezone=GMT%2B8
+    url: jdbc:mysql://192.170.2.167:3306/cloud-leaf-admin?characterEncoding=utf8&useSSL=false&useTimezone=true&serverTimezone=GMT%2B8
     username: root
     password: root
     type: com.alibaba.druid.pool.DruidDataSource
@@ -36,3 +36,9 @@ mybatis-plus:
     map-underscore-to-camel-case: on
   mapper-locations:
     - classpath*:/mapper/*.xml
+
+leaf:
+  jwt:
+    header: authorization
+    expire: 1800
+    secret: j49mu6wehy343d8cr20l8qn00i157o5g
