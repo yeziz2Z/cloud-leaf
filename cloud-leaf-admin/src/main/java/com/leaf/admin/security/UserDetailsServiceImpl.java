@@ -22,14 +22,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        /*SysUser sysUser = sysUserService.getByUsername(username);
+        SysUser sysUser = sysUserService.getByUsername(username);
 
         if (Objects.isNull(sysUser)) {
             throw new UsernameNotFoundException("用户名或密码不正确");
         }
 
-        return new AccountUser(sysUser.getId(), sysUser.getUsername(), sysUser.getPassword(), getUserAuthorities(sysUser.getId()));*/
-        return null;
+        return new AccountUser(sysUser.getId(), sysUser.getUsername(), sysUser.getPassword(), getUserAuthorities(sysUser.getId()));
     }
 
     public List<GrantedAuthority> getUserAuthorities(Long userId) {

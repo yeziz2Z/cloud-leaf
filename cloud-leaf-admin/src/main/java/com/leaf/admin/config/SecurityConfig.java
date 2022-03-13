@@ -1,17 +1,23 @@
 package com.leaf.admin.config;
 
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.jwt.JWT;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.leaf.admin.common.SystemConst;
 import com.leaf.admin.security.UserDetailsServiceImpl;
 import com.leaf.admin.security.exception.CaptchaException;
+import com.leaf.admin.sys.dto.UserLoginDTO;
 import com.leaf.admin.utils.JwtUtils;
 import com.leaf.common.result.Result;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -19,6 +25,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,10 +46,13 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
 import java.util.Objects;
 
 @Configuration
 @EnableWebSecurity
+@Slf4j
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private RedisTemplate redisTemplate;
@@ -51,9 +62,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
 
-    static String CAPTCHA_KEY = "captcha";
-
-    private String[] WITHE_URLS = {"/auth/login", "/auth/captcha", "/logout"};
+    private String[] WITHE_URLS = {"/auth/login", "/auth/captcha", "/logout", "/auth/test"};
 
     private static final String TOKEN_ERROR = "token_error";
 
@@ -67,12 +76,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .disable()
                 // 登录配置
                 .formLogin()
+                /*.loginProcessingUrl("/")
                 .successHandler(loginSuccessHandler())
-                .failureHandler(loginFailureHandler())
+                .failureHandler(loginFailureHandler())*/
 
                 //登出配置
                 .and()
                 .logout()
+
                 .logoutSuccessHandler(jwtLogoutSuccessHandler())
 
                 // 禁用session
@@ -95,8 +106,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 // 自定义过滤器配置
                 .and()
+                .addFilterAt(loginAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(captchaFilter(), UsernamePasswordAuthenticationFilter.class)
         ;
     }
 
@@ -111,46 +122,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     /**
-     * 验证码过滤器
-     *
-     * @return
-     */
-    @Bean
-    public OncePerRequestFilter captchaFilter() {
-
-        return new OncePerRequestFilter() {
-            @Override
-            protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-                String uri = request.getRequestURI();
-                if ("/login".equals(uri) && request.getMethod().equals("POST")) {
-                    try {
-                        validate(request);
-                    } catch (CaptchaException e) {
-                        loginFailureHandler().onAuthenticationFailure(request, response, e);
-                    }
-                }
-
-                filterChain.doFilter(request, response);
-            }
-
-            private void validate(HttpServletRequest request) {
-                String key = request.getParameter("key");
-                String captcha = request.getParameter("captcha");
-
-                if (StrUtil.isBlank(key) || StrUtil.isBlank(captcha)) {
-                    throw new CaptchaException("验证码错误");
-                }
-                if (!captcha.equals(redisTemplate.opsForHash().get(CAPTCHA_KEY, key))) {
-                    throw new CaptchaException("验证码错误");
-                }
-
-                // 一次性使用
-                redisTemplate.opsForHash().delete(CAPTCHA_KEY, key);
-            }
-        };
-    }
-
-    /**
      * 认证失败 Handler
      *
      * @return
@@ -160,14 +131,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return (request, response, exception) -> {
             response.setContentType("application/json;charset=UTF-8");
 
-//            Result<String> fail = Result.fail(exception.getMessage());
-            Result<String> fail = Result.ok(exception.getMessage());
+            log.error("loginFailureHandler", exception);
+            Result<String> fail = Result.fail(exception.getMessage());
+
             if (exception instanceof BadCredentialsException) {
                 fail.setMsg("用户名或密码错误");
             }
-            /*if (exception instanceof CaptchaException) {
-                fail.setMsg(exception.getMessage());
-            }*/
 
             ServletOutputStream outputStream = response.getOutputStream();
             outputStream.write(JSONUtil.toJsonStr(fail).getBytes(CharsetUtil.UTF_8));
@@ -186,12 +155,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationSuccessHandler loginSuccessHandler() {
         return (request, response, authentication) -> {
             response.setContentType("application/json;charset=UTF-8");
-
             String token = jwtUtils.generateToken(authentication.getName());
-            response.setHeader(jwtUtils.getHeader(), token);
 
-            Result<String> result = Result.success();
-
+            Result<Map> result = Result.success(MapUtil.builder()
+                    .put("token", token)
+                    .build());
             ServletOutputStream outputStream = response.getOutputStream();
             outputStream.write(JSONUtil.toJsonStr(result).getBytes(CharsetUtil.UTF_8));
             outputStream.flush();
@@ -213,18 +181,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 JWT jwt = jwtUtils.getJwtFromToken(token);
 
                 if (!jwtUtils.isValidToken(jwt)) {
-//                    throw new JWTException("不合法的token!");
-                    /*jwtAuthenticationEntryPoint().commence(request, response, new AuthenticationException("不合法的token!", new JWTException("不合法的token!")) {
-                    });*/
                     request.setAttribute(TOKEN_ERROR, "不合法的token!");
                     chain.doFilter(request, response);
                     return;
                 }
 
                 if (jwtUtils.isExpired(jwt)) {
-//                    throw new JWTException("token已过期!");
-                    /*jwtAuthenticationEntryPoint().commence(request, response, new AuthenticationException("token已过期!", new JWTException("token已过期!")) {
-                    });*/
                     request.setAttribute(TOKEN_ERROR, "token已过期!");
                     chain.doFilter(request, response);
                     return;
@@ -248,16 +210,50 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
             Object token_error = request.getAttribute(TOKEN_ERROR);
 
-            Result result = Result.error(401, "请先登录");
-            if (!Objects.isNull(token_error)) {
+            Result result = Result.fail("请先登录");
+            /*if (!Objects.isNull(token_error)) {
                 result.setMsg(String.valueOf(token_error));
-            }
+            }*/
 
             ServletOutputStream outputStream = response.getOutputStream();
             outputStream.write(JSONUtil.toJsonStr(result).getBytes(CharsetUtil.UTF_8));
             outputStream.flush();
             outputStream.close();
         };
+    }
+
+    @Bean
+    public UsernamePasswordAuthenticationFilter loginAuthenticationFilter() throws Exception {
+        UsernamePasswordAuthenticationFilter authenticationFilter = new UsernamePasswordAuthenticationFilter() {
+            @Override
+            public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+
+                if (request.getContentType().equals(MediaType.APPLICATION_JSON_VALUE)) {
+                    try (InputStream is = request.getInputStream()) {
+                        ObjectMapper mapper = new ObjectMapper();
+                        UserLoginDTO userLoginDTO = mapper.readValue(is, UserLoginDTO.class);
+                        String key = SystemConst.CAPTCHA_KEY + userLoginDTO.getUid();
+                        Object cacheCaptcha = redisTemplate.opsForValue().get(key);
+                        log.info("UserLoginDTO {}", userLoginDTO);
+                        if (!Objects.equals(cacheCaptcha, userLoginDTO.getCaptcha())) {
+                            throw new CaptchaException("验证码错误!");
+                        }
+                        redisTemplate.delete(key);
+                        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userLoginDTO.getUsername(), userLoginDTO.getPassword());
+                        setDetails(request, authenticationToken);
+                        return this.getAuthenticationManager().authenticate(authenticationToken);
+                    } catch (IOException e) {
+                        log.error("", e);
+                    }
+                }
+                return super.attemptAuthentication(request, response);
+            }
+        };
+        authenticationFilter.setAuthenticationSuccessHandler(loginSuccessHandler());
+        authenticationFilter.setAuthenticationFailureHandler(loginFailureHandler());
+        authenticationFilter.setFilterProcessesUrl("/auth/login");
+        authenticationFilter.setAuthenticationManager(super.authenticationManagerBean());
+        return authenticationFilter;
     }
 
     /**
@@ -270,8 +266,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return (request, response, accessDeniedException) -> {
             response.setContentType("application/json;charset=UTF-8");
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-//            Result<String> fail = Result.fail(accessDeniedException.getMessage());
-            Result<String> fail = Result.ok(accessDeniedException.getMessage());
+            Result<String> fail = Result.fail(accessDeniedException.getMessage());
 
             ServletOutputStream outputStream = response.getOutputStream();
             outputStream.write(JSONUtil.toJsonStr(fail).getBytes(CharsetUtil.UTF_8));

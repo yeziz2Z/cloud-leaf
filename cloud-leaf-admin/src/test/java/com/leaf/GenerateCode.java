@@ -9,6 +9,8 @@ import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 
+import java.util.Collections;
+
 
 public class GenerateCode {
 
@@ -22,10 +24,8 @@ public class GenerateCode {
         GlobalConfig globalConfig = new GlobalConfig.Builder()
                 .outputDir("E:\\code-gen")
                 .author("liuk")
-                .fileOverride()
                 .commentDate("yyyy-MM-dd")
                 .dateType(DateType.TIME_PACK)
-                .openDir(true)
                 .build();
 
         // 模板引擎
@@ -33,8 +33,9 @@ public class GenerateCode {
                 .Builder()
                 .entity("templates/entity.java")
                 .mapper("templates/mapper.java")
-                .mapperXml("templates/mapper.xml")
-                .service("templates/service.java", "templates/serviceImpl.java")
+                .service("templates/service.java")
+                .serviceImpl("templates/serviceImpl.java")
+                .xml("/templates/mapper.xml")
                 .controller(null)
                 .build();
 
@@ -42,7 +43,7 @@ public class GenerateCode {
         StrategyConfig strategyConfig = new StrategyConfig
                 .Builder()
                 .addTablePrefix("t")
-//                .addInclude("t_sys_menu", "t_sys_role", "t_sys_user")
+                .addInclude("t_sys_menu", "t_sys_role", "t_sys_user")
                 .entityBuilder()
                 .enableLombok()
                 .idType(IdType.ASSIGN_ID)
@@ -59,11 +60,12 @@ public class GenerateCode {
                 .parent("com.leaf.admin")
                 .moduleName("sys")
                 .mapper("mapper")
+                .pathInfo(Collections.singletonMap(OutputFile.xml, "E:\\code-gen\\mapper"))
                 .build();
 
 
         ConfigBuilder config = new ConfigBuilder(packageConfig, dataSourceConfig, strategyConfig, templateConfig, globalConfig, null);
-        config.getPathInfo().put(ConstVal.XML_PATH, "E:\\code-gen\\mapper");
+//        config.getPathInfo().put(ConstVal.XML_PATH, "E:\\code-gen\\mapper");
         AutoGenerator ag = new AutoGenerator(dataSourceConfig);
         ag.config(config);
         ag.execute(new FreemarkerTemplateEngine());
