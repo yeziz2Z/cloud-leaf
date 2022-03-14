@@ -37,7 +37,7 @@ public class SysRole implements Serializable {
     /**
      * 角色权限字符串
      */
-    private String key;
+    private String code;
 
     /**
      * 显示顺序
@@ -69,7 +69,7 @@ public class SysRole implements Serializable {
     private String status;
 
     /**
-     * 删除标志（0代表存在 2代表删除）
+     * 删除标志（0代表存在 1代表删除）
      */
     @TableField("del_flag")
     private String delFlag;

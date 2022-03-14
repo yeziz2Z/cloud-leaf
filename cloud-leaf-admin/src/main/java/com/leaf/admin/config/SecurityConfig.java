@@ -62,7 +62,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
 
-    private String[] WITHE_URLS = {"/auth/login", "/auth/captcha", "/logout", "/auth/test"};
+    private String[] WITHE_URLS = {"/auth/login", "/auth/captcha", "/auth/logout", "/auth/test"};
 
     private static final String TOKEN_ERROR = "token_error";
 
@@ -83,7 +83,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //登出配置
                 .and()
                 .logout()
-
+                .logoutUrl("/auth/logout")
                 .logoutSuccessHandler(jwtLogoutSuccessHandler())
 
                 // 禁用session
