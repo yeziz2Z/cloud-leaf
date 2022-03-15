@@ -86,7 +86,7 @@ public class SysMenu implements Serializable {
     /**
      * 权限标识
      */
-    private String perms;
+    private String permission;
 
     /**
      * 菜单图标

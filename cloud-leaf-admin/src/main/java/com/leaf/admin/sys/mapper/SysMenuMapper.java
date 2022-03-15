@@ -3,6 +3,8 @@ package com.leaf.admin.sys.mapper;
 import com.leaf.admin.sys.entity.SysMenu;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+import java.util.List;
+
 /**
  * <p>
  * 菜单权限表 Mapper 接口
@@ -13,4 +15,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface SysMenuMapper extends BaseMapper<SysMenu> {
 
+    List<SysMenu> selectByUserId(Long userId);
 }

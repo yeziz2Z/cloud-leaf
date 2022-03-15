@@ -17,7 +17,7 @@ public class MailController {
     @PostMapping("send")
     public Result send(String to, String code) {
         mailService.send(to,code);
-        return Result.ok();
+        return Result.success();
     }
 
 }

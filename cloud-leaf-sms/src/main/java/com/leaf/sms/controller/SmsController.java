@@ -20,11 +20,13 @@ public class SmsController {
     @PostMapping("/send")
     public Result send(String phoneNumber, String code) {
         smsService.send(phoneNumber, code);
-        return Result.ok();
+        return Result.success();
     }
 
     @GetMapping("querySendDetails")
     public Result<QuerySendDetailsResponse.SmsSendDetailDTO> querySendDetails(QuerySendDetailsRequest request) {
-        return Result.ok().setData(smsService.querySendDetails(request));
+        Result success = Result.success();
+        success.setData(smsService.querySendDetails(request));
+        return success;
     }
 }
