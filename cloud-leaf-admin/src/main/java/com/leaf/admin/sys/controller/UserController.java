@@ -2,6 +2,7 @@ package com.leaf.admin.sys.controller;
 
 import com.leaf.admin.sys.dto.UserVO;
 import com.leaf.admin.sys.entity.SysUser;
+import com.leaf.admin.sys.service.ISysMenuService;
 import com.leaf.admin.sys.service.ISysRoleService;
 import com.leaf.admin.sys.service.ISysUserService;
 import com.leaf.common.result.Result;
@@ -23,6 +24,8 @@ public class UserController {
     ISysUserService userService;
     @Autowired
     ISysRoleService roleService;
+    @Autowired
+    ISysMenuService menuService;
 
     @GetMapping("/info")
     public Result<UserVO> info(Principal principal) {
@@ -36,8 +39,8 @@ public class UserController {
 
 
     @GetMapping("/nav")
-    public Result nav() {
-
-        return Result.success();
+    public Result nav(Principal principal) {
+        SysUser sysUser = userService.getByUsername(principal.getName());
+        return Result.success(menuService.selectByUserId(sysUser.getId()));
     }
 }
