@@ -72,7 +72,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         SysUser sysUser = getByUsername(username);
         Long userId = sysUser.getId();
         List<SysRole> roleList = this.getRolesByUserId(userId);
-        List<String> authorities = roleList.stream().map(SysRole::getKey).collect(Collectors.toList());
+        List<String> authorities = roleList.stream().map(SysRole::getCode).collect(Collectors.toList());
 
         List<SysMenu> menuList = this.getMenusByUserId(userId);
         authorities.addAll(menuList.stream().map(SysMenu::getPermission).collect(Collectors.toList()));

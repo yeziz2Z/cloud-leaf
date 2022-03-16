@@ -6,7 +6,7 @@
     <resultMap id="BaseResultMap" type="com.leaf.admin.sys.entity.SysRole">
         <id column="id" property="id" />
         <result column="name" property="name" />
-        <result column="key" property="key" />
+        <result column="code" property="code" />
         <result column="order_no" property="orderNo" />
         <result column="data_scope" property="dataScope" />
         <result column="menu_check_strictly" property="menuCheckStrictly" />
@@ -22,7 +22,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, name, key, order_no, data_scope, menu_check_strictly, dept_check_strictly, status, del_flag, create_by, create_time, update_by, update_time, remark
+        id, name, code, order_no, data_scope, menu_check_strictly, dept_check_strictly, status, del_flag, create_by, create_time, update_by, update_time, remark
     </sql>
 
 <insert id="insertRoleMenu">
