@@ -75,7 +75,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         List<String> authorities = roleList.stream().map(SysRole::getCode).collect(Collectors.toList());
 
         List<SysMenu> menuList = this.getMenusByUserId(userId);
-        authorities.addAll(menuList.stream().map(SysMenu::getPermission).collect(Collectors.toList()));
+//        authorities.addAll(menuList.stream().map(SysMenu::getPermission).collect(Collectors.toList()));
         redisTemplate.opsForList().leftPush(key, authorities);
         return authorities;
 

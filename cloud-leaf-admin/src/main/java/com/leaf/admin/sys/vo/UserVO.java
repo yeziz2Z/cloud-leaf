@@ -1,6 +1,7 @@
-package com.leaf.admin.sys.dto;
+package com.leaf.admin.sys.vo;
 
 
+import com.leaf.admin.sys.entity.SysOrganization;
 import com.leaf.admin.sys.entity.SysRole;
 import lombok.Data;
 import lombok.ToString;
@@ -16,11 +17,6 @@ public class UserVO {
      * 用户ID
      */
     private Long id;
-
-    /**
-     * 部门ID
-     */
-    private Long orgId;
 
     /**
      * 用户账号
@@ -97,6 +93,8 @@ public class UserVO {
      * 备注
      */
     private String remark;
+
+    private SysOrganization organization;
 
     private List<SysRole> roles;
 

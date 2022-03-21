@@ -31,24 +31,35 @@
         , org_id, username, nick_name, user_type, email, mobile_phone, gender, avatar, password, status, del_flag, login_ip, login_time, create_by, create_time, update_by, update_time, remark
     </sql>
     <!-- 通用查询映射结果 -->
-<!--
-    <resultMap id="SysUserVOResultMap" type="com.leaf.vo.SysUserVO">
+
+    <resultMap id="SysUserVOResultMap" type="com.leaf.admin.sys.vo.UserVO">
         <id column="id" property="id"/>
         <result column="username" property="username"/>
-        <result column="avatar" property="avatar"/>
+        <result column="nick_name" property="nickName"/>
+        <result column="user_type" property="userType"/>
         <result column="email" property="email"/>
-        <result column="city" property="city"/>
-        <result column="created" property="created"/>
+        <result column="mobile_phone" property="mobilePhone"/>
+        <result column="gender" property="gender"/>
+        <result column="avatar" property="avatar"/>
         <result column="status" property="status"/>
-        <result column="updated" property="updated"/>
-        <result column="last_login" property="lastLogin"/>
+        <result column="login_ip" property="loginIp"/>
+        <result column="login_time" property="loginTime"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remark" property="remark"/>
 
-        <collection property="roles" ofType="com.leaf.entity.SysRole">
+        <association property="organization" javaType="com.leaf.admin.sys.entity.SysOrganization">
+            <id property="id" column="org_id"/>
+            <result property="name" column="orgName"/>
+        </association>
+
+        <collection property="roles" ofType="com.leaf.admin.sys.entity.SysRole">
             <id property="id" column="roleId"/>
             <result property="name" column="name"/>
         </collection>
     </resultMap>
--->
 
 
     <insert id="insertUserRole">
@@ -69,22 +80,30 @@
         from t_sys_user
         where id in (select user_id from t_sys_user_role where role_id = #{roleId})
     </select>
-    <!--<select id="selectUserList" resultMap="SysUserVOResultMap">
+    <select id="selectUserList" resultMap="SysUserVOResultMap">
         SELECT
         u.id,
         u.username,
-        u.password,
+        u.nick_name,
         u.avatar,
         u.email,
-        u.city,
-        u.created,
-        u.updated,
-        u.last_login,
+        u.mobile_phone,
+        u.gender,
         u.status,
+        u.login_ip,
+        u.login_time,
+        u.create_by,
+        u.create_time,
+        u.update_by,
+        u.update_time,
         r.id roleId,
-        r.name
+        r.name,
+        u.org_id,
+        org.name
         FROM
         t_sys_user u
+        left join t_sys_organization org
+        on u.org_id = org.id
         LEFT JOIN t_sys_user_role ur
         ON u.id = ur.user_id
         LEFT JOIN t_sys_role r
@@ -93,6 +112,13 @@
         <if test="query.username != null and query.username != ''">
             and u.username like concat('%',#{query.username},'%')
         </if>
-    </select>-->
+        <if test="query.mobilePhone != null and query.mobilePhone != ''">
+            and u.mobile_phone = #{query.mobilePhone}
+        </if>
+        <if test="query.status != null and query.status != ''">
+            and u.status = #{query.status}
+        </if>
+        order by u.id asc
+    </select>
 
 </mapper>

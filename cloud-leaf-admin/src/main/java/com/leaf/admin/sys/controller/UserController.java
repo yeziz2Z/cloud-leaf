@@ -1,10 +1,10 @@
 package com.leaf.admin.sys.controller;
 
-import com.leaf.admin.sys.dto.UserVO;
 import com.leaf.admin.sys.entity.SysUser;
 import com.leaf.admin.sys.service.ISysMenuService;
 import com.leaf.admin.sys.service.ISysRoleService;
 import com.leaf.admin.sys.service.ISysUserService;
+import com.leaf.admin.sys.vo.UserVO;
 import com.leaf.common.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.util.Map;
 
 @RequestMapping("/user")
 @RestController
@@ -42,5 +44,13 @@ public class UserController {
     public Result nav(Principal principal) {
         SysUser sysUser = userService.getByUsername(principal.getName());
         return Result.success(menuService.selectByUserId(sysUser.getId()));
+    }
+
+    @GetMapping("/service")
+    public Result list(HttpServletRequest request) {
+        Map<String, String[]> parameterMap = request.getParameterMap();
+        log.info("parameterMap {}", parameterMap);
+
+        return Result.success();
     }
 }
