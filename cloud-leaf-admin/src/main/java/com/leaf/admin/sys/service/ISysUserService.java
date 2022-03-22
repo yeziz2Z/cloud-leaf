@@ -1,10 +1,12 @@
 package com.leaf.admin.sys.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.leaf.admin.sys.dto.UserQueryParam;
 import com.leaf.admin.sys.entity.SysMenu;
 import com.leaf.admin.sys.entity.SysRole;
 import com.leaf.admin.sys.entity.SysUser;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.leaf.admin.sys.vo.UserVO;
 
 import java.util.List;
 
@@ -34,7 +36,7 @@ public interface ISysUserService extends IService<SysUser> {
 
     void clearUserAuthoritiesByMenuId(Long menuId);
 
-//    Page<SysUserVO> selectSysUserVOPage(UserQueryDTO queryDTO);
+    Page<UserVO> selectSysUserVOPage(Page page, UserQueryParam queryParam);
 
     void deleteByUserIds(List<Long> userIds);
 
