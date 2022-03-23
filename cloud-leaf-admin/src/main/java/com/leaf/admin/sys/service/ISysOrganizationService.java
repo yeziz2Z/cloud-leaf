@@ -1,7 +1,10 @@
 package com.leaf.admin.sys.service;
 
-import com.leaf.admin.sys.entity.SysOrganization;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.leaf.admin.sys.entity.SysOrganization;
+import com.leaf.admin.sys.vo.OrgTreeVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ISysOrganizationService extends IService<SysOrganization> {
 
+    List<OrgTreeVO> selectOrgTreeList();
 }

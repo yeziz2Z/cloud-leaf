@@ -1,92 +1,83 @@
 package com.leaf.admin.sys.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <p>
- * 菜单权限表
+ * 系统菜单
  * </p>
  *
  * @author liuk
- * @since 2021-08-04
+ * @since 2022-03-17
  */
-@Data
-@EqualsAndHashCode(callSuper = false)
+@Getter
+@Setter
 @TableName("t_sys_menu")
 public class SysMenu implements Serializable {
 
+    private static final long serialVersionUID = 1L;
 
     /**
-     * 菜单ID
+     * 主键
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**
-     * 菜单名称
+     * 菜单编码名
      */
     private String name;
 
     /**
-     * 父菜单ID
+     * 菜单名称
      */
-    @TableField("parent_id")
+    private String title;
+
+    /**
+     * 父级菜单id
+     */
     private Long parentId;
 
     /**
-     * 显示顺序
-     */
-    @TableField("order_no")
-    private Integer orderNo;
-
-    /**
-     * 路由地址
-     */
-    private String path;
-
-    /**
-     * 组件路径
+     * 组件名
      */
     private String component;
 
     /**
-     * 是否为外链（0是 1否）
+     * 请求路由
      */
-    @TableField("is_frame")
-    private Integer isFrame;
+    private String path;
 
     /**
-     * 是否缓存（0缓存 1不缓存）
+     * 控制路由和子路由是否显示在 sidebar
      */
-    @TableField("is_cache")
-    private Integer isCache;
+    private Boolean hidden;
 
     /**
-     * 菜单类型（M目录 C菜单 F按钮）
+     * 重定向地址, 访问这个路由时,自定进行重定向
+     */
+    private String redirect;
+
+    /**
+     * 强制菜单显示为Item而不是SubItem(配合 meta.hidden)
+     */
+    private Boolean hideChildrenInMenu;
+
+    /**
+     * 菜单类型 F目录 M菜单 B按钮
      */
     private String type;
 
     /**
-     * 菜单状态（0显示 1隐藏）
+     * 排序
      */
-    private String visible;
-
-    /**
-     * 菜单状态（0正常 1停用）
-     */
-    private String status;
-
-    /**
-     * 权限标识
-     */
-    private String permission;
+    private Integer orderNo;
 
     /**
      * 菜单图标
@@ -94,27 +85,43 @@ public class SysMenu implements Serializable {
     private String icon;
 
     /**
-     * 创建者
+     * *特殊 隐藏 PageHeader 组件中的页面带的 面包屑和页面标题栏
      */
-    @TableField("create_by")
+    private Boolean hiddenHeaderContent;
+
+    /**
+     * 缓存该路由 (开启 multi-tab 是默认值为 true)
+     */
+    private Boolean keepAlive;
+
+    /**
+     * 权限标识
+     */
+    private String permission;
+
+    /**
+     * 新窗口打开
+     */
+    private Boolean newWindow;
+
+    /**
+     * 创建人
+     */
     private String createBy;
 
     /**
      * 创建时间
      */
-    @TableField("create_time")
     private LocalDateTime createTime;
 
     /**
      * 更新者
      */
-    @TableField("update_by")
     private String updateBy;
 
     /**
      * 更新时间
      */
-    @TableField("update_time")
     private LocalDateTime updateTime;
 
     /**

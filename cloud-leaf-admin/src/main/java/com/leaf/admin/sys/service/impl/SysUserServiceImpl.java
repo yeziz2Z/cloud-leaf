@@ -1,7 +1,9 @@
 package com.leaf.admin.sys.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.leaf.admin.sys.dto.UserQueryParam;
 import com.leaf.admin.sys.entity.SysMenu;
 import com.leaf.admin.sys.entity.SysRole;
 import com.leaf.admin.sys.entity.SysUser;
@@ -9,6 +11,7 @@ import com.leaf.admin.sys.mapper.SysMenuMapper;
 import com.leaf.admin.sys.mapper.SysRoleMapper;
 import com.leaf.admin.sys.mapper.SysUserMapper;
 import com.leaf.admin.sys.service.ISysUserService;
+import com.leaf.admin.sys.vo.UserVO;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -75,7 +78,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         List<String> authorities = roleList.stream().map(SysRole::getCode).collect(Collectors.toList());
 
         List<SysMenu> menuList = this.getMenusByUserId(userId);
-        authorities.addAll(menuList.stream().map(SysMenu::getPermission).collect(Collectors.toList()));
+//        authorities.addAll(menuList.stream().map(SysMenu::getPermission).collect(Collectors.toList()));
         redisTemplate.opsForList().leftPush(key, authorities);
         return authorities;
 
@@ -108,11 +111,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         sysRoles.forEach(sysRole -> this.clearUserAuthoritiesByRoleId(sysRole.getId()));
     }
 
-   /* @Override
-    public Page<SysUserVO> selectSysUserVOPage(UserQueryDTO queryDTO) {
-        baseMapper.selectUserList(queryDTO, queryDTO);
-        return queryDTO;
-    }*/
+    @Override
+    public Page<UserVO> selectSysUserVOPage(Page page, UserQueryParam queryParam) {
+        return baseMapper.selectUserList(page, queryParam);
+    }
 
     @Transactional
     @Override

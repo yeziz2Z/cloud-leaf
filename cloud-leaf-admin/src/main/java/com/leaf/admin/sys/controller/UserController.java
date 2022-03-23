@@ -1,10 +1,12 @@
 package com.leaf.admin.sys.controller;
 
-import com.leaf.admin.sys.dto.UserVO;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.leaf.admin.sys.dto.UserQueryParam;
 import com.leaf.admin.sys.entity.SysUser;
 import com.leaf.admin.sys.service.ISysMenuService;
 import com.leaf.admin.sys.service.ISysRoleService;
 import com.leaf.admin.sys.service.ISysUserService;
+import com.leaf.admin.sys.vo.UserVO;
 import com.leaf.common.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -42,5 +44,11 @@ public class UserController {
     public Result nav(Principal principal) {
         SysUser sysUser = userService.getByUsername(principal.getName());
         return Result.success(menuService.selectByUserId(sysUser.getId()));
+    }
+
+    @GetMapping("/service")
+    public Result list(Page page, UserQueryParam queryParam) {
+        log.info("queryParam {}, Page {}", queryParam, page);
+        return Result.success(userService.selectSysUserVOPage(page, queryParam));
     }
 }

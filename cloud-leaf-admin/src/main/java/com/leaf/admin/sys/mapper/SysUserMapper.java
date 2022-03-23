@@ -1,8 +1,10 @@
 package com.leaf.admin.sys.mapper;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.leaf.admin.sys.entity.SysUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.leaf.admin.sys.dto.UserQueryParam;
+import com.leaf.admin.sys.entity.SysUser;
+import com.leaf.admin.sys.vo.UserVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -19,7 +21,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 
     List<SysUser> selectByRoleId(Long roleId);
 
-//    Page<SysUserVO> selectUserList(Page page, @Param("query") UserQueryDTO query);
+    Page<UserVO> selectUserList(Page page, @Param("query") UserQueryParam query);
 
     int deleteUserRoleByUserIds(List<Long> userIds);
 

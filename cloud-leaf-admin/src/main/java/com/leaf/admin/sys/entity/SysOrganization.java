@@ -22,7 +22,6 @@ import lombok.EqualsAndHashCode;
 @TableName("t_sys_organization")
 public class SysOrganization implements Serializable {
 
-
     /**
      * 部门id
      */
