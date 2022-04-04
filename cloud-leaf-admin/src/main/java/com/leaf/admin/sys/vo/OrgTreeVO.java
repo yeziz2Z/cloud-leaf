@@ -3,7 +3,6 @@ package com.leaf.admin.sys.vo;
 import lombok.Data;
 import lombok.ToString;
 
-import java.util.LinkedList;
 import java.util.List;
 
 @Data

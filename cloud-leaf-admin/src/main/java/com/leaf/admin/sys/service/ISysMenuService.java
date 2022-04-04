@@ -2,6 +2,7 @@ package com.leaf.admin.sys.service;
 
 import com.leaf.admin.sys.entity.SysMenu;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.leaf.admin.sys.vo.SysMenuVO;
 
 import java.util.List;
 
@@ -15,4 +16,6 @@ import java.util.List;
  */
 public interface ISysMenuService extends IService<SysMenu> {
     List<SysMenu> selectByUserId(Long userId);
+
+    List<SysMenuVO> selectMenuTree();
 }

@@ -1,32 +1,12 @@
-package com.leaf.admin.sys.entity;
+package com.leaf.admin.sys.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
+import lombok.Data;
+
 import java.time.LocalDateTime;
-import lombok.Getter;
-import lombok.Setter;
+import java.util.List;
 
-/**
- * <p>
- * 系统菜单
- * </p>
- *
- * @author liuk
- * @since 2022-03-17
- */
-@Getter
-@Setter
-@TableName("t_sys_menu")
-public class SysMenu implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * 主键
-     */
-    @TableId(value = "id", type = IdType.AUTO)
+@Data
+public class SysMenuVO {
     private Long id;
 
     /**
@@ -131,5 +111,6 @@ public class SysMenu implements Serializable {
      */
     private String remark;
 
+    private List<SysMenuVO> children;
 
 }

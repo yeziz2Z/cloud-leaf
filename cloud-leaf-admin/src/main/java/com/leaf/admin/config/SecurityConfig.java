@@ -235,10 +235,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         String key = SystemConst.CAPTCHA_KEY + userLoginDTO.getUid();
                         Object cacheCaptcha = redisTemplate.opsForValue().get(key);
                         log.info("UserLoginDTO {}", userLoginDTO);
+                        redisTemplate.delete(key);
                         if (!Objects.equals(cacheCaptcha, userLoginDTO.getCaptcha())) {
                             throw new CaptchaException("验证码错误!");
                         }
-                        redisTemplate.delete(key);
                         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userLoginDTO.getUsername(), userLoginDTO.getPassword());
                         setDetails(request, authenticationToken);
                         return this.getAuthenticationManager().authenticate(authenticationToken);

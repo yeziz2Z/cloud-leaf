@@ -1,5 +1,6 @@
 package com.leaf.admin.sys.service;
 
+import com.leaf.admin.sys.dto.RoleMenuDTO;
 import com.leaf.admin.sys.entity.SysRole;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -18,4 +19,11 @@ public interface ISysRoleService extends IService<SysRole> {
 
     List<SysRole> getRolesByUserId(Long userId);
 
+    boolean saveSysRole(SysRole sysRole);
+
+    boolean updateSysRole(SysRole sysRole);
+
+    List<Long> selectMenuIdsByRoleId(Long roleId);
+
+    void saveRoleMenu(RoleMenuDTO roleMenuDTO);
 }

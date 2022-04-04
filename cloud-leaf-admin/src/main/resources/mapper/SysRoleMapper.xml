@@ -25,7 +25,7 @@
         id, name, code, order_no, data_scope, menu_check_strictly, dept_check_strictly, status, del_flag, create_by, create_time, update_by, update_time, remark
     </sql>
 
-<insert id="insertRoleMenu">
+    <insert id="insertRoleMenu">
         insert into t_sys_role_menu(role_id,menu_id) values
         <foreach collection="menuIds" separator="," item="menuId">
             (#{roleId},#{menuId})

@@ -1,8 +1,11 @@
 package com.leaf.admin.sys.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.leaf.admin.sys.dto.SysUserDTO;
 import com.leaf.admin.sys.dto.UserQueryParam;
 import com.leaf.admin.sys.entity.SysMenu;
 import com.leaf.admin.sys.entity.SysRole;
@@ -12,13 +15,19 @@ import com.leaf.admin.sys.mapper.SysRoleMapper;
 import com.leaf.admin.sys.mapper.SysUserMapper;
 import com.leaf.admin.sys.service.ISysUserService;
 import com.leaf.admin.sys.vo.UserVO;
+import com.leaf.common.exception.BusinessException;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,6 +49,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     SysRoleMapper roleMapper;
     @Resource
     SysMenuMapper menuMapper;
+
+    @Resource
+    PasswordEncoder passwordEncoder;
 
     private static final String GRANTED_AUTHORITY_KEY = "GrantedAuthority:username:";
     private static final String AUTHORITIES_KEY = "authorities:username:";
@@ -132,4 +144,75 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         SysUser sysUser = getById(userId);
         clearUserAuthorities(sysUser.getUsername());
     }*/
+
+    @Override
+    @Transactional
+    @Deprecated
+    public void saveUser(SysUserDTO sysUserDTO) {
+        SysUser user = new SysUser();
+        BeanUtil.copyProperties(sysUserDTO, user);
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        fillCreate(user);
+        // 入库
+        this.save(user);
+        if (CollectionUtil.isNotEmpty(sysUserDTO.getRoleIds())) {
+            // 保存用户角色
+            baseMapper.insertUserRole(user.getId(), sysUserDTO.getRoleIds());
+        }
+    }
+
+    @Override
+    public int resetPassword(SysUserDTO sysUserDTO) {
+        SysUser user = new SysUser();
+        user.setId(sysUserDTO.getId());
+        fillUpdate(user);
+        user.setPassword(passwordEncoder.encode(sysUserDTO.getPassword()));
+        return baseMapper.updateById(user);
+    }
+
+    @Transactional
+    @Override
+    public void updateUser(SysUserDTO sysUserDTO) {
+        SysUser user = new SysUser();
+        BeanUtil.copyProperties(sysUserDTO, user);
+
+        fillUpdate(user);
+
+        this.updateById(user);
+        baseMapper.deleteUserRoleByUserIds(Arrays.asList(user.getId()));
+
+        if (CollectionUtil.isNotEmpty(sysUserDTO.getRoleIds())) {
+            // 保存用户角色
+            baseMapper.insertUserRole(user.getId(), sysUserDTO.getRoleIds());
+        }
+
+    }
+
+    @Override
+    @Transactional
+    public void removeByUserIds(List<Long> userIds) {
+        SysUser sysUser = this.getByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+        if (CollectionUtil.contains(userIds, sysUser.getId())) {
+            throw new BusinessException(500, "不能删除当前用户");
+        }
+        baseMapper.deleteUserRoleByUserIds(userIds);
+
+        baseMapper.deleteBatchIds(userIds);
+    }
+
+    private void fillCreate(SysUser user) {
+        //TODO 待统一封装  或者 使用 mybatis plugin插件做统一处理
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        user.setCreateBy(authentication.getName());
+        user.setCreateTime(LocalDateTime.now());
+    }
+
+    private void fillUpdate(SysUser user) {
+        //TODO 待统一封装  或者 使用 mybatis plugin插件做统一处理
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        user.setUpdateBy(authentication.getName());
+        user.setUpdateTime(LocalDateTime.now());
+    }
 }

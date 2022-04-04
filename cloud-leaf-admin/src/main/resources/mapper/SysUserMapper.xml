@@ -70,7 +70,7 @@
     </insert>
     <delete id="deleteUserRoleByUserIds">
         delete from t_sys_user_role where
-        <foreach collection="userIds" open="user_id in (" close=")" item="roleId" separator=",">
+        <foreach collection="userIds" open="user_id in (" close=")" item="userId" separator=",">
             #{userId}
         </foreach>
     </delete>
@@ -113,7 +113,7 @@
             and u.org_id = #{query.orgId}
         </if>
         <if test="query.name != null and query.name != ''">
-            and u.username like concat('%',#{query.name},'%')
+            and u.nick_name like concat('%',#{query.name},'%')
         </if>
         <if test="query.phone != null and query.phone != ''">
             and u.mobile_phone = #{query.phone}

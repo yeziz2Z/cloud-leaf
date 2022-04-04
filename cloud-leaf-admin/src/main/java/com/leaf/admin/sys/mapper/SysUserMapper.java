@@ -1,6 +1,7 @@
 package com.leaf.admin.sys.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.leaf.admin.sys.dto.UserQueryParam;
 import com.leaf.admin.sys.entity.SysUser;
@@ -21,9 +22,10 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 
     List<SysUser> selectByRoleId(Long roleId);
 
-    Page<UserVO> selectUserList(Page page, @Param("query") UserQueryParam query);
+    //TODO 数据存在一对多  <collection> 映射  查询结果不正常
+    Page<UserVO> selectUserList(IPage<UserVO> page, @Param("query") UserQueryParam query);
 
-    int deleteUserRoleByUserIds(List<Long> userIds);
+    int deleteUserRoleByUserIds(@Param("userIds") List<Long> userIds);
 
-//    int insertUserRole(UserRoleDTO userRoleDTO);
+    int insertUserRole(@Param("userId")Long userId ,@Param("roleIds")List<Long> roleIds);
 }
