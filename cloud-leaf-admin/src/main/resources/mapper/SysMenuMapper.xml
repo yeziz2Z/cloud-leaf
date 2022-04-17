@@ -4,32 +4,33 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.leaf.admin.sys.entity.SysMenu">
-        <id column="id" property="id" />
-        <result column="name" property="name" />
-        <result column="title" property="title" />
-        <result column="parent_id" property="parentId" />
-        <result column="component" property="component" />
-        <result column="path" property="path" />
-        <result column="hidden" property="hidden" />
-        <result column="redirect" property="redirect" />
-        <result column="hide_children_in_menu" property="hideChildrenInMenu" />
-        <result column="type" property="type" />
-        <result column="order_no" property="orderNo" />
-        <result column="icon" property="icon" />
-        <result column="hidden_header_content" property="hiddenHeaderContent" />
-        <result column="keep_alive" property="keepAlive" />
-        <result column="permission" property="permission" />
-        <result column="new_window" property="newWindow" />
-        <result column="create_by" property="createBy" />
-        <result column="create_time" property="createTime" />
-        <result column="update_by" property="updateBy" />
-        <result column="update_time" property="updateTime" />
-        <result column="remark" property="remark" />
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="title" property="title"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="component" property="component"/>
+        <result column="path" property="path"/>
+        <result column="hidden" property="hidden"/>
+        <result column="redirect" property="redirect"/>
+        <result column="hide_children_in_menu" property="hideChildrenInMenu"/>
+        <result column="type" property="type"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="icon" property="icon"/>
+        <result column="hidden_header_content" property="hiddenHeaderContent"/>
+        <result column="keep_alive" property="keepAlive"/>
+        <result column="permission" property="permission"/>
+        <result column="new_window" property="newWindow"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remark" property="remark"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, name, title, parent_id, component, path, hidden, redirect, hide_children_in_menu, type, order_no, icon, hidden_header_content, keep_alive, permission, new_window, create_by, create_time, update_by, update_time, remark
+        id
+        , name, title, parent_id, component, path, hidden, redirect, hide_children_in_menu, type, order_no, icon, hidden_header_content, keep_alive, permission, new_window, create_by, create_time, update_by, update_time, remark
     </sql>
 
     <select id="selectByUserId" resultMap="BaseResultMap">
@@ -43,5 +44,50 @@
         LEFT JOIN t_sys_role_menu rm
         ON ur.role_id = rm.role_id
         WHERE ur.user_id = #{userId})
+    </select>
+    <select id="selectUserPermissionsByUserId" resultType="java.lang.String">
+        select permission
+        from t_sys_menu
+        where id in (SELECT DISTINCT rm.menu_id
+                     FROM t_sys_user_role ur
+                              LEFT JOIN t_sys_role_menu rm
+                                        ON ur.role_id = rm.role_id
+                     WHERE ur.user_id = #{userId})
+          and status = 1
+    </select>
+    <select id="selectMenusByUserId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_sys_menu
+        where id in (SELECT DISTINCT
+        rm.menu_id
+        FROM
+        t_sys_user_role ur
+        LEFT JOIN t_sys_role_menu rm
+        ON ur.role_id = rm.role_id
+        WHERE ur.user_id = #{userId})
+        and status = 1
+        and `type` in ('F','M') order by parent_id,order_no
+    </select>
+    <select id="selectSubIds" resultType="java.lang.Long">
+        SELECT id
+        FROM (SELECT t1.id,
+                     IF(
+                             FIND_IN_SET(parent_id, @pids) > 0,
+                             @pids := CONCAT (@pids, ',', id),
+                             0
+                         ) AS ischild
+              FROM (SELECT id,
+                           parent_id
+                    FROM t_sys_menu t
+                    ORDER BY parent_id,
+                             id) t1,
+                   (SELECT @pids := #{menuId}) t2) t3
+        WHERE ischild != '0'
+    </select>
+    <select id="countRoleMenuByMenuId" resultType="java.lang.Integer">
+        select count(1)
+        from t_sys_role_menu
+        where menu_id = #{menuId}
     </select>
 </mapper>

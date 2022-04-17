@@ -97,6 +97,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
+    public List<SysMenu> getCurrentUserNav() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        SysUser currentUser = this.getByUsername(authentication.getName());
+        return menuMapper.selectMenusByUserId(currentUser.getId());
+    }
+
+    @Override
     public List<SysRole> getRolesByUserId(Long userId) {
         return roleMapper.selectByUserId(userId);
     }

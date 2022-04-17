@@ -8,6 +8,7 @@ import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @ToString
@@ -97,5 +98,7 @@ public class UserVO {
     private SysOrganization organization;
 
     private List<SysRole> roles;
+
+    private Set<String> permissions;
 
 }

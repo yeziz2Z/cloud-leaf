@@ -1,14 +1,23 @@
 package com.leaf.admin.sys.service.impl;
 
+import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.core.lang.tree.TreeNodeConfig;
+import cn.hutool.core.lang.tree.TreeUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.leaf.admin.sys.entity.SysOrganization;
+import com.leaf.admin.sys.entity.SysUser;
 import com.leaf.admin.sys.mapper.SysOrganizationMapper;
+import com.leaf.admin.sys.mapper.SysUserMapper;
 import com.leaf.admin.sys.service.ISysOrganizationService;
 import com.leaf.admin.sys.vo.OrgTreeVO;
 import com.leaf.common.enums.YesOrNoEnum;
+import com.leaf.common.exception.BusinessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,6 +34,9 @@ import java.util.stream.Collectors;
  */
 @Service
 public class SysOrganizationServiceImpl extends ServiceImpl<SysOrganizationMapper, SysOrganization> implements ISysOrganizationService {
+
+    @Resource
+    SysUserMapper userMapper;
 
     @Override
     public List<OrgTreeVO> selectOrgTreeList() {
@@ -71,6 +83,64 @@ public class SysOrganizationServiceImpl extends ServiceImpl<SysOrganizationMappe
             orgTreeVO.setTitle(sysOrganization.getName());
             return orgTreeVO;
         }).collect(Collectors.toList());
+
+    }
+
+    @Override
+    public List<Tree<Long>> getOrganizationTree() {
+        List<SysOrganization> sysOrganizations = this.list(new LambdaQueryWrapper<SysOrganization>()
+                .eq(SysOrganization::getDelFlag, YesOrNoEnum.NO.getCode()));
+
+        TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
+        treeNodeConfig.setIdKey("id");
+        treeNodeConfig.setWeightKey("orderNo");
+
+        List<Tree<Long>> treeList = TreeUtil.build(sysOrganizations, 0L, treeNodeConfig, ((organization, treeNode) -> {
+            treeNode.setId(organization.getId());
+            treeNode.setParentId(organization.getParentId());
+            treeNode.setName(organization.getName());
+            treeNode.putExtra("createTime", organization.getCreateTime());
+            treeNode.putExtra("status", organization.getStatus());
+            treeNode.putExtra("orderNo", organization.getOrderNo());
+        }));
+
+        return treeList;
+    }
+
+    @Transactional
+    @Override
+    public void saveOrganization(SysOrganization organization) {
+        checkOrganizationName(organization);
+        this.save(organization);
+    }
+
+    @Transactional
+    @Override
+    public void updateOrganization(SysOrganization organization) {
+        checkOrganizationName(organization);
+        super.updateById(organization);
+    }
+
+    @Override
+    public boolean removeById(Serializable id) {
+        if (super.count(new LambdaQueryWrapper<SysOrganization>().eq(SysOrganization::getParentId, id)) > 0) {
+            throw new BusinessException(500, "存在下级机构,不允许删除");
+        }
+        if (userMapper.selectCount(new LambdaQueryWrapper<SysUser>().eq(SysUser::getOrgId, id)) > 0) {
+            throw new BusinessException(500, "机构存在用户,不允许删除");
+        }
+        return super.removeById(id);
+    }
+
+    private void checkOrganizationName(SysOrganization organization) {
+        LambdaQueryWrapper<SysOrganization> wrapper = new LambdaQueryWrapper<SysOrganization>()
+                .ne(!Objects.isNull(organization.getId()), SysOrganization::getId, organization.getId())
+                .eq(SysOrganization::getParentId, organization.getParentId())
+                .eq(SysOrganization::getName, organization.getName());
+
+        if (super.count(wrapper) > 0) {
+            throw new BusinessException(500, "机构名称已存在");
+        }
 
     }
 }

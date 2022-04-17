@@ -5,8 +5,11 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * <p>
@@ -16,8 +19,8 @@ import lombok.Setter;
  * @author liuk
  * @since 2022-03-17
  */
-@Getter
-@Setter
+@Data
+@ToString
 @TableName("t_sys_menu")
 public class SysMenu implements Serializable {
 

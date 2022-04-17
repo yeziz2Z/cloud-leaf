@@ -4,6 +4,7 @@ import com.leaf.admin.sys.entity.SysMenu;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -16,4 +17,12 @@ import java.util.List;
 public interface SysMenuMapper extends BaseMapper<SysMenu> {
 
     List<SysMenu> selectByUserId(Long userId);
+
+    Set<String> selectUserPermissionsByUserId(Long userId);
+
+    List<SysMenu> selectMenusByUserId(Long userId);
+
+    List<Long> selectSubIds(Long menuId);
+
+    int countRoleMenuByMenuId(Long menuId);
 }

@@ -38,15 +38,15 @@ public class UserController {
         UserVO userVO = new UserVO();
         BeanUtils.copyProperties(sysUser, userVO);
         userVO.setRoles(roleService.getRolesByUserId(sysUser.getId()));
+        userVO.setPermissions(menuService.selectUserPermissions(sysUser.getId()));
         log.info("UserVO ：{}", userVO);
         return Result.success(userVO);
     }
 
 
     @GetMapping("/nav")
-    public Result nav(Principal principal) {
-        SysUser sysUser = userService.getByUsername(principal.getName());
-        return Result.success(menuService.selectByUserId(sysUser.getId()));
+    public Result nav() {
+        return Result.success(userService.getCurrentUserNav());
     }
 
     @GetMapping("/service")

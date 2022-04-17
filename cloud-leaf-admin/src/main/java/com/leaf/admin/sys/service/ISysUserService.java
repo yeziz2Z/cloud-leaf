@@ -27,6 +27,8 @@ public interface ISysUserService extends IService<SysUser> {
 
     List<SysMenu> getMenusByUserId(Long userId);
 
+    List<SysMenu> getCurrentUserNav();
+
     String getUserAuthorities(Long userId);
 
     List<String> getUserAuthoritiesByUsername(String username);
