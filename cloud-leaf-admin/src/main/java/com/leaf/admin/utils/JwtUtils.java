@@ -57,7 +57,7 @@ public class JwtUtils {
 
     public String generateRefreshToken(Map payload) {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime expireDate = now.plus(30 * 2, ChronoUnit.SECONDS);
+        LocalDateTime expireDate = now.plus(expire * 2, ChronoUnit.SECONDS);
         payload.put("tokenType", SystemConst.REFRESH_TOKEN);
         return generateToken(now, expireDate, payload);
     }
