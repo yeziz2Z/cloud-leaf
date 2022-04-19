@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.leaf.admin.common.entity.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -22,7 +23,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("t_sys_user")
-public class SysUser implements Serializable {
+public class SysUser extends BaseEntity implements Serializable {
 
 
     /**
@@ -103,30 +104,6 @@ public class SysUser implements Serializable {
      */
     @TableField("login_time")
     private LocalDateTime loginTime;
-
-    /**
-     * 创建者
-     */
-    @TableField("create_by")
-    private String createBy;
-
-    /**
-     * 创建时间
-     */
-    @TableField("create_time")
-    private LocalDateTime createTime;
-
-    /**
-     * 更新者
-     */
-    @TableField("update_by")
-    private String updateBy;
-
-    /**
-     * 更新时间
-     */
-    @TableField("update_time")
-    private LocalDateTime updateTime;
 
     /**
      * 备注

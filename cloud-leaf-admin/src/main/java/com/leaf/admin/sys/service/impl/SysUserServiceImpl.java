@@ -26,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -160,8 +159,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         BeanUtil.copyProperties(sysUserDTO, user);
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        fillCreate(user);
         // 入库
         this.save(user);
         if (CollectionUtil.isNotEmpty(sysUserDTO.getRoleIds())) {
@@ -174,7 +171,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public int resetPassword(SysUserDTO sysUserDTO) {
         SysUser user = new SysUser();
         user.setId(sysUserDTO.getId());
-        fillUpdate(user);
         user.setPassword(passwordEncoder.encode(sysUserDTO.getPassword()));
         return baseMapper.updateById(user);
     }
@@ -184,8 +180,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public void updateUser(SysUserDTO sysUserDTO) {
         SysUser user = new SysUser();
         BeanUtil.copyProperties(sysUserDTO, user);
-
-        fillUpdate(user);
 
         this.updateById(user);
         baseMapper.deleteUserRoleByUserIds(Arrays.asList(user.getId()));
@@ -207,19 +201,5 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         baseMapper.deleteUserRoleByUserIds(userIds);
 
         baseMapper.deleteBatchIds(userIds);
-    }
-
-    private void fillCreate(SysUser user) {
-        //TODO 待统一封装  或者 使用 mybatis plugin插件做统一处理
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        user.setCreateBy(authentication.getName());
-        user.setCreateTime(LocalDateTime.now());
-    }
-
-    private void fillUpdate(SysUser user) {
-        //TODO 待统一封装  或者 使用 mybatis plugin插件做统一处理
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        user.setUpdateBy(authentication.getName());
-        user.setUpdateTime(LocalDateTime.now());
     }
 }

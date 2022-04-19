@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
+import com.leaf.admin.common.entity.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -20,7 +22,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("t_sys_config")
-public class SysConfig implements Serializable {
+public class SysConfig extends BaseEntity implements Serializable {
 
 
     /**
@@ -48,30 +50,6 @@ public class SysConfig implements Serializable {
      * 系统内置（Y是 N否）
      */
     private String type;
-
-    /**
-     * 创建者
-     */
-    @TableField("create_by")
-    private String createBy;
-
-    /**
-     * 创建时间
-     */
-    @TableField("create_time")
-    private LocalDateTime createTime;
-
-    /**
-     * 更新者
-     */
-    @TableField("update_by")
-    private String updateBy;
-
-    /**
-     * 更新时间
-     */
-    @TableField("update_time")
-    private LocalDateTime updateTime;
 
     /**
      * 备注

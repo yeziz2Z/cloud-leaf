@@ -4,15 +4,20 @@ import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.LineCaptcha;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.jwt.JWT;
 import com.leaf.admin.common.SystemConst;
+import com.leaf.admin.common.enums.TokenErrorEnum;
+import com.leaf.admin.utils.JwtUtils;
 import com.leaf.common.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @RequestMapping("/auth")
@@ -21,8 +26,10 @@ public class AuthController {
 
     @Autowired
     RedisTemplate redisTemplate;
+    @Autowired
+    JwtUtils jwtUtils;
 
-    @GetMapping("captcha")
+    @GetMapping("/captcha")
     public Result captcha() {
         LineCaptcha captcha = CaptchaUtil.createLineCaptcha(100, 40, 5, 70);
 
@@ -38,13 +45,33 @@ public class AuthController {
                 .build());
     }
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    /**
+     * 刷新 访问 token
+     *
+     * @param refreshToken
+     * @return
+     */
+    @GetMapping("/refreshToken")
+    public Result refreshToken(@RequestParam(value = "refreshToken", required = false) String refreshToken) {
+        if (StrUtil.isEmpty(refreshToken)) {
+            return Result.fail("刷新token失败!");
+        }
+        JWT jwt = jwtUtils.getJwtFromToken(refreshToken);
 
-    @GetMapping("test")
-    public Result test() {
-        String encode = passwordEncoder.encode("123456");
-        System.out.println(encode);
-        return Result.success();
+        if (!jwtUtils.isValidToken(jwt)) {
+            return Result.fail("刷新token失败!");
+        }
+        if (jwtUtils.isExpired(jwt)) {
+            return Result.fail(TokenErrorEnum.EXPIRED_TOKEN.getCode(), TokenErrorEnum.EXPIRED_TOKEN.getMessage());
+        }
+        if (!Objects.equals(SystemConst.REFRESH_TOKEN, jwt.getPayload("tokenType"))) {
+            return Result.fail("刷新token失败!");
+        }
+        String name = (String) jwt.getPayload("name");
+        Map<String, String> payload = MapUtil.builder("name", name).build();
+        return Result.success(MapUtil.builder()
+                .put(SystemConst.ACCESS_TOKEN, jwtUtils.generateAccessToken(payload))
+//                .put(SystemConst.REFRESH_TOKEN, jwtUtils.generateRefreshToken(payload)) //刷新token 同时也生成新的 refreshToken
+                .build());
     }
 }

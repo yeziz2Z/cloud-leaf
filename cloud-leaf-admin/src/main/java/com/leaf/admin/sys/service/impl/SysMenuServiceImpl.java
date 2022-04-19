@@ -78,10 +78,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         if (Objects.equals(sysMenu.getType(), "F")) {
             sysMenu.setComponent(sysMenu.getHiddenHeaderContent() ? "RouteView" : "PageView");
         }
-        //TODO 填充公共属性
-        sysMenu.setCreateTime(LocalDateTime.now());
-        sysMenu.setCreateBy(SecurityContextHolder.getContext().getAuthentication().getName());
-
         this.save(sysMenu);
     }
 
@@ -91,10 +87,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         if (Objects.equals(sysMenu.getType(), "F")) {
             sysMenu.setComponent(sysMenu.getHiddenHeaderContent() ? "RouteView" : "PageView");
         }
-        //TODO 填充公共属性
-        sysMenu.setUpdateTime(LocalDateTime.now());
-        sysMenu.setUpdateBy(SecurityContextHolder.getContext().getAuthentication().getName());
-
         this.updateById(sysMenu);
     }
 

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import com.leaf.admin.common.entity.BaseEntity;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +23,7 @@ import lombok.ToString;
 @Data
 @ToString
 @TableName("t_sys_menu")
-public class SysMenu implements Serializable {
+public class SysMenu extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -108,26 +109,6 @@ public class SysMenu implements Serializable {
     private Boolean newWindow;
 
     private Boolean status;
-
-    /**
-     * 创建人
-     */
-    private String createBy;
-
-    /**
-     * 创建时间
-     */
-    private LocalDateTime createTime;
-
-    /**
-     * 更新者
-     */
-    private String updateBy;
-
-    /**
-     * 更新时间
-     */
-    private LocalDateTime updateTime;
 
     /**
      * 备注

@@ -7,6 +7,7 @@ import cn.hutool.json.JSONUtil;
 import cn.hutool.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.leaf.admin.common.SystemConst;
+import com.leaf.admin.common.enums.TokenErrorEnum;
 import com.leaf.admin.security.UserDetailsServiceImpl;
 import com.leaf.admin.security.exception.CaptchaException;
 import com.leaf.admin.sys.dto.UserLoginDTO;
@@ -38,7 +39,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -62,7 +62,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
 
-    private String[] WITHE_URLS = {"/auth/login", "/auth/captcha", "/auth/logout", "/auth/test"};
+    private String[] WITHE_URLS = {"/auth/login", "/auth/captcha", "/auth/logout", "/auth/refreshToken"};
 
     private static final String TOKEN_ERROR = "token_error";
 
@@ -155,10 +155,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationSuccessHandler loginSuccessHandler() {
         return (request, response, authentication) -> {
             response.setContentType("application/json;charset=UTF-8");
-            String token = jwtUtils.generateToken(authentication.getName());
+
+            Map<String, String> payload = MapUtil.builder("name", authentication.getName()).build();
 
             Result<Map> result = Result.success(MapUtil.builder()
-                    .put("token", token)
+                    .put(SystemConst.ACCESS_TOKEN, jwtUtils.generateAccessToken(payload))
+                    .put(SystemConst.REFRESH_TOKEN, jwtUtils.generateRefreshToken(payload))
                     .build());
             ServletOutputStream outputStream = response.getOutputStream();
             outputStream.write(JSONUtil.toJsonStr(result).getBytes(CharsetUtil.UTF_8));
@@ -181,17 +183,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 JWT jwt = jwtUtils.getJwtFromToken(token);
 
                 if (!jwtUtils.isValidToken(jwt)) {
-                    request.setAttribute(TOKEN_ERROR, "不合法的token!");
+                    request.setAttribute(TOKEN_ERROR, TokenErrorEnum.INVALID_TOKEN);
                     chain.doFilter(request, response);
                     return;
                 }
 
                 if (jwtUtils.isExpired(jwt)) {
-                    request.setAttribute(TOKEN_ERROR, "token已过期!");
+                    request.setAttribute(TOKEN_ERROR, TokenErrorEnum.EXPIRED_TOKEN);
                     chain.doFilter(request, response);
                     return;
                 }
-                String username = (String) jwt.getPayload("sub");
+                String username = (String) jwt.getPayload("name");
 
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, userDetailsService.getUserAuthoritiesByUsername(username));
 
@@ -208,12 +210,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             response.setContentType("application/json;charset=UTF-8");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-            Object token_error = request.getAttribute(TOKEN_ERROR);
+            TokenErrorEnum tokenErrorEnum = (TokenErrorEnum) request.getAttribute(TOKEN_ERROR);
 
-            Result result = Result.fail("请先登录");
-            /*if (!Objects.isNull(token_error)) {
-                result.setMsg(String.valueOf(token_error));
-            }*/
+            Result result = Result.fail(tokenErrorEnum.getCode(), tokenErrorEnum.getMessage());
 
             ServletOutputStream outputStream = response.getOutputStream();
             outputStream.write(JSONUtil.toJsonStr(result).getBytes(CharsetUtil.UTF_8));

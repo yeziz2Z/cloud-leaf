@@ -37,9 +37,6 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         if (count > 0) {
             throw new BusinessException(500, "角色编码已存在");
         }
-        //TODO 填充公共属性
-        sysRole.setCreateTime(LocalDateTime.now());
-        sysRole.setCreateBy(SecurityContextHolder.getContext().getAuthentication().getName());
         return this.save(sysRole);
     }
 
@@ -52,9 +49,6 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         if (count > 0) {
             throw new BusinessException(500, "角色编码已存在");
         }
-        //TODO 填充公共属性
-        sysRole.setUpdateTime(LocalDateTime.now());
-        sysRole.setUpdateBy(SecurityContextHolder.getContext().getAuthentication().getName());
         return this.updateById(sysRole);
     }
 
