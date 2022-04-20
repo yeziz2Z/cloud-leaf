@@ -193,6 +193,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     chain.doFilter(request, response);
                     return;
                 }
+
+                if (!Objects.equals(SystemConst.ACCESS_TOKEN, jwt.getPayload("tokenType"))) {
+                    request.setAttribute(TOKEN_ERROR, TokenErrorEnum.INVALID_TOKEN);
+                    chain.doFilter(request, response);
+                    return;
+                }
+                // TODO 校验参与生成token 客户端特征  例如请求ip  访问设备等等
+
                 String username = (String) jwt.getPayload("name");
 
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, userDetailsService.getUserAuthoritiesByUsername(username));
