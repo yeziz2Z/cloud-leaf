@@ -90,4 +90,10 @@ public class UserController {
     }
 
 
+    @PutMapping("/profile")
+    public Result profile(@RequestBody SysUser sysUser) {
+        userService.updateById(sysUser);
+        return Result.success();
+    }
+
 }

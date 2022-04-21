@@ -16,7 +16,6 @@ import com.leaf.admin.sys.mapper.SysUserMapper;
 import com.leaf.admin.sys.service.ISysUserService;
 import com.leaf.admin.sys.vo.UserVO;
 import com.leaf.common.exception.BusinessException;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,6 +27,8 @@ import javax.annotation.Resource;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -54,17 +55,29 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     private static final String GRANTED_AUTHORITY_KEY = "GrantedAuthority:username:";
     private static final String AUTHORITIES_KEY = "authorities:username:";
+    private static final String USERNAME_KEY = "sys:username:";
+    private static final String USER_ID_KEY = "sys:userId:";
 
-    @Cacheable(cacheNames = {"sysUser:username"}, key = "#username")
     @Override
     public SysUser getByUsername(String username) {
-        return getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, username));
+        String key = USERNAME_KEY + username;
+        SysUser user = (SysUser) redisTemplate.opsForValue().get(key);
+        if (Objects.isNull(user)) {
+            user = getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, username));
+            redisTemplate.opsForValue().set(key, user, 3600, TimeUnit.SECONDS);
+        }
+        return user;
     }
 
-    @Cacheable(cacheNames = {"sysUser:id"}, key = "#id")
     @Override
     public SysUser getById(Serializable id) {
-        return super.getById(id);
+        String key = USER_ID_KEY + id;
+        SysUser user = (SysUser) redisTemplate.opsForValue().get(key);
+        if (Objects.isNull(user)) {
+            user = super.getById(id);
+            redisTemplate.opsForValue().set(key, user, 3600, TimeUnit.SECONDS);
+        }
+        return user;
     }
 
     @Override

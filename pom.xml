@@ -30,6 +30,7 @@
 <!--        <mybatis.spring.boot.version>2.1.4</mybatis.spring.boot.version>-->
         <mybatis-plus-boot-starter.version>3.5.1</mybatis-plus-boot-starter.version>
         <mybatis.plus.generator.version>3.5.2</mybatis.plus.generator.version>
+        <jackson.datatype.jsr310.version>2.13.2</jackson.datatype.jsr310.version>
     </properties>
 
 
@@ -109,6 +110,11 @@
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
                 <optional>true</optional>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jsr310</artifactId>
+                <version>${jackson.datatype.jsr310.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
