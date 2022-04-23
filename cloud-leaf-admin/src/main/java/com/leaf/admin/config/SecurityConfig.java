@@ -16,14 +16,13 @@ import com.leaf.common.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
@@ -50,8 +49,7 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Objects;
 
-@Configuration
-@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 @Slf4j
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
@@ -274,7 +272,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             response.setContentType("application/json;charset=UTF-8");
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             Result<String> fail = Result.fail(accessDeniedException.getMessage());
-
+            log.warn("============>权限不足 异常处理器", accessDeniedException);
             ServletOutputStream outputStream = response.getOutputStream();
             outputStream.write(JSONUtil.toJsonStr(fail).getBytes(CharsetUtil.UTF_8));
             outputStream.flush();

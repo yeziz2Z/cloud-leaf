@@ -32,13 +32,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     public List<GrantedAuthority> getUserAuthorities(Long userId) {
-//        return AuthorityUtils.commaSeparatedStringToAuthorityList(sysUserService.getUserAuthorities(userId));
-        return null;
+        return AuthorityUtils.commaSeparatedStringToAuthorityList(sysUserService.getUserAuthorities(userId));
     }
 
     public List<GrantedAuthority> getUserAuthoritiesByUsername(String username) {
-        /*SysUser sysUser = sysUserService.getByUsername(username);
-        return AuthorityUtils.commaSeparatedStringToAuthorityList(sysUserService.getUserAuthorities(sysUser.getId()));*/
-        return null;
+        SysUser sysUser = sysUserService.getByUsername(username);
+        return AuthorityUtils.commaSeparatedStringToAuthorityList(sysUserService.getUserAuthorities(sysUser.getId()));
     }
 }

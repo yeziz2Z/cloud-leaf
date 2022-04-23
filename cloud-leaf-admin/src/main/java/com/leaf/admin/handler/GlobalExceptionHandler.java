@@ -27,7 +27,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = AccessDeniedException.class)
+    @ResponseStatus(value = HttpStatus.FORBIDDEN)
     public Result accessDeniedExceptionHandler(AccessDeniedException e) {
+        log.warn("权限不足", e);
         return Result.fail(403, "没有足够权限");
     }
 
@@ -49,7 +51,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = IllegalArgumentException.class)
     public Result illegalArgumentExceptionHandler(IllegalArgumentException e) {
-
         log.warn("实体参数校验失败:{}", e.getMessage());
         return Result.fail(e.getMessage());
     }

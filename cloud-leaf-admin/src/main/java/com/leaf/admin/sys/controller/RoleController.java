@@ -10,6 +10,7 @@ import com.leaf.admin.sys.service.ISysRoleService;
 import com.leaf.common.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,11 +23,13 @@ public class RoleController {
     ISysRoleService roleService;
 
     @GetMapping("/list")
+    @PreAuthorize("hasAnyAuthority('system.user.list')")
     public Result list() {
         return Result.success(roleService.list());
     }
 
     @GetMapping("/page")
+    @PreAuthorize("hasAnyAuthority('system.role.list')")
     public Result page(Page page, RoleQueryParam queryParam) {
         LambdaQueryWrapper<SysRole> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(StrUtil.isNotEmpty(queryParam.getName()), SysRole::getName, queryParam.getName())
@@ -39,6 +42,7 @@ public class RoleController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyAuthority('system.role.add')")
     public Result add(@RequestBody SysRole sysRole) {
         roleService.saveSysRole(sysRole);
         return Result.success();
@@ -50,12 +54,14 @@ public class RoleController {
     }
 
     @PutMapping
+    @PreAuthorize("hasAnyAuthority('system.role.edit')")
     public Result edit(@RequestBody SysRole sysRole) {
         roleService.updateSysRole(sysRole);
         return Result.success();
     }
 
     @DeleteMapping("/{roleIds}")
+    @PreAuthorize("hasAnyAuthority('system.role.delete')")
     public Result delete(@PathVariable("roleIds") List<Long> roleIds) {
         roleService.removeBatchByIds(roleIds);
         return Result.success();
@@ -67,6 +73,7 @@ public class RoleController {
     }
 
     @PostMapping("/menus")
+    @PreAuthorize("hasAnyAuthority('system.role.permission')")
     public Result roleMenus(@RequestBody RoleMenuDTO roleMenuDTO) {
         roleService.saveRoleMenu(roleMenuDTO);
         return Result.success();

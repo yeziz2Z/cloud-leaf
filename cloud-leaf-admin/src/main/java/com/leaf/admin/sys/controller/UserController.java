@@ -13,6 +13,7 @@ import com.leaf.common.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -50,18 +51,21 @@ public class UserController {
     }
 
     @GetMapping("/service")
+    @PreAuthorize("hasAnyAuthority('system.user.list')")
     public Result list(Page page, UserQueryParam queryParam) {
         log.info("queryParam {}, Page {}", queryParam, page);
         return Result.success(userService.selectSysUserVOPage(page, queryParam));
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('system.user.add')")
     public Result add(@RequestBody SysUserDTO sysUser) {
         userService.saveUser(sysUser);
         return Result.success();
     }
 
     @PutMapping
+    @PreAuthorize("hasAnyAuthority('system.user.edit')")
     public Result edit(@RequestBody SysUserDTO sysUser) {
         userService.updateUser(sysUser);
         return Result.success();
@@ -84,6 +88,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{userIds}")
+    @PreAuthorize("hasAnyAuthority('system.user.delete')")
     public Result deleteByUserIds(@PathVariable("userIds") List<Long> userIds) {
         userService.removeByUserIds(userIds);
         return Result.success();

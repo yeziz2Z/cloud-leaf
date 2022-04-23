@@ -79,7 +79,6 @@ public class SysUser extends BaseEntity implements Serializable {
     /**
      * 密码
      */
-    @JsonIgnore
     private String password;
 
     /**

@@ -1,7 +1,9 @@
 package com.leaf.admin.sys.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -53,10 +55,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Resource
     PasswordEncoder passwordEncoder;
 
-    private static final String GRANTED_AUTHORITY_KEY = "GrantedAuthority:username:";
     private static final String AUTHORITIES_KEY = "authorities:username:";
     private static final String USERNAME_KEY = "sys:username:";
     private static final String USER_ID_KEY = "sys:userId:";
+    private static final String USER_MENU_KEY = "sys:menus:";
 
     @Override
     public SysUser getByUsername(String username) {
@@ -83,27 +85,29 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public String getUserAuthorities(Long userId) {
         SysUser sysUser = this.getById(userId);
-
         List<String> authorities = this.getUserAuthoritiesByUsername(sysUser.getUsername());
         String grantedAuthority = authorities.stream().collect(Collectors.joining(","));
-
         return grantedAuthority;
     }
 
     @Override
     public List<String> getUserAuthoritiesByUsername(String username) {
         String key = AUTHORITIES_KEY + username;
-        if (redisTemplate.hasKey(key)) {
-            return (List<String>) redisTemplate.opsForList().index(key, -1);
-        }
-        SysUser sysUser = getByUsername(username);
-        Long userId = sysUser.getId();
-        List<SysRole> roleList = this.getRolesByUserId(userId);
-        List<String> authorities = roleList.stream().map(SysRole::getCode).collect(Collectors.toList());
 
-        List<SysMenu> menuList = this.getMenusByUserId(userId);
-//        authorities.addAll(menuList.stream().map(SysMenu::getPermission).collect(Collectors.toList()));
-        redisTemplate.opsForList().leftPush(key, authorities);
+        List<String> authorities = (List<String>) redisTemplate.opsForValue().get(key);
+        if (CollUtil.isEmpty(authorities)) {
+            SysUser sysUser = getByUsername(username);
+            Long userId = sysUser.getId();
+            List<SysRole> roleList = this.getRolesByUserId(userId);
+            authorities = roleList.stream().map(SysRole::getCode).collect(Collectors.toList());
+
+            List<SysMenu> menuList = this.getMenusByUserId(userId);
+            authorities.addAll(menuList.stream()
+                    .filter(sysMenu -> StrUtil.isNotEmpty(sysMenu.getPermission()))
+                    .map(SysMenu::getPermission)
+                    .collect(Collectors.toList()));
+            redisTemplate.opsForValue().set(key, authorities, 60 * 60, TimeUnit.SECONDS);
+        }
         return authorities;
 
     }
@@ -112,7 +116,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public List<SysMenu> getCurrentUserNav() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         SysUser currentUser = this.getByUsername(authentication.getName());
-        return menuMapper.selectMenusByUserId(currentUser.getId());
+        String key = USER_MENU_KEY + currentUser.getId();
+        List<SysMenu> result = (List<SysMenu>) redisTemplate.opsForValue().get(key);
+        if (CollUtil.isEmpty(result)) {
+            // 查询  目录以及菜单
+            result = menuMapper.selectMenusByUserId(currentUser.getId());
+            redisTemplate.opsForValue().set(key, result, 60 * 60, TimeUnit.SECONDS);
+        }
+        return result;
     }
 
     @Override
@@ -166,7 +177,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     @Transactional
-    @Deprecated
     public void saveUser(SysUserDTO sysUserDTO) {
         SysUser user = new SysUser();
         BeanUtil.copyProperties(sysUserDTO, user);

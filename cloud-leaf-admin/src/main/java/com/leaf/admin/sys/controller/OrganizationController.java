@@ -6,6 +6,7 @@ import com.leaf.admin.sys.vo.OrgTreeVO;
 import com.leaf.common.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class OrganizationController {
     }
 
     @GetMapping("/getOrganizationTree")
+    @PreAuthorize("hasAnyAuthority('system.org.list')")
     public Result getOrganizationTree() {
         return Result.success(organizationService.getOrganizationTree());
     }
@@ -36,18 +38,21 @@ public class OrganizationController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('system.org.add')")
     public Result save(@RequestBody SysOrganization organization) {
         organizationService.saveOrganization(organization);
         return Result.success();
     }
 
     @PutMapping
+    @PreAuthorize("hasAnyAuthority('system.org.edit')")
     public Result edit(@RequestBody SysOrganization organization) {
         organizationService.updateOrganization(organization);
         return Result.success();
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('system.org.delete')")
     public Result delete(@PathVariable("id") Long id) {
         organizationService.removeById(id);
         return Result.success();

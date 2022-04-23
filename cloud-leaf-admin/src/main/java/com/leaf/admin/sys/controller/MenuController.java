@@ -6,6 +6,7 @@ import com.leaf.admin.sys.service.ISysMenuService;
 import com.leaf.admin.sys.vo.SysMenuVO;
 import com.leaf.common.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,12 +29,14 @@ public class MenuController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('system.menu.add')")
     public Result add(@RequestBody SysMenu sysMenu) {
         menuService.saveMenu(sysMenu);
         return Result.success();
     }
 
     @PutMapping
+    @PreAuthorize("hasAnyAuthority('system.menu.edit')")
     public Result edit(@RequestBody SysMenu sysMenu) {
         menuService.updateMenu(sysMenu);
         return Result.success();
@@ -46,6 +49,7 @@ public class MenuController {
     }*/
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('system.menu.delete')")
     public Result delete(@PathVariable("id") Long id) {
         menuService.deleteById(id);
         return Result.success();

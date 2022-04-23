@@ -44,6 +44,7 @@
         LEFT JOIN t_sys_role_menu rm
         ON ur.role_id = rm.role_id
         WHERE ur.user_id = #{userId})
+        and status = '1'
     </select>
     <select id="selectUserPermissionsByUserId" resultType="java.lang.String">
         select permission

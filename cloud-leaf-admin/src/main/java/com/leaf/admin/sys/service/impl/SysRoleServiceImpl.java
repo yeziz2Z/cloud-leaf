@@ -6,7 +6,9 @@ import com.leaf.admin.sys.dto.RoleMenuDTO;
 import com.leaf.admin.sys.entity.SysRole;
 import com.leaf.admin.sys.mapper.SysRoleMapper;
 import com.leaf.admin.sys.service.ISysRoleService;
+import com.leaf.admin.sys.service.ISysUserService;
 import com.leaf.common.exception.BusinessException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,9 @@ import java.util.List;
  */
 @Service
 public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> implements ISysRoleService {
+
+    @Autowired
+    ISysUserService userService;
 
     @Override
     public List<SysRole> getRolesByUserId(Long userId) {
@@ -63,5 +68,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         baseMapper.deleteRoleMenuByRoleId(roleMenuDTO.getRoleId());
 
         baseMapper.insertRoleMenu(roleMenuDTO);
+
+        userService.clearUserAuthoritiesByRoleId(roleMenuDTO.getRoleId());
     }
 }
