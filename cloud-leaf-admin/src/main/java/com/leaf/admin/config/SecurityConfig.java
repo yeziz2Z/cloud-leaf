@@ -6,18 +6,22 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.leaf.admin.async.factory.LogTaskFactory;
 import com.leaf.admin.common.SystemConst;
 import com.leaf.admin.common.enums.TokenErrorEnum;
 import com.leaf.admin.security.UserDetailsServiceImpl;
 import com.leaf.admin.security.exception.CaptchaException;
 import com.leaf.admin.sys.dto.UserLoginDTO;
+import com.leaf.admin.sys.entity.SysLoginLog;
 import com.leaf.admin.utils.JwtUtils;
+import com.leaf.common.enums.YesOrNoEnum;
 import com.leaf.common.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -46,6 +50,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
 
@@ -59,6 +64,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     JwtUtils jwtUtils;
     @Autowired
     UserDetailsServiceImpl userDetailsService;
+    @Autowired
+    ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     private String[] WITHE_URLS = {"/auth/login", "/auth/captcha", "/auth/logout", "/auth/refreshToken"};
 
@@ -129,12 +136,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return (request, response, exception) -> {
             response.setContentType("application/json;charset=UTF-8");
 
-            log.error("loginFailureHandler", exception);
+            log.warn("loginFailureHandler", exception);
             Result<String> fail = Result.fail(exception.getMessage());
 
             if (exception instanceof BadCredentialsException) {
                 fail.setMsg("用户名或密码错误");
             }
+            // TODO  待抽取
+            SysLoginLog loginLog = new SysLoginLog();
+            loginLog.setStatus(String.valueOf(YesOrNoEnum.NO.getCode()));
+            loginLog.setAccessTime(LocalDateTime.now());
+            loginLog.setIpaddr(request.getLocalAddr());
+            loginLog.setUserName((String) request.getAttribute("username"));
+            loginLog.setMsg(fail.getMsg());
+            threadPoolTaskExecutor.execute(LogTaskFactory.loginLog(loginLog));
 
             ServletOutputStream outputStream = response.getOutputStream();
             outputStream.write(JSONUtil.toJsonStr(fail).getBytes(CharsetUtil.UTF_8));
@@ -160,6 +175,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .put(SystemConst.ACCESS_TOKEN, jwtUtils.generateAccessToken(payload))
                     .put(SystemConst.REFRESH_TOKEN, jwtUtils.generateRefreshToken(payload))
                     .build());
+
+            // TODO  待抽取
+            SysLoginLog loginLog = new SysLoginLog();
+            loginLog.setStatus(String.valueOf(YesOrNoEnum.YES.getCode()));
+            loginLog.setAccessTime(LocalDateTime.now());
+            loginLog.setIpaddr(request.getLocalAddr());
+            loginLog.setUserName(authentication.getName());
+            loginLog.setMsg("登录成功");
+            threadPoolTaskExecutor.execute(LogTaskFactory.loginLog(loginLog));
+
             ServletOutputStream outputStream = response.getOutputStream();
             outputStream.write(JSONUtil.toJsonStr(result).getBytes(CharsetUtil.UTF_8));
             outputStream.flush();
@@ -167,6 +192,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         };
     }
+
 
     @Bean
     public BasicAuthenticationFilter jwtAuthenticationFilter() throws Exception {
@@ -180,18 +206,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 }
                 JWT jwt = jwtUtils.getJwtFromToken(token);
 
+                // 非法
                 if (!jwtUtils.isValidToken(jwt)) {
                     request.setAttribute(TOKEN_ERROR, TokenErrorEnum.INVALID_TOKEN);
                     chain.doFilter(request, response);
                     return;
                 }
-
+                // 过期
                 if (jwtUtils.isExpired(jwt)) {
                     request.setAttribute(TOKEN_ERROR, TokenErrorEnum.EXPIRED_TOKEN);
                     chain.doFilter(request, response);
                     return;
                 }
-
+                // 非ACCESS_TOKEN 不能用来做业务认证
                 if (!Objects.equals(SystemConst.ACCESS_TOKEN, jwt.getPayload("tokenType"))) {
                     request.setAttribute(TOKEN_ERROR, TokenErrorEnum.INVALID_TOKEN);
                     chain.doFilter(request, response);
@@ -237,9 +264,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     try (InputStream is = request.getInputStream()) {
                         ObjectMapper mapper = new ObjectMapper();
                         UserLoginDTO userLoginDTO = mapper.readValue(is, UserLoginDTO.class);
+                        request.setAttribute("username", userLoginDTO.getUsername());
                         String key = SystemConst.CAPTCHA_KEY + userLoginDTO.getUid();
                         Object cacheCaptcha = redisTemplate.opsForValue().get(key);
-                        log.info("UserLoginDTO {}", userLoginDTO);
                         redisTemplate.delete(key);
                         if (!Objects.equals(cacheCaptcha, userLoginDTO.getCaptcha())) {
                             throw new CaptchaException("验证码错误!");
@@ -248,7 +275,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         setDetails(request, authenticationToken);
                         return this.getAuthenticationManager().authenticate(authenticationToken);
                     } catch (IOException e) {
-                        log.error("", e);
+                        log.error("解析请求参数异常", e);
                     }
                 }
                 return super.attemptAuthentication(request, response);
@@ -300,5 +327,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             outputStream.close();
         });
     }
+
+
 }
 

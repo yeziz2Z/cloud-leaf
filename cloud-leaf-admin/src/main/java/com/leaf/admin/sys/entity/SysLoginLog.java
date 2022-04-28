@@ -26,8 +26,8 @@ public class SysLoginLog implements Serializable {
     /**
      * 访问ID
      */
-    @TableId(value = "info_id", type = IdType.AUTO)
-    private Long infoId;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Long id;
 
     /**
      * 用户账号

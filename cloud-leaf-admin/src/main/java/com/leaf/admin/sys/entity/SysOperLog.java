@@ -4,10 +4,11 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
-import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -30,15 +31,22 @@ public class SysOperLog implements Serializable {
     private Long id;
 
     /**
-     * 模块标题
+     * 模块
      */
-    private String title;
+    private String module;
 
     /**
      * 业务类型（0其它 1新增 2修改 3删除）
      */
     @TableField("business_type")
     private Integer businessType;
+
+    /**
+     * 接口耗时 单位: ms
+     */
+    @TableField("execute_time")
+    private Long executeTime;
+
 
     /**
      * 方法名称

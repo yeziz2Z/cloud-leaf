@@ -144,13 +144,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public void clearUserAuthoritiesByRoleId(Long roleId) {
         List<SysUser> sysUsers = baseMapper.selectByRoleId(roleId);
-        sysUsers.forEach(sysUser -> this.clearUserAuthorities(sysUser.getUsername()));
+        sysUsers.forEach(sysUser -> {
+            this.clearUserAuthorities(sysUser.getUsername());
+            this.clearUserMenuByUserId(sysUser.getId());
+        });
     }
 
     @Override
-    public void clearUserAuthoritiesByMenuId(Long menuId) {
-        List<SysRole> sysRoles = roleMapper.selectByMenuId(menuId);
-        sysRoles.forEach(sysRole -> this.clearUserAuthoritiesByRoleId(sysRole.getId()));
+    public void clearUserMenuByUserId(Long userId) {
+        redisTemplate.delete(USER_MENU_KEY + userId);
     }
 
     @Override
@@ -165,15 +167,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         baseMapper.deleteUserRoleByUserIds(userIds);
     }
 
-    /*@Transactional
-    @Override
-    public void setUserRoles(UserRoleDTO userRoleDTO) {
-        Long userId = userRoleDTO.getUserId();
-        baseMapper.deleteUserRoleByUserIds(Arrays.asList(userId));
-        baseMapper.insertUserRole(userRoleDTO);
-        SysUser sysUser = getById(userId);
-        clearUserAuthorities(sysUser.getUsername());
-    }*/
 
     @Override
     @Transactional

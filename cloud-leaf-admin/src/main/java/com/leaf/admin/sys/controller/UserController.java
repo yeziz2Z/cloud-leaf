@@ -9,6 +9,8 @@ import com.leaf.admin.sys.service.ISysOrganizationService;
 import com.leaf.admin.sys.service.ISysRoleService;
 import com.leaf.admin.sys.service.ISysUserService;
 import com.leaf.admin.sys.vo.UserVO;
+import com.leaf.common.annotation.OperationLog;
+import com.leaf.common.enums.BusinessTypeEnum;
 import com.leaf.common.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -50,6 +52,7 @@ public class UserController {
         return Result.success(userService.getCurrentUserNav());
     }
 
+    @OperationLog(module = "用户管理", businessType = BusinessTypeEnum.SELECT)
     @GetMapping("/service")
     @PreAuthorize("hasAnyAuthority('system.user.list')")
     public Result list(Page page, UserQueryParam queryParam) {
@@ -59,6 +62,7 @@ public class UserController {
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('system.user.add')")
+    @OperationLog(module = "用户管理", businessType = BusinessTypeEnum.INSERT)
     public Result add(@RequestBody SysUserDTO sysUser) {
         userService.saveUser(sysUser);
         return Result.success();
@@ -66,6 +70,7 @@ public class UserController {
 
     @PutMapping
     @PreAuthorize("hasAnyAuthority('system.user.edit')")
+    @OperationLog(module = "用户管理", businessType = BusinessTypeEnum.UPDATE)
     public Result edit(@RequestBody SysUserDTO sysUser) {
         userService.updateUser(sysUser);
         return Result.success();
@@ -89,6 +94,7 @@ public class UserController {
 
     @DeleteMapping("/{userIds}")
     @PreAuthorize("hasAnyAuthority('system.user.delete')")
+    @OperationLog(module = "用户管理", businessType = BusinessTypeEnum.DELETE)
     public Result deleteByUserIds(@PathVariable("userIds") List<Long> userIds) {
         userService.removeByUserIds(userIds);
         return Result.success();

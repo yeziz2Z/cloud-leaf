@@ -37,13 +37,11 @@ public interface ISysUserService extends IService<SysUser> {
 
     void clearUserAuthoritiesByRoleId(Long roleId);
 
-    void clearUserAuthoritiesByMenuId(Long menuId);
+    void clearUserMenuByUserId(Long userId);
 
     Page<UserVO> selectSysUserVOPage(Page page, UserQueryParam queryParam);
 
     void deleteByUserIds(List<Long> userIds);
-
-//    void setUserRoles(UserRoleDTO userRoleDTO);
 
     void saveUser(SysUserDTO sysUserDTO);
 

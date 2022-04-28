@@ -9,6 +9,8 @@ import cn.hutool.jwt.JWT;
 import com.leaf.admin.common.SystemConst;
 import com.leaf.admin.common.enums.TokenErrorEnum;
 import com.leaf.admin.utils.JwtUtils;
+import com.leaf.common.annotation.OperationLog;
+import com.leaf.common.enums.BusinessTypeEnum;
 import com.leaf.common.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -29,6 +31,7 @@ public class AuthController {
     @Autowired
     JwtUtils jwtUtils;
 
+    @OperationLog(module = "系统登录-验证码", businessType = BusinessTypeEnum.SELECT)
     @GetMapping("/captcha")
     public Result captcha() {
         LineCaptcha captcha = CaptchaUtil.createLineCaptcha(100, 40, 5, 70);

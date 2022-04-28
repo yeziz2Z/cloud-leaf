@@ -7,6 +7,8 @@ import com.leaf.admin.sys.dto.RoleMenuDTO;
 import com.leaf.admin.sys.dto.RoleQueryParam;
 import com.leaf.admin.sys.entity.SysRole;
 import com.leaf.admin.sys.service.ISysRoleService;
+import com.leaf.common.annotation.OperationLog;
+import com.leaf.common.enums.BusinessTypeEnum;
 import com.leaf.common.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,6 +30,7 @@ public class RoleController {
         return Result.success(roleService.list());
     }
 
+    @OperationLog(module = "角色管理", businessType = BusinessTypeEnum.SELECT)
     @GetMapping("/page")
     @PreAuthorize("hasAnyAuthority('system.role.list')")
     public Result page(Page page, RoleQueryParam queryParam) {
@@ -43,6 +46,7 @@ public class RoleController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyAuthority('system.role.add')")
+    @OperationLog(module = "角色管理", businessType = BusinessTypeEnum.INSERT)
     public Result add(@RequestBody SysRole sysRole) {
         roleService.saveSysRole(sysRole);
         return Result.success();
@@ -53,6 +57,7 @@ public class RoleController {
         return Result.success(roleService.getById(id));
     }
 
+    @OperationLog(module = "角色管理", businessType = BusinessTypeEnum.UPDATE)
     @PutMapping
     @PreAuthorize("hasAnyAuthority('system.role.edit')")
     public Result edit(@RequestBody SysRole sysRole) {
@@ -60,6 +65,7 @@ public class RoleController {
         return Result.success();
     }
 
+    @OperationLog(module = "角色管理", businessType = BusinessTypeEnum.DELETE)
     @DeleteMapping("/{roleIds}")
     @PreAuthorize("hasAnyAuthority('system.role.delete')")
     public Result delete(@PathVariable("roleIds") List<Long> roleIds) {
@@ -72,6 +78,7 @@ public class RoleController {
         return Result.success(roleService.selectMenuIdsByRoleId(roleId));
     }
 
+    @OperationLog(module = "角色管理", businessType = BusinessTypeEnum.GRANT)
     @PostMapping("/menus")
     @PreAuthorize("hasAnyAuthority('system.role.permission')")
     public Result roleMenus(@RequestBody RoleMenuDTO roleMenuDTO) {
