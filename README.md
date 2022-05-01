@@ -221,3 +221,14 @@ nacos.inetutils.ip-address=192.168.56.23
 
 ```
 
+### c. 新版本spring-cloud 不读取 启动配置 bootstrap.yml 
+
+解决eg: 项目添加 `spring-cloud-starter-bootstrap` 依赖
+
+```xml
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-bootstrap</artifactId>
+</dependency>
+```
+

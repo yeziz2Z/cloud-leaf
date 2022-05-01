@@ -10,6 +10,8 @@ import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class GenerateCode {
@@ -43,7 +45,7 @@ public class GenerateCode {
         StrategyConfig strategyConfig = new StrategyConfig
                 .Builder()
                 .addTablePrefix("t")
-                .addInclude("t_sys_menu", "t_sys_role", "t_sys_user")
+                .addInclude("t_sys_menu")
                 .entityBuilder()
                 .enableLombok()
                 .idType(IdType.ASSIGN_ID)
@@ -72,4 +74,5 @@ public class GenerateCode {
 
 
     }*/
+
 }
