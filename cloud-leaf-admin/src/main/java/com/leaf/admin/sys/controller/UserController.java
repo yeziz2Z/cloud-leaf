@@ -1,6 +1,9 @@
 package com.leaf.admin.sys.controller;
 
+import cn.hutool.core.io.FileTypeUtil;
+import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.leaf.admin.api.FileServiceApi;
 import com.leaf.admin.sys.dto.SysUserDTO;
 import com.leaf.admin.sys.dto.UserQueryParam;
 import com.leaf.admin.sys.entity.SysUser;
@@ -17,7 +20,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 
@@ -34,6 +39,8 @@ public class UserController {
     ISysMenuService menuService;
     @Autowired
     ISysOrganizationService organizationService;
+    @Autowired
+    FileServiceApi fileServiceApi;
 
     @GetMapping("/info")
     public Result<UserVO> info(Principal principal) {
@@ -107,4 +114,21 @@ public class UserController {
         return Result.success();
     }
 
+    @PostMapping("/avatar")
+    public Result avatar(@RequestParam("file") MultipartFile file) {
+        try {
+            Result<String> res = fileServiceApi.upload(file, "avatar");
+            String url = res.getData();
+            SysUser user = userService.getCurrentUser();
+            user.setAvatar(url);
+            userService.updateById(user);
+            userService.clearUserByName(user.getUsername());
+            userService.clearUserById(user.getId());
+            return res;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return Result.fail("上传图片失败");
+        }
+
+    }
 }

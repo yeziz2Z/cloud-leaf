@@ -23,6 +23,8 @@ public interface ISysUserService extends IService<SysUser> {
 
     SysUser getByUsername(String username);
 
+    SysUser getCurrentUser();
+
     List<SysRole> getRolesByUserId(Long userId);
 
     List<SysMenu> getMenusByUserId(Long userId);
@@ -38,6 +40,10 @@ public interface ISysUserService extends IService<SysUser> {
     void clearUserAuthoritiesByRoleId(Long roleId);
 
     void clearUserMenuByUserId(Long userId);
+
+    void clearUserByName(String name);
+
+    void clearUserById(Long id);
 
     Page<UserVO> selectSysUserVOPage(Page page, UserQueryParam queryParam);
 

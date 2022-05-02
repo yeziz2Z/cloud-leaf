@@ -2,7 +2,7 @@ spring:
   profiles:
     active: dev
   application:
-    name: cloud-leaf-file
+    name: cloud-leaf-gateway
   cloud:
     nacos:
       config:

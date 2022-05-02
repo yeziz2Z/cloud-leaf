@@ -232,3 +232,20 @@ nacos.inetutils.ip-address=192.168.56.23
 </dependency>
 ```
 
+
+
+
+
+# 2. minio
+
+### a. 安装
+
+官网 [[MinIO | High Performance, Kubernetes Native Object Storage](https://min.io/)]()
+
+帮助文档 [](https://docs.min.io/minio/baremetal/)
+
+```shell
+docker run -d -p 9000:9000 -p 9527:9527 --name minio -e "MINIO_ROOT_USER=admin" -e "MINIO_ROOT_PASSWORD=admin123" -v /usr/local/docker/minio/data:/data -v /usr/local/docker/minio/config:/root/.minio minio/minio server  /data --console-address ":9527"
+
+```
+

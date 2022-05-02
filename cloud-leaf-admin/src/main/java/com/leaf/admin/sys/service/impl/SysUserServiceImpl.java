@@ -151,6 +151,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
+    public void clearUserByName(String name) {
+        redisTemplate.delete(USERNAME_KEY + name);
+    }
+
+    @Override
+    public void clearUserById(Long id) {
+        redisTemplate.delete(USER_ID_KEY + id);
+    }
+
+    @Override
     public void clearUserMenuByUserId(Long userId) {
         redisTemplate.delete(USER_MENU_KEY + userId);
     }
@@ -217,5 +227,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         baseMapper.deleteUserRoleByUserIds(userIds);
 
         baseMapper.deleteBatchIds(userIds);
+    }
+
+    @Override
+    public SysUser getCurrentUser() {
+        return getByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 }
