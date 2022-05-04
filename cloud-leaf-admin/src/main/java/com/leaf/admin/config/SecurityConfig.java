@@ -201,6 +201,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
                 String token = request.getHeader(jwtUtils.getHeader());
                 if (StrUtil.isBlankOrUndefined(token)) {
+                    request.setAttribute(TOKEN_ERROR, TokenErrorEnum.INVALID_TOKEN);
                     chain.doFilter(request, response);
                     return;
                 }
