@@ -1,7 +1,7 @@
 package com.leaf.sms.controller;
 
-import com.aliyuncs.dysmsapi.model.v20170525.QuerySendDetailsRequest;
-import com.aliyuncs.dysmsapi.model.v20170525.QuerySendDetailsResponse;
+//import com.aliyuncs.dysmsapi.model.v20170525.QuerySendDetailsRequest;
+//import com.aliyuncs.dysmsapi.model.v20170525.QuerySendDetailsResponse;
 import com.leaf.common.result.Result;
 import com.leaf.sms.service.ISmsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +19,14 @@ public class SmsController {
 
     @PostMapping("/send")
     public Result send(String phoneNumber, String code) {
-        smsService.send(phoneNumber, code);
+//        smsService.send(phoneNumber, code);
         return Result.success();
     }
 
-    @GetMapping("querySendDetails")
+   /* @GetMapping("querySendDetails")
     public Result<QuerySendDetailsResponse.SmsSendDetailDTO> querySendDetails(QuerySendDetailsRequest request) {
         Result success = Result.success();
         success.setData(smsService.querySendDetails(request));
         return success;
-    }
+    }*/
 }

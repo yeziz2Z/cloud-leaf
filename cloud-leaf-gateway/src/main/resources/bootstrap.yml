@@ -11,3 +11,6 @@ spring:
       discovery:
         server-addr: ${spring.cloud.nacos.config.server-addr}
         ip: 192.168.0.124
+#logging:
+#  level:
+#    org.springframework.security: debug

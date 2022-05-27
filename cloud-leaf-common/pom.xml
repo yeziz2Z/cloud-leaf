@@ -10,6 +10,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>cloud-leaf-common</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>common-web</module>
+        <module>common-core</module>
+    </modules>
 
     <dependencies>
         <dependency>

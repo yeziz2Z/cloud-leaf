@@ -28,7 +28,7 @@ public class SmsConsumer {
             )
     })
     public void receive(SmsEntity entity) {
-        smsService.send(entity.getPhoneNumber(), entity.getCode());
+//        smsService.send(entity.getPhoneNumber(), entity.getCode());
     }
 
 }

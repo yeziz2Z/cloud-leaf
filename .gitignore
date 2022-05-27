@@ -11,3 +11,11 @@
 /cloud-leaf-file/target/
 /cloud-leaf-gateway/cloud-leaf-gateway.iml
 /cloud-leaf-gateway/target/
+/cloud-leaf-auth/cloud-leaf-auth.iml
+/cloud-leaf-admin/admin-server/admin-server.iml
+/cloud-leaf-admin/admin-api/admin-api.iml
+/cloud-leaf-admin/admin-server/target/
+/cloud-leaf-oauth2/target/
+/cloud-leaf-auth/target/
+/cloud-leaf-common/common-core/target/
+/cloud-leaf-common/common-web/target/

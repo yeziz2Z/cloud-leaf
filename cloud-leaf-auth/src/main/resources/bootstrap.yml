@@ -1,0 +1,21 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: cloud-leaf-auth
+  cloud:
+    nacos:
+      config:
+        server-addr: 192.168.0.148:8080
+        file-extension: yml
+      discovery:
+        server-addr: 192.168.0.148:8080
+        ip: 192.168.0.124
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  main:
+    allow-circular-references: on
+#logging:
+#  level:
+#    org.springframework: debug

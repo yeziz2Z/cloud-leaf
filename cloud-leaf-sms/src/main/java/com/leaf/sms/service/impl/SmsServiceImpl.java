@@ -1,14 +1,14 @@
 package com.leaf.sms.service.impl;
 
-import com.aliyuncs.dysmsapi.model.v20170525.QuerySendDetailsRequest;
-import com.aliyuncs.dysmsapi.model.v20170525.QuerySendDetailsResponse;
-import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
-import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
-import com.aliyuncs.exceptions.ClientException;
-import com.aliyuncs.http.MethodType;
+//import com.aliyuncs.dysmsapi.model.v20170525.QuerySendDetailsRequest;
+//import com.aliyuncs.dysmsapi.model.v20170525.QuerySendDetailsResponse;
+//import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
+//import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
+//import com.aliyuncs.exceptions.ClientException;
+//import com.aliyuncs.http.MethodType;
 import com.leaf.sms.service.ISmsService;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
+//import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +20,7 @@ import java.util.Map;
 @Slf4j
 public class SmsServiceImpl implements ISmsService {
 
-    @Autowired
+   /* @Autowired
     private com.alibaba.cloud.spring.boot.sms.SmsServiceImpl smsService;
 
     @Override
@@ -54,5 +54,5 @@ public class SmsServiceImpl implements ISmsService {
         } catch (ClientException e) {
             throw new RuntimeException(e);
         }
-    }
+    }*/
 }

@@ -4,6 +4,7 @@ import com.leaf.common.result.Result;
 import com.leaf.file.service.IFileService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,5 +31,10 @@ public class MinioController {
             return Result.fail(e.getMessage());
         }
 
+    }
+
+    @GetMapping("ping")
+    public Result<String> ping(){
+        return Result.success("pong!");
     }
 }

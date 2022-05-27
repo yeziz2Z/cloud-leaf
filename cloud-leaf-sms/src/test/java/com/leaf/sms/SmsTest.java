@@ -1,12 +1,12 @@
 package com.leaf.sms;
 
-import com.alibaba.cloud.spring.boot.sms.AbstractSmsService;
-import com.aliyuncs.dysmsapi.model.v20170525.QuerySendDetailsRequest;
-import com.aliyuncs.dysmsapi.model.v20170525.QuerySendDetailsResponse;
-import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
-import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
-import com.aliyuncs.exceptions.ClientException;
-import com.aliyuncs.http.MethodType;
+//import com.alibaba.cloud.spring.boot.sms.AbstractSmsService;
+//import com.aliyuncs.dysmsapi.model.v20170525.QuerySendDetailsRequest;
+//import com.aliyuncs.dysmsapi.model.v20170525.QuerySendDetailsResponse;
+//import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
+//import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
+//import com.aliyuncs.exceptions.ClientException;
+//import com.aliyuncs.http.MethodType;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ import java.util.Map;
 @Slf4j
 public class SmsTest {
 
-    @Autowired
+    /*@Autowired
     private AbstractSmsService smsService;
 
     @Test
@@ -54,5 +54,5 @@ public class SmsTest {
         QuerySendDetailsResponse response = smsService.querySendDetails(request);
         log.info("response code: {},details:{}",response.getCode(),response.getSmsSendDetailDTOs());
         log.info("account{}",request.getResourceOwnerAccount());
-    }
+    }*/
 }
