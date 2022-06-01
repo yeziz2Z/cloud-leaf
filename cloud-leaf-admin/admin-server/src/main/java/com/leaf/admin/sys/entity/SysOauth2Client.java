@@ -1,5 +1,6 @@
 package com.leaf.admin.sys.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -14,10 +15,13 @@ import lombok.Data;
 @TableName(value ="t_sys_oauth2_client")
 @Data
 public class SysOauth2Client implements Serializable {
+
+    @TableId(value = "id", type = IdType.AUTO)
+    private Long id;
+
     /**
      * 客户端标识
      */
-    @TableId
     private String clientId;
 
     /**

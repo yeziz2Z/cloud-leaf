@@ -1,5 +1,6 @@
 package com.leaf.admin.sys.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.leaf.admin.annotation.OperationLog;
 import com.leaf.admin.api.FileServiceApi;
@@ -12,6 +13,7 @@ import com.leaf.admin.sys.service.ISysRoleService;
 import com.leaf.admin.sys.service.ISysUserService;
 import com.leaf.admin.sys.vo.UserVO;
 import com.leaf.common.enums.BusinessTypeEnum;
+import com.leaf.common.pojo.auth.AuthUser;
 import com.leaf.common.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -22,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequestMapping("/user")
 @RestController
@@ -49,7 +52,6 @@ public class UserController {
         log.info("UserVO ：{}", userVO);
         return Result.success(userVO);
     }
-
 
 
     @GetMapping("/nav")
@@ -128,5 +130,21 @@ public class UserController {
             return Result.fail("上传图片失败");
         }
 
+    }
+
+    @GetMapping("/loadByUsername")
+    public Result<AuthUser> loadByUsername(@RequestParam String username) {
+        SysUser sysUser = userService.getByUsername(username);
+        if (sysUser == null) {
+            return Result.fail("用户不存在");
+        }
+        AuthUser user = new AuthUser();
+        user.setUserId(sysUser.getId());
+        user.setEnabled(sysUser.getStatus());
+        user.setUsername(sysUser.getUsername());
+        user.setPassword(sysUser.getPassword());
+        user.setOrgId(sysUser.getOrgId());
+        user.setRoles(roleService.getRolesByUserId(sysUser.getId()).stream().map(sysRole -> sysRole.getCode()).collect(Collectors.toList()));
+        return Result.success(user);
     }
 }

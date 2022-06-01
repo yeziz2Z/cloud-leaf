@@ -130,13 +130,13 @@ com.alibaba.nacos.api.exception.NacosException: <html><body><h1>Whitelabel Error
 	at com.alibaba.nacos.client.naming.net.NamingProxy.reqApi(NamingProxy.java:486) [nacos-client-1.3.2.jar:na]
 	at com.alibaba.nacos.client.naming.net.NamingProxy.registerService(NamingProxy.java:239) [nacos-client-1.3.2.jar:na]
 	at com.alibaba.nacos.client.naming.NacosNamingService.registerInstance(NacosNamingService.java:200) [nacos-client-1.3.2.jar:na]
-	at com.alibaba.cloud.nacos.registry.NacosServiceRegistry.register(NacosServiceRegistry.java:70) [spring-cloud-starter-alibaba-nacos-discovery-2.2.2.RELEASE.jar:2.2.2.RELEASE]
-	at org.springframework.cloud.client.serviceregistry.AbstractAutoServiceRegistration.register(AbstractAutoServiceRegistration.java:239) [spring-cloud-commons-2.2.5.RELEASE.jar:2.2.5.RELEASE]
-	at com.alibaba.cloud.nacos.registry.NacosAutoServiceRegistration.register(NacosAutoServiceRegistration.java:76) [spring-cloud-starter-alibaba-nacos-discovery-2.2.2.RELEASE.jar:2.2.2.RELEASE]
-	at org.springframework.cloud.client.serviceregistry.AbstractAutoServiceRegistration.start(AbstractAutoServiceRegistration.java:138) [spring-cloud-commons-2.2.5.RELEASE.jar:2.2.5.RELEASE]
-	at org.springframework.cloud.client.serviceregistry.AbstractAutoServiceRegistration.bind(AbstractAutoServiceRegistration.java:101) [spring-cloud-commons-2.2.5.RELEASE.jar:2.2.5.RELEASE]
-	at org.springframework.cloud.client.serviceregistry.AbstractAutoServiceRegistration.onApplicationEvent(AbstractAutoServiceRegistration.java:88) [spring-cloud-commons-2.2.5.RELEASE.jar:2.2.5.RELEASE]
-	at org.springframework.cloud.client.serviceregistry.AbstractAutoServiceRegistration.onApplicationEvent(AbstractAutoServiceRegistration.java:47) [spring-cloud-commons-2.2.5.RELEASE.jar:2.2.5.RELEASE]
+	at com.alibaba.com.nacos.registry.NacosServiceRegistry.register(NacosServiceRegistry.java:70) [spring-com-starter-alibaba-nacos-discovery-2.2.2.RELEASE.jar:2.2.2.RELEASE]
+	at org.springframework.com.client.serviceregistry.AbstractAutoServiceRegistration.register(AbstractAutoServiceRegistration.java:239) [spring-com-commons-2.2.5.RELEASE.jar:2.2.5.RELEASE]
+	at com.alibaba.com.nacos.registry.NacosAutoServiceRegistration.register(NacosAutoServiceRegistration.java:76) [spring-com-starter-alibaba-nacos-discovery-2.2.2.RELEASE.jar:2.2.2.RELEASE]
+	at org.springframework.com.client.serviceregistry.AbstractAutoServiceRegistration.start(AbstractAutoServiceRegistration.java:138) [spring-com-commons-2.2.5.RELEASE.jar:2.2.5.RELEASE]
+	at org.springframework.com.client.serviceregistry.AbstractAutoServiceRegistration.bind(AbstractAutoServiceRegistration.java:101) [spring-com-commons-2.2.5.RELEASE.jar:2.2.5.RELEASE]
+	at org.springframework.com.client.serviceregistry.AbstractAutoServiceRegistration.onApplicationEvent(AbstractAutoServiceRegistration.java:88) [spring-com-commons-2.2.5.RELEASE.jar:2.2.5.RELEASE]
+	at org.springframework.com.client.serviceregistry.AbstractAutoServiceRegistration.onApplicationEvent(AbstractAutoServiceRegistration.java:47) [spring-com-commons-2.2.5.RELEASE.jar:2.2.5.RELEASE]
 	at org.springframework.context.event.SimpleApplicationEventMulticaster.doInvokeListener(SimpleApplicationEventMulticaster.java:172) [spring-context-5.2.11.RELEASE.jar:5.2.11.RELEASE]
 	at org.springframework.context.event.SimpleApplicationEventMulticaster.invokeListener(SimpleApplicationEventMulticaster.java:165) [spring-context-5.2.11.RELEASE.jar:5.2.11.RELEASE]
 	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:139) [spring-context-5.2.11.RELEASE.jar:5.2.11.RELEASE]
@@ -173,13 +173,13 @@ com.alibaba.nacos.api.exception.NacosException: <html><body><h1>Whitelabel Error
 	at com.alibaba.nacos.client.naming.net.NamingProxy.reqApi(NamingProxy.java:486) [nacos-client-1.3.2.jar:na]
 	at com.alibaba.nacos.client.naming.net.NamingProxy.registerService(NamingProxy.java:239) [nacos-client-1.3.2.jar:na]
 	at com.alibaba.nacos.client.naming.NacosNamingService.registerInstance(NacosNamingService.java:200) [nacos-client-1.3.2.jar:na]
-	at com.alibaba.cloud.nacos.registry.NacosServiceRegistry.register(NacosServiceRegistry.java:70) [spring-cloud-starter-alibaba-nacos-discovery-2.2.2.RELEASE.jar:2.2.2.RELEASE]
-	at org.springframework.cloud.client.serviceregistry.AbstractAutoServiceRegistration.register(AbstractAutoServiceRegistration.java:239) [spring-cloud-commons-2.2.5.RELEASE.jar:2.2.5.RELEASE]
-	at com.alibaba.cloud.nacos.registry.NacosAutoServiceRegistration.register(NacosAutoServiceRegistration.java:76) [spring-cloud-starter-alibaba-nacos-discovery-2.2.2.RELEASE.jar:2.2.2.RELEASE]
-	at org.springframework.cloud.client.serviceregistry.AbstractAutoServiceRegistration.start(AbstractAutoServiceRegistration.java:138) [spring-cloud-commons-2.2.5.RELEASE.jar:2.2.5.RELEASE]
-	at org.springframework.cloud.client.serviceregistry.AbstractAutoServiceRegistration.bind(AbstractAutoServiceRegistration.java:101) [spring-cloud-commons-2.2.5.RELEASE.jar:2.2.5.RELEASE]
-	at org.springframework.cloud.client.serviceregistry.AbstractAutoServiceRegistration.onApplicationEvent(AbstractAutoServiceRegistration.java:88) [spring-cloud-commons-2.2.5.RELEASE.jar:2.2.5.RELEASE]
-	at org.springframework.cloud.client.serviceregistry.AbstractAutoServiceRegistration.onApplicationEvent(AbstractAutoServiceRegistration.java:47) [spring-cloud-commons-2.2.5.RELEASE.jar:2.2.5.RELEASE]
+	at com.alibaba.com.nacos.registry.NacosServiceRegistry.register(NacosServiceRegistry.java:70) [spring-com-starter-alibaba-nacos-discovery-2.2.2.RELEASE.jar:2.2.2.RELEASE]
+	at org.springframework.com.client.serviceregistry.AbstractAutoServiceRegistration.register(AbstractAutoServiceRegistration.java:239) [spring-com-commons-2.2.5.RELEASE.jar:2.2.5.RELEASE]
+	at com.alibaba.com.nacos.registry.NacosAutoServiceRegistration.register(NacosAutoServiceRegistration.java:76) [spring-com-starter-alibaba-nacos-discovery-2.2.2.RELEASE.jar:2.2.2.RELEASE]
+	at org.springframework.com.client.serviceregistry.AbstractAutoServiceRegistration.start(AbstractAutoServiceRegistration.java:138) [spring-com-commons-2.2.5.RELEASE.jar:2.2.5.RELEASE]
+	at org.springframework.com.client.serviceregistry.AbstractAutoServiceRegistration.bind(AbstractAutoServiceRegistration.java:101) [spring-com-commons-2.2.5.RELEASE.jar:2.2.5.RELEASE]
+	at org.springframework.com.client.serviceregistry.AbstractAutoServiceRegistration.onApplicationEvent(AbstractAutoServiceRegistration.java:88) [spring-com-commons-2.2.5.RELEASE.jar:2.2.5.RELEASE]
+	at org.springframework.com.client.serviceregistry.AbstractAutoServiceRegistration.onApplicationEvent(AbstractAutoServiceRegistration.java:47) [spring-com-commons-2.2.5.RELEASE.jar:2.2.5.RELEASE]
 	at org.springframework.context.event.SimpleApplicationEventMulticaster.doInvokeListener(SimpleApplicationEventMulticaster.java:172) [spring-context-5.2.11.RELEASE.jar:5.2.11.RELEASE]
 	at org.springframework.context.event.SimpleApplicationEventMulticaster.invokeListener(SimpleApplicationEventMulticaster.java:165) [spring-context-5.2.11.RELEASE.jar:5.2.11.RELEASE]
 	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:139) [spring-context-5.2.11.RELEASE.jar:5.2.11.RELEASE]
@@ -221,14 +221,14 @@ nacos.inetutils.ip-address=192.168.56.23
 
 ```
 
-### c. 新版本spring-cloud 不读取 启动配置 bootstrap.yml 
+### c. 新版本spring-com 不读取 启动配置 bootstrap.yml 
 
-解决eg: 项目添加 `spring-cloud-starter-bootstrap` 依赖
+解决eg: 项目添加 `spring-com-starter-bootstrap` 依赖
 
 ```xml
 <dependency>
-    <groupId>org.springframework.cloud</groupId>
-    <artifactId>spring-cloud-starter-bootstrap</artifactId>
+    <groupId>org.springframework.com</groupId>
+    <artifactId>spring-com-starter-bootstrap</artifactId>
 </dependency>
 ```
 

@@ -1,6 +1,6 @@
 /*
 SQLyog Ultimate
-MySQL - 5.7.16 : Database - cloud-leaf-admin
+MySQL - 5.7.16 : Database - com-leaf-admin
 *********************************************************************
 */
 
@@ -12,7 +12,7 @@ MySQL - 5.7.16 : Database - cloud-leaf-admin
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-CREATE DATABASE /*!32312 IF NOT EXISTS*/`cloud-leaf-admin` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/`com-leaf-admin` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
 
 /*Table structure for table `t_sys_config` */
 
@@ -34,7 +34,7 @@ CREATE TABLE `t_sys_config` (
 
 /*Data for the table `t_sys_config` */
 
-insert  into `t_sys_config`(`id`,`name`,`key`,`value`,`type`,`create_by`,`create_time`,`update_by`,`update_time`,`remark`) values 
+insert  into `t_sys_config`(`id`,`name`,`key`,`value`,`type`,`create_by`,`create_time`,`update_by`,`update_time`,`remark`) values
 (1,'主框架页-默认皮肤样式名称','sys.index.skinName','skin-blue','1','admin','2021-08-01 17:12:51','',NULL,'蓝色 skin-blue、绿色 skin-green、紫色 skin-purple、红色 skin-red、黄色 skin-yellow'),
 (2,'用户管理-账号初始密码','sys.user.initPassword','123456','1','admin','2021-08-01 17:12:51','',NULL,'初始化密码 123456'),
 (3,'主框架页-侧边栏主题','sys.index.sideTheme','theme-dark','1','admin','2021-08-01 17:12:51','',NULL,'深色主题theme-dark，浅色主题theme-light'),
@@ -64,7 +64,7 @@ CREATE TABLE `t_sys_dict_data` (
 
 /*Data for the table `t_sys_dict_data` */
 
-insert  into `t_sys_dict_data`(`id`,`sort`,`label`,`value`,`type`,`css_class`,`list_class`,`is_default`,`status`,`create_by`,`create_time`,`update_by`,`update_time`,`remark`) values 
+insert  into `t_sys_dict_data`(`id`,`sort`,`label`,`value`,`type`,`css_class`,`list_class`,`is_default`,`status`,`create_by`,`create_time`,`update_by`,`update_time`,`remark`) values
 (1,1,'男','0','sys_user_sex','','',1,'0','admin','2021-08-01 17:12:49','',NULL,'性别男'),
 (2,2,'女','1','sys_user_sex','','',0,'0','admin','2021-08-01 17:12:49','',NULL,'性别女'),
 (3,3,'未知','2','sys_user_sex','','',0,'0','admin','2021-08-01 17:12:49','',NULL,'性别未知'),
@@ -114,7 +114,7 @@ CREATE TABLE `t_sys_dict_type` (
 
 /*Data for the table `t_sys_dict_type` */
 
-insert  into `t_sys_dict_type`(`id`,`name`,`type`,`status`,`create_by`,`create_time`,`update_by`,`update_time`,`remark`) values 
+insert  into `t_sys_dict_type`(`id`,`name`,`type`,`status`,`create_by`,`create_time`,`update_by`,`update_time`,`remark`) values
 (1,'用户性别','sys_user_sex','0','admin','2021-08-01 17:12:47','',NULL,'用户性别列表'),
 (2,'菜单状态','sys_show_hide','0','admin','2021-08-01 17:12:47','',NULL,'菜单状态列表'),
 (3,'系统开关','sys_normal_disable','0','admin','2021-08-01 17:12:47','',NULL,'系统开关列表'),
@@ -174,7 +174,7 @@ CREATE TABLE `t_sys_menu` (
 
 /*Data for the table `t_sys_menu` */
 
-insert  into `t_sys_menu`(`id`,`name`,`title`,`parent_id`,`component`,`path`,`hidden`,`redirect`,`hide_children_in_menu`,`type`,`order_no`,`icon`,`hidden_header_content`,`keep_alive`,`permission`,`new_window`,`status`,`create_by`,`create_time`,`update_by`,`update_time`,`remark`) values 
+insert  into `t_sys_menu`(`id`,`name`,`title`,`parent_id`,`component`,`path`,`hidden`,`redirect`,`hide_children_in_menu`,`type`,`order_no`,`icon`,`hidden_header_content`,`keep_alive`,`permission`,`new_window`,`status`,`create_by`,`create_time`,`update_by`,`update_time`,`remark`) values
 (1,'dashboard','仪表盘',0,'RouteView',NULL,0,'/dashboard/workplace',0,'F',1,'dashboard',1,0,NULL,0,1,'admin','2022-03-16 23:07:35','admin','2022-03-16 23:07:35',NULL),
 (2,'form','表单页',0,'RouteView',NULL,0,'',0,'F',2,'form',0,0,NULL,0,1,'admin','2022-03-16 23:07:35','admin','2022-03-16 23:07:35',NULL),
 (3,'list','列表页',0,'RouteView',NULL,0,'/list/table-list',0,'F',3,'table',0,0,NULL,0,1,'admin','2022-03-16 23:07:35','admin','2022-03-16 23:07:35',NULL),
@@ -294,7 +294,7 @@ CREATE TABLE `t_sys_organization` (
 
 /*Data for the table `t_sys_organization` */
 
-insert  into `t_sys_organization`(`id`,`parent_id`,`ancestors`,`name`,`order_no`,`leader`,`phone`,`email`,`status`,`del_flag`,`create_by`,`create_time`,`update_by`,`update_time`) values 
+insert  into `t_sys_organization`(`id`,`parent_id`,`ancestors`,`name`,`order_no`,`leader`,`phone`,`email`,`status`,`del_flag`,`create_by`,`create_time`,`update_by`,`update_time`) values
 (100,0,'0','总公司',0,'管理员','18004557098','18004557098@163.com','1','0','admin','2021-08-01 17:12:32','',NULL),
 (101,100,'0,100','深圳总公司',1,'张巧蕊','13388165563','13388165563@163.com','1','0','admin','2021-08-01 17:12:32','',NULL),
 (102,100,'0,100','长沙分公司',2,'李山芙','15888888888','15888888888@163.com','1','0','admin','2021-08-01 17:12:32','',NULL),
@@ -334,7 +334,7 @@ CREATE TABLE `t_sys_role` (
 
 /*Data for the table `t_sys_role` */
 
-insert  into `t_sys_role`(`id`,`name`,`code`,`order_no`,`data_scope`,`menu_check_strictly`,`dept_check_strictly`,`status`,`del_flag`,`create_by`,`create_time`,`update_by`,`update_time`,`remark`) values 
+insert  into `t_sys_role`(`id`,`name`,`code`,`order_no`,`data_scope`,`menu_check_strictly`,`dept_check_strictly`,`status`,`del_flag`,`create_by`,`create_time`,`update_by`,`update_time`,`remark`) values
 (1,'超级管理员','admin',1,'1',1,1,'0','0','admin','2021-08-01 17:12:35','',NULL,'超级管理员'),
 (2,'普通角色','common',2,'2',1,1,'0','0','admin','2021-08-01 17:12:35','',NULL,'普通角色'),
 (4,'研发','dev',4,'1',1,1,'1','0','admin','2022-03-31 14:05:56','',NULL,NULL),
@@ -358,7 +358,7 @@ CREATE TABLE `t_sys_role_menu` (
 
 /*Data for the table `t_sys_role_menu` */
 
-insert  into `t_sys_role_menu`(`role_id`,`menu_id`) values 
+insert  into `t_sys_role_menu`(`role_id`,`menu_id`) values
 (1,1),
 (1,2),
 (1,3),
@@ -521,14 +521,14 @@ CREATE TABLE `t_sys_user` (
 
 /*Data for the table `t_sys_user` */
 
-insert  into `t_sys_user`(`id`,`org_id`,`username`,`nick_name`,`user_type`,`email`,`mobile_phone`,`gender`,`avatar`,`password`,`status`,`del_flag`,`login_ip`,`login_time`,`create_by`,`create_time`,`update_by`,`update_time`,`remark`) values 
-(1,103,'admin','管理员','00','admin@163.com','15888888888','1','http://192.168.0.114:9000/cloud/avatar/2022-05-02-031021.jpg','$2a$10$24UkW4UwHwCugOW.uZj5PeJuiSWQgjZzaGzs1RFalQT92lKZAt9tC',0,'0','127.0.0.1','2021-08-01 17:12:34','admin','2021-08-01 17:12:34','','2022-05-02 20:59:41','管理员'),
-(2,105,'user','千本田','00','user2233@qq.com','15666666666','1','http://192.168.0.114:9000/cloud/avatar/2022-05-02-378809.jpg','$2a$10$24UkW4UwHwCugOW.uZj5PeJuiSWQgjZzaGzs1RFalQT92lKZAt9tC',0,'0','127.0.0.1','2021-08-01 17:12:34','admin','2021-08-01 17:12:34','user','2022-04-24 22:20:54','个人简介'),
+insert  into `t_sys_user`(`id`,`org_id`,`username`,`nick_name`,`user_type`,`email`,`mobile_phone`,`gender`,`avatar`,`password`,`status`,`del_flag`,`login_ip`,`login_time`,`create_by`,`create_time`,`update_by`,`update_time`,`remark`) values
+(1,103,'admin','管理员','00','admin@163.com','15888888888','1','http://192.168.0.114:9000/com/avatar/2022-05-02-031021.jpg','$2a$10$24UkW4UwHwCugOW.uZj5PeJuiSWQgjZzaGzs1RFalQT92lKZAt9tC',0,'0','127.0.0.1','2021-08-01 17:12:34','admin','2021-08-01 17:12:34','','2022-05-02 20:59:41','管理员'),
+(2,105,'user','千本田','00','user2233@qq.com','15666666666','1','http://192.168.0.114:9000/com/avatar/2022-05-02-378809.jpg','$2a$10$24UkW4UwHwCugOW.uZj5PeJuiSWQgjZzaGzs1RFalQT92lKZAt9tC',0,'0','127.0.0.1','2021-08-01 17:12:34','admin','2021-08-01 17:12:34','user','2022-04-24 22:20:54','个人简介'),
 (5,100,'testuser','测试用户3','00','13816063821@163.com','13816063821','0','','$2a$10$pbK9THcpRQylLIqDNgsjfeHLjejutJSLD4xRP5tnjM7J2voosy9f.',1,'0','',NULL,'test2','2022-03-27 20:44:33','admin','2022-03-28 14:16:41','11111'),
 (11,109,'san.zhang','张三','00','','13816063434','0','','$2a$10$ULF7FGqcJH4IGbZD8acRte2gUxJWlrw3C46bdidM475g3zbO8J2TW',0,'0','',NULL,'admin','2022-03-28 14:34:41','',NULL,'11'),
 (12,102,'beifang','北方','00','','13816063821','1','','$2a$10$NOPUeng6WoUWwKYg/LyraeTJL0i2DB2Dkrenl8LLlaKIQLTUkCVG2',0,'0','',NULL,'admin','2022-03-28 14:35:11','user','2022-04-17 22:10:47','1'),
 (14,106,'lili-143','莉莉','00','','13814363821','1','','$2a$10$NafFUsRII6eBKNeP4Br2H.W1I5vUiJKs3K30aKqh5AV/9IxWp4sDa',0,'0','',NULL,'admin','2022-03-28 14:36:17','',NULL,'1111'),
-(15,100,'jianghuan','蒋欢','00','','13316063821','1','http://192.168.0.114:9000/cloud/2022-05-02/blob','$2a$10$MD2s8VYu5L4iZkwpOjkxrOhFXuFC08qPlco3/UeBoebR0kKd5qUv.',1,'0','',NULL,'admin','2022-03-28 14:36:56','','2022-05-02 21:03:53','自在');
+(15,100,'jianghuan','蒋欢','00','','13316063821','1','http://192.168.0.114:9000/com/2022-05-02/blob','$2a$10$MD2s8VYu5L4iZkwpOjkxrOhFXuFC08qPlco3/UeBoebR0kKd5qUv.',1,'0','',NULL,'admin','2022-03-28 14:36:56','','2022-05-02 21:03:53','自在');
 
 /*Table structure for table `t_sys_user_role` */
 
@@ -542,7 +542,7 @@ CREATE TABLE `t_sys_user_role` (
 
 /*Data for the table `t_sys_user_role` */
 
-insert  into `t_sys_user_role`(`user_id`,`role_id`) values 
+insert  into `t_sys_user_role`(`user_id`,`role_id`) values
 (1,1),
 (2,2),
 (3,1),

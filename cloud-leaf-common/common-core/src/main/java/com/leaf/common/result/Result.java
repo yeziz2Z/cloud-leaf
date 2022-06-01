@@ -22,24 +22,28 @@ public class Result<T> {
         this.msg = msg;
     }
 
+    public static Result result(IResultCode resultCode) {
+        return new Result(resultCode.getCode(), resultCode.getMsg());
+    }
+
     public static Result success() {
         Result result = new Result();
-        result.setCode(200);
-        result.setMsg("ok!");
+        result.setCode(ResultCode.SUCCESS.getCode());
+        result.setMsg(ResultCode.SUCCESS.getMsg());
         return result;
     }
 
     public static Result success(String msg) {
         Result result = new Result();
-        result.setCode(200);
+        result.setCode(ResultCode.SUCCESS.getCode());
         result.setMsg(msg);
         return result;
     }
 
     public static <T> Result<T> success(T data) {
         Result result = new Result();
-        result.setCode(200);
-        result.setMsg("ok!");
+        result.setCode(ResultCode.SUCCESS.getCode());
+        result.setMsg(ResultCode.SUCCESS.getMsg());
         result.setData(data);
         return result;
     }
@@ -54,7 +58,7 @@ public class Result<T> {
 
     public static Result fail(String msg) {
         Result result = new Result();
-        result.setCode(500);
+        result.setCode(ResultCode.ERROR.getCode());
         result.setMsg(msg);
         return result;
 

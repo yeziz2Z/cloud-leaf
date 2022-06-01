@@ -25,7 +25,6 @@ import lombok.EqualsAndHashCode;
 @TableName("t_sys_user")
 public class SysUser extends BaseEntity implements Serializable {
 
-
     /**
      * 用户ID
      */

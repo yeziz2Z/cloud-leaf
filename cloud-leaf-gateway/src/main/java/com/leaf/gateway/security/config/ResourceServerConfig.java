@@ -1,17 +1,15 @@
 package com.leaf.gateway.security.config;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.json.JSONUtil;
-import com.leaf.common.result.Result;
+import cn.hutool.core.exceptions.ExceptionUtil;
+import cn.hutool.core.util.StrUtil;
+import com.leaf.gateway.enums.UserAuthErrorEnum;
+import com.leaf.gateway.utlis.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.core.io.buffer.DataBufferUtils;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.ReactiveAuthorizationManager;
@@ -34,7 +32,6 @@ import reactor.core.publisher.Mono;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,26 +101,24 @@ public class ResourceServerConfig {
 
     /**
      * 处理权限不足
+     *
      * @return
      */
     @Bean
     ServerAccessDeniedHandler accessDeniedHandler() {
-        return (exchange, denied) ->
-                Mono.defer(() -> Mono.just(exchange.getResponse()))
-                        .flatMap(response -> {
-                            response.getHeaders().set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-                            response.getHeaders().set("Access-Control-Allow-Origin", "*");
-                            response.getHeaders().set("Cache-Control", "no-cache");
-                            response.setStatusCode(HttpStatus.FORBIDDEN);
-                            String body = JSONUtil.toJsonStr(Result.fail("没有访问权限"));
-                            DataBuffer buffer = response.bufferFactory().wrap(body.getBytes(StandardCharsets.UTF_8));
-                            return response.writeWith(Mono.just(buffer))
-                                    .doOnError(error -> DataBufferUtils.release(buffer));
-                        });
+        return (exchange, denied) -> {
+            log.error("err", denied);
+            return Mono.defer(() -> Mono.just(exchange.getResponse()))
+                    .flatMap(response -> ResponseUtil.writeErrorInfo(response,
+                            UserAuthErrorEnum.ACCESS_DENY_ERROR,
+                            HttpStatus.FORBIDDEN));
+        };
+
     }
 
     /**
      * 鉴权管理器
+     *
      * @return
      */
     @Bean
@@ -131,6 +126,7 @@ public class ResourceServerConfig {
         return ((authentication, authorizationContext) -> {
             List<String> authorizedRoles = new ArrayList<>();
             authorizedRoles.add("admin");
+            authorizedRoles.add("common");
 
             // 判断JWT中携带的用户角色是否有权限访问
             Mono<AuthorizationDecision> authorizationDecisionMono = authentication
@@ -151,24 +147,21 @@ public class ResourceServerConfig {
 
     /**
      * token 无效&过期  处理
+     *
      * @return
      */
     @Bean
     public ServerAuthenticationEntryPoint authenticationEntryPoint() {
-        return (exchange, ex) -> {
-            log.info(ex.getMessage(), ex);
+        return (exchange, denied) -> {
+            log.info("===================== msg {}",denied.getMessage());
             return Mono.defer(() -> Mono.just(exchange.getResponse()))
-                    .flatMap(response -> {
-                        response.getHeaders().set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-                        response.getHeaders().set("Access-Control-Allow-Origin", "*");
-                        response.getHeaders().set("Cache-Control", "no-cache");
-                        response.setStatusCode(HttpStatus.UNAUTHORIZED);
-                        String body = JSONUtil.toJsonStr(Result.fail("token无效或已过期"));
-                        DataBuffer buffer = response.bufferFactory().wrap(body.getBytes(StandardCharsets.UTF_8));
-                        return response.writeWith(Mono.just(buffer))
-                                .doOnError(error -> DataBufferUtils.release(buffer));
-                    });
+                    .flatMap(response -> ResponseUtil.writeErrorInfo(response,
+                            // token过期
+                            StrUtil.startWith(denied.getMessage(), "Jwt expired") ? UserAuthErrorEnum.ACCESS_TOKEN_EXPIRED : UserAuthErrorEnum.ACCESS_TOKEN_INVALID,
+                            HttpStatus.UNAUTHORIZED)
+                    );
         };
+
 
     }
 }

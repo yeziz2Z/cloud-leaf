@@ -2,7 +2,7 @@ package com.leaf.admin.sys.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.leaf.admin.sys.entity.SysOauth2Client;
-import com.leaf.admin.sys.service.SysOauth2ClientService;
+import com.leaf.admin.sys.service.ISysOauth2ClientService;
 import com.leaf.admin.sys.mapper.SysOauth2ClientMapper;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 */
 @Service
 public class SysOauth2ClientServiceImpl extends ServiceImpl<SysOauth2ClientMapper, SysOauth2Client>
-    implements SysOauth2ClientService{
+    implements ISysOauth2ClientService {
 
 }
 

@@ -5,7 +5,8 @@
 <mapper namespace="com.leaf.admin.sys.mapper.SysOauth2ClientMapper">
 
     <resultMap id="BaseResultMap" type="com.leaf.admin.sys.entity.SysOauth2Client">
-            <id property="clientId" column="client_id" jdbcType="VARCHAR"/>
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="clientId" column="client_id" jdbcType="VARCHAR"/>
             <result property="resourcesIds" column="resources_ids" jdbcType="VARCHAR"/>
             <result property="clientSecret" column="client_secret" jdbcType="VARCHAR"/>
             <result property="scope" column="scope" jdbcType="VARCHAR"/>
@@ -19,7 +20,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        client_id,resources_ids,client_secret,
+        id,client_id,resources_ids,client_secret,
         scope,authorized_grant_types,web_server_redirect_uri,
         authorities,access_token_validity,refresh_token_validity,
         additional_information,auto_approve
