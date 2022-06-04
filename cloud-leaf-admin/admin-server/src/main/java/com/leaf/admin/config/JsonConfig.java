@@ -16,6 +16,7 @@ public class JsonConfig {
 
     /**
      * LocalDate LocalDateTime 支持
+     *
      * @return
      */
     @Bean
@@ -26,5 +27,6 @@ public class JsonConfig {
             builder.serializers(new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
         };
     }
+
 
 }

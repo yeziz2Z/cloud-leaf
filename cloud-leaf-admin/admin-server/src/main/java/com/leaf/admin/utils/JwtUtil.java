@@ -16,7 +16,7 @@ import java.util.Map;
 @Component
 @Data
 @ConfigurationProperties(prefix = "leaf.jwt")
-public class JwtUtils {
+public class JwtUtil {
 
     private long expire;
 

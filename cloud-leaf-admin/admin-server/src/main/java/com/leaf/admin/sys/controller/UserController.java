@@ -1,6 +1,5 @@
 package com.leaf.admin.sys.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.leaf.admin.annotation.OperationLog;
 import com.leaf.admin.api.FileServiceApi;
@@ -44,12 +43,11 @@ public class UserController {
 
     @GetMapping("/info")
     public Result<UserVO> info(Principal principal, HttpServletRequest request) {
-        SysUser sysUser = userService.getByUsername("admin");
+        SysUser sysUser = userService.getCurrentUser();
         UserVO userVO = new UserVO();
         BeanUtils.copyProperties(sysUser, userVO);
         userVO.setRoles(roleService.getRolesByUserId(sysUser.getId()));
         userVO.setPermissions(menuService.selectUserPermissions(sysUser.getId()));
-        log.info("UserVO ：{}", userVO);
         return Result.success(userVO);
     }
 
@@ -60,15 +58,12 @@ public class UserController {
     }
 
     @OperationLog(module = "用户管理", businessType = BusinessTypeEnum.SELECT)
-    @GetMapping("/service")
-//    @PreAuthorize("hasAnyAuthority('system.user.list')")
+    @GetMapping("/page")
     public Result list(Page page, UserQueryParam queryParam) {
-        log.info("queryParam {}, Page {}", queryParam, page);
         return Result.success(userService.selectSysUserVOPage(page, queryParam));
     }
 
     @PostMapping
-//    @PreAuthorize("hasAnyAuthority('system.user.add')")
     @OperationLog(module = "用户管理", businessType = BusinessTypeEnum.INSERT)
     public Result add(@RequestBody SysUserDTO sysUser) {
         userService.saveUser(sysUser);
@@ -76,7 +71,6 @@ public class UserController {
     }
 
     @PutMapping
-//    @PreAuthorize("hasAnyAuthority('system.user.edit')")
     @OperationLog(module = "用户管理", businessType = BusinessTypeEnum.UPDATE)
     public Result edit(@RequestBody SysUserDTO sysUser) {
         userService.updateUser(sysUser);
@@ -100,7 +94,6 @@ public class UserController {
     }
 
     @DeleteMapping("/{userIds}")
-//    @PreAuthorize("hasAnyAuthority('system.user.delete')")
     @OperationLog(module = "用户管理", businessType = BusinessTypeEnum.DELETE)
     public Result deleteByUserIds(@PathVariable("userIds") List<Long> userIds) {
         userService.removeByUserIds(userIds);

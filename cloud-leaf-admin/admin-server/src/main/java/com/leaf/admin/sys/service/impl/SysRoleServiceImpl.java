@@ -69,4 +69,11 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
         userService.clearUserAuthoritiesByRoleId(roleMenuDTO.getRoleId());
     }
+
+
+    @Override
+    public boolean refreshRolePermission() {
+        // TODO 待实现
+        return false;
+    }
 }

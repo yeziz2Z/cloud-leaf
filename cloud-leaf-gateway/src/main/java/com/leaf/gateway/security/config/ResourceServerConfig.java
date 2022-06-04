@@ -1,14 +1,17 @@
 package com.leaf.gateway.security.config;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.spring.SpringUtil;
 import com.leaf.gateway.enums.UserAuthErrorEnum;
+import com.leaf.gateway.security.jwt.JwtValidator;
 import com.leaf.gateway.utlis.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authorization.AuthorizationDecision;
@@ -17,8 +20,10 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -33,6 +38,7 @@ import reactor.core.publisher.Mono;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -75,11 +81,14 @@ public class ResourceServerConfig {
     @Bean
     public ReactiveJwtDecoder jwtDecoder() {
         SecretKey secretKey = new SecretKeySpec("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJhZG1pbiIsInNjb3BlIjpbImFsbCJdLCJkZXB0SWQiOjIsImV4cCI6MTY1MzAzNTYxOSwidXNlcklkIjoyLCJhdXRob3JpdGllcyI6WyJBRE1JTiJdLCJqdGkiOiI1ZGFhZDljZi04YzhiLTQ5NzItYjBiYi1lYjdiZjc3YjAxNWIiLCJjbGllbnRfaWQiOiJtYWxsLWFkbWluLXdlYiIsInVzZXJuYW1lIjoiYWRtaW4ifQ.YKu2Z8ZEBIVqJHdJhKpZvwg1k3BdsCe0g2LxI8iHrtg".getBytes(), "HMACSHA256");
-        return NimbusReactiveJwtDecoder
+        NimbusReactiveJwtDecoder jwtDecoder = NimbusReactiveJwtDecoder
                 .withSecretKey(secretKey)
                 .macAlgorithm(MacAlgorithm.HS256)
                 .build();
+        jwtDecoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(Arrays.asList(new JwtTimestampValidator(), new JwtValidator(SpringUtil.getBean(StringRedisTemplate.class)))));
+        return jwtDecoder;
     }
+
 
     /**
      * @link https://blog.csdn.net/qq_24230139/article/details/105091273
@@ -130,6 +139,7 @@ public class ResourceServerConfig {
 
             // 判断JWT中携带的用户角色是否有权限访问
             Mono<AuthorizationDecision> authorizationDecisionMono = authentication
+//                    .filter(auth -> auth.isAuthenticated() && ((JSONObject)(auth.getDetails())).containsKey("ati"))
                     .filter(Authentication::isAuthenticated)
                     .flatMapIterable(Authentication::getAuthorities)
                     .map(GrantedAuthority::getAuthority)
@@ -153,7 +163,7 @@ public class ResourceServerConfig {
     @Bean
     public ServerAuthenticationEntryPoint authenticationEntryPoint() {
         return (exchange, denied) -> {
-            log.info("===================== msg {}",denied.getMessage());
+            log.info("===================== msg {}", denied.getMessage());
             return Mono.defer(() -> Mono.just(exchange.getResponse()))
                     .flatMap(response -> ResponseUtil.writeErrorInfo(response,
                             // token过期

@@ -1,34 +1,39 @@
 package com.leaf.gateway.security.filter;
 
+import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.util.StrUtil;
 import com.leaf.common.constant.SecurityConstant;
+import com.nimbusds.jose.JWSObject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
-import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
+
 /**
  * 安全拦截全局过滤器
- * <p>
- * 善后一些无关紧要的工作，在 ResourceServerManager#check 鉴权之后执行
+ * 转发请求时  将 jwt payload 信息写入请求头
  *
- * @date 2022/2/15
+ * @date 2022年6月3日
  */
-//@Component
+@Component
 @Slf4j
-public class SecurityGlobalFilter implements GlobalFilter, Ordered {
+@Order(value = 0)
+public class SecurityGlobalFilter implements GlobalFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 
         ServerHttpRequest request = exchange.getRequest();
-        ServerHttpResponse response = exchange.getResponse();
-
 
         // 非JWT放行不做后续解析处理
         String token = request.getHeaders().getFirst(SecurityConstant.AUTHORIZATION_KEY);
@@ -36,26 +41,19 @@ public class SecurityGlobalFilter implements GlobalFilter, Ordered {
             return chain.filter(exchange);
         }
 
-        // 解析JWT获取jti，以jti为key判断redis的黑名单列表是否存在，存在则拦截访问
-        /*token = StrUtil.replaceIgnoreCase(token, SecurityConstants.JWT_PREFIX, Strings.EMPTY);
-        String payload = StrUtil.toString(JWSObject.parse(token).getPayload());
-        JSONObject jsonObject = JSONUtil.parseObj(payload);
-        String jti = jsonObject.getStr(SecurityConstants.JWT_JTI);
-        Boolean isBlack = redisTemplate.hasKey(SecurityConstants.TOKEN_BLACKLIST_PREFIX + jti);
-        if (isBlack) {
-            return ResponseUtils.writeErrorInfo(response, ResultCode.TOKEN_ACCESS_FORBIDDEN);
-        }*/
+        try {
+            // token 会写至 request 请求头
+            token = StrUtil.replaceIgnoreCase(token, SecurityConstant.JWT_PREFIX, Strings.EMPTY);
 
-        // 存在token且不是黑名单，request写入JWT的载体信息
-        request = exchange.getRequest().mutate()
-                .header(SecurityConstant.JWT_PAYLOAD_KEY, "hello")
-                .build();
-        exchange = exchange.mutate().request(request).build();
+            String payload = StrUtil.toString(JWSObject.parse(token).getPayload());
+            request = exchange.getRequest().mutate()
+                    .header(SecurityConstant.JWT_PAYLOAD_KEY, URLEncoder.encode(payload, StandardCharsets.UTF_8.name()))
+                    .build();
+            exchange = exchange.mutate().request(request).build();
+        } catch (ParseException | UnsupportedEncodingException e) {
+            ExceptionUtil.wrapAndThrow(e);
+        }
         return chain.filter(exchange);
     }
 
-    @Override
-    public int getOrder() {
-        return 0;
-    }
 }

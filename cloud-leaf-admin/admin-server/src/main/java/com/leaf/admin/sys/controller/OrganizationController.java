@@ -27,7 +27,7 @@ public class OrganizationController {
         return Result.success(orgTreeVOS);
     }
 
-    @GetMapping("/getOrganizationTree")
+    @GetMapping("/organizationTree")
     @OperationLog(module = "组织管理", businessType = BusinessTypeEnum.SELECT)
 //    @PreAuthorize("hasAnyAuthority('system.org.list')")
     public Result getOrganizationTree() {

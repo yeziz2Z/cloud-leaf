@@ -104,6 +104,11 @@ public class SysMenu extends BaseEntity implements Serializable {
     private String permission;
 
     /**
+     * 权限接口Url
+     */
+    private String permissionUrl;
+
+    /**
      * 新窗口打开
      */
     private Boolean newWindow;

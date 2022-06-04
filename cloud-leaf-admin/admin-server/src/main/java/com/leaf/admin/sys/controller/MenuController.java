@@ -32,7 +32,6 @@ public class MenuController {
 
     @OperationLog(module = "菜单管理", businessType = BusinessTypeEnum.INSERT)
     @PostMapping
-//    @PreAuthorize("hasAnyAuthority('system.menu.add')")
     public Result add(@RequestBody SysMenu sysMenu) {
         menuService.saveMenu(sysMenu);
         return Result.success();
@@ -40,7 +39,6 @@ public class MenuController {
 
     @OperationLog(module = "菜单管理", businessType = BusinessTypeEnum.UPDATE)
     @PutMapping
-//    @PreAuthorize("hasAnyAuthority('system.menu.edit')")
     public Result edit(@RequestBody SysMenu sysMenu) {
         menuService.updateMenu(sysMenu);
         return Result.success();
@@ -55,7 +53,6 @@ public class MenuController {
 
     @OperationLog(module = "菜单管理", businessType = BusinessTypeEnum.DELETE)
     @DeleteMapping("/{id}")
-//    @PreAuthorize("hasAnyAuthority('system.menu.delete')")
     public Result delete(@PathVariable("id") Long id) {
         menuService.deleteById(id);
         return Result.success();

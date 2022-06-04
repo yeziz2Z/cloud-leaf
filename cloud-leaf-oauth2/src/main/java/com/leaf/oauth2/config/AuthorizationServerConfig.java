@@ -1,10 +1,14 @@
 package com.leaf.oauth2.config;
 
-import com.leaf.oauth2.security.provider.CaptchaGranter;
-import com.leaf.oauth2.security.provider.ClientDetailsServiceImpl;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONUtil;
+import com.leaf.common.constant.SecurityConstant;
 import com.leaf.common.result.Result;
+import com.leaf.oauth2.security.provider.CaptchaGranter;
+import com.leaf.oauth2.security.provider.ClientDetailsServiceImpl;
+import com.leaf.oauth2.security.provider.PreAuthenticatedUserDetailsService;
+import com.leaf.oauth2.security.userdetails.AdminUserDetails;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
@@ -22,19 +27,20 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.provider.CompositeTokenGranter;
 import org.springframework.security.oauth2.provider.TokenGranter;
+import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Configuration
 @EnableAuthorizationServer
+@Slf4j
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
     @Autowired
@@ -52,20 +58,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
 
-        /*DefaultTokenServices tokenServices = new DefaultTokenServices();
-        tokenServices.setTokenStore(endpoints.getTokenStore());
-        tokenServices.setSupportRefreshToken(true);
-        tokenServices.setClientDetailsService(clientDetailsService);
-
-        Map<String, UserDetailsService> clientUserDetailsServiceMap = new HashMap<>();
-        clientUserDetailsServiceMap.put(SecurityConstant.ADMIN_CLIENT_ID, sysUserDetailsServiceImpl);
-
-        // 刷新token模式下，重写预认证提供者替换其AuthenticationManager，可自定义根据客户端ID和认证方式区分用户体系获取认证用户信息
-        PreAuthenticatedAuthenticationProvider provider = new PreAuthenticatedAuthenticationProvider();
-        provider.setPreAuthenticatedUserDetailsService(new PreAuthenticatedUserDetailsService<>(clientUserDetailsServiceMap));
-        tokenServices.setAuthenticationManager(new ProviderManager(Arrays.asList(provider)));*/
-
-
         // 获取原有默认授权模式(授权码模式、密码模式、客户端模式、简化模式)的授权者
         List<TokenGranter> granterList = new ArrayList<>(Arrays.asList(endpoints.getTokenGranter()));
         // 添加验证码授权模式授权者
@@ -77,10 +69,11 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
         CompositeTokenGranter compositeTokenGranter = new CompositeTokenGranter(granterList);
         endpoints.authenticationManager(authenticationManager)
-                .userDetailsService(sysUserDetailsServiceImpl)
-                .tokenStore(jwtTokenStore())
-                .accessTokenConverter(jwtAccessTokenConverter())
-                .tokenGranter(compositeTokenGranter);
+//                .userDetailsService(sysUserDetailsServiceImpl)
+//                .tokenStore(jwtTokenStore())
+//                .accessTokenConverter(jwtAccessTokenConverter())
+                .tokenGranter(compositeTokenGranter)
+                .tokenServices(tokenServices());
     }
 
     @Override
@@ -93,13 +86,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         return new JwtTokenStore(jwtAccessTokenConverter());
     }
 
-   /* @Bean
-    public JwtAccessTokenConverter jwtAccessTokenConverter() {
-        JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
-        jwtAccessTokenConverter.setSigningKey("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJhZG1pbiIsInNjb3BlIjpbImFsbCJdLCJkZXB0SWQiOjIsImV4cCI6MTY1MzAzNTYxOSwidXNlcklkIjoyLCJhdXRob3JpdGllcyI6WyJBRE1JTiJdLCJqdGkiOiI1ZGFhZDljZi04YzhiLTQ5NzItYjBiYi1lYjdiZjc3YjAxNWIiLCJjbGllbnRfaWQiOiJtYWxsLWFkbWluLXdlYiIsInVzZXJuYW1lIjoiYWRtaW4ifQ.YKu2Z8ZEBIVqJHdJhKpZvwg1k3BdsCe0g2LxI8iHrtg");
-        return jwtAccessTokenConverter;
-    }*/
-
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter() {
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
@@ -108,26 +94,54 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         return converter;
     }
 
+
+    public DefaultTokenServices tokenServices() {
+        TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
+        List<TokenEnhancer> tokenEnhancers = new ArrayList<>();
+        tokenEnhancers.add(tokenEnhancer());
+        tokenEnhancers.add(jwtAccessTokenConverter());
+        tokenEnhancerChain.setTokenEnhancers(tokenEnhancers);
+
+        DefaultTokenServices tokenServices = new DefaultTokenServices();
+        tokenServices.setClientDetailsService(clientDetailsService);
+        tokenServices.setTokenStore(jwtTokenStore());
+        tokenServices.setTokenEnhancer(tokenEnhancerChain);
+
+        Map<String, UserDetailsService> userDetailsServiceMap = new HashMap<>();
+        userDetailsServiceMap.put(SecurityConstant.ADMIN_CLIENT_ID, sysUserDetailsServiceImpl);
+        PreAuthenticatedAuthenticationProvider provider = new PreAuthenticatedAuthenticationProvider();
+        provider.setPreAuthenticatedUserDetailsService(new PreAuthenticatedUserDetailsService<>(userDetailsServiceMap));
+        tokenServices.setAuthenticationManager(new ProviderManager(Arrays.asList(provider)));
+       // 支持 RefreshToken 自动续期
+        tokenServices.setSupportRefreshToken(true);
+//        默认值 为true
+//        1.设为true时  调用刷新 token 时间原 refresh_token 过期时间不变
+//        2. 设为false 每次调用  重置 refresh_token 过期时间
+        tokenServices.setReuseRefreshToken(false);
+        return tokenServices;
+    }
+
     /**
      * token 内容扩展
      *
      * @return
      */
-//    @Bean
+    @Bean
     public TokenEnhancer tokenEnhancer() {
         return (accessToken, authentication) -> {
             Map<String, Object> additionalInfo = MapUtil.newHashMap();
             Object principal = authentication.getUserAuthentication().getPrincipal();
-            /*if (principal instanceof SysUserDetails) {
-                SysUserDetails sysUserDetails = (SysUserDetails) principal;
-                additionalInfo.put("userId", sysUserDetails.getUserId());
-                additionalInfo.put("username", sysUserDetails.getUsername());
-                additionalInfo.put("deptId", sysUserDetails.getDeptId());
+            // TODO 利用设计模式 扩展该实现
+            if (principal instanceof AdminUserDetails) {
+                AdminUserDetails userDetails = (AdminUserDetails) principal;
+                additionalInfo.put("userId", userDetails.getUserId());
+                additionalInfo.put("username", userDetails.getUsername());
+                additionalInfo.put("orgId", userDetails.getOrgId());
                 // 认证身份标识(username:用户名；)
-                if (StrUtil.isNotBlank(sysUserDetails.getAuthenticationIdentity())) {
-                    additionalInfo.put("authenticationIdentity", sysUserDetails.getAuthenticationIdentity());
-                }
-            } */
+                /*if (StrUtil.isNotBlank(userDetails.getAuthenticationIdentity())) {
+                    additionalInfo.put("authenticationIdentity", userDetails.getAuthenticationIdentity());
+                }*/
+            }
             ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInfo);
             return accessToken;
         };
@@ -137,6 +151,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint() {
         return (request, response, e) -> {
+            log.error("认证失败: {}", e.getMessage(), e);
             response.setStatus(HttpStatus.OK.value());
             response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
             response.setHeader("Access-Control-Allow-Origin", "*");

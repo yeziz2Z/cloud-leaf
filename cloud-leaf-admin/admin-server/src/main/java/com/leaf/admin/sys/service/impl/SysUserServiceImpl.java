@@ -17,6 +17,7 @@ import com.leaf.admin.sys.mapper.SysRoleMapper;
 import com.leaf.admin.sys.mapper.SysUserMapper;
 import com.leaf.admin.sys.service.ISysUserService;
 import com.leaf.admin.sys.vo.UserVO;
+import com.leaf.admin.utils.UserUtils;
 import com.leaf.common.exception.BusinessException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -50,7 +51,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Resource
     SysMenuMapper menuMapper;
 
-    //    @Resource
+    @Resource
     PasswordEncoder passwordEncoder;
 
     private static final String AUTHORITIES_KEY = "authorities:username:";
@@ -112,7 +113,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public List<SysMenu> getCurrentUserNav() {
-        SysUser currentUser = this.getByUsername("admin");
+        SysUser currentUser = this.getCurrentUser();
         String key = USER_MENU_KEY + currentUser.getId();
         List<SysMenu> result = (List<SysMenu>) redisTemplate.opsForValue().get(key);
         if (CollUtil.isEmpty(result)) {
@@ -180,7 +181,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public void saveUser(SysUserDTO sysUserDTO) {
         SysUser user = new SysUser();
         BeanUtil.copyProperties(sysUserDTO, user);
-
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         // 入库
         this.save(user);
@@ -217,8 +217,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     @Transactional
     public void removeByUserIds(List<Long> userIds) {
-//        SysUser sysUser = this.getByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
-        SysUser sysUser = this.getByUsername("admin");
+        SysUser sysUser = this.getCurrentUser();
         if (CollectionUtil.contains(userIds, sysUser.getId())) {
             throw new BusinessException(500, "不能删除当前用户");
         }
@@ -229,6 +228,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public SysUser getCurrentUser() {
-        return getByUsername("admin");
+        return getById(UserUtils.getCurrentUserId());
     }
+
 }

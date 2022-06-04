@@ -26,4 +26,6 @@ public interface ISysRoleService extends IService<SysRole> {
     List<Long> selectMenuIdsByRoleId(Long roleId);
 
     void saveRoleMenu(RoleMenuDTO roleMenuDTO);
+
+    boolean refreshRolePermission();
 }

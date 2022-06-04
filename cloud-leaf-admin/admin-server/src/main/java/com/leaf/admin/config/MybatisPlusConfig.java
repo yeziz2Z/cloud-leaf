@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.leaf.admin.common.SystemConst;
+import com.leaf.admin.utils.UserUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.reflection.MetaObject;
 import org.mybatis.spring.annotation.MapperScan;
@@ -30,21 +31,19 @@ public class MybatisPlusConfig {
         return interceptor;
     }
 
-//    @Bean
+    @Bean
     public MetaObjectHandler saveAndUpdateHandler() {
 
         return new MetaObjectHandler() {
             @Override
             public void insertFill(MetaObject metaObject) {
-//                this.strictInsertFill(metaObject, "createBy", () -> SecurityContextHolder.getContext().getAuthentication().getName(), String.class);
-                this.strictInsertFill(metaObject, "createBy", () -> "admin", String.class);
+                this.strictInsertFill(metaObject, "createBy", () -> UserUtils.getCurrentUsername(), String.class);
                 this.strictInsertFill(metaObject, "createTime", () -> LocalDateTime.now(), LocalDateTime.class);
             }
 
             @Override
             public void updateFill(MetaObject metaObject) {
-//                this.strictUpdateFill(metaObject, "updateBy", () -> SecurityContextHolder.getContext().getAuthentication().getName(), String.class);
-                this.strictUpdateFill(metaObject, "updateBy", () -> "admin", String.class);
+                this.strictUpdateFill(metaObject, "updateBy", () -> UserUtils.getCurrentUsername(), String.class);
                 this.strictUpdateFill(metaObject, "updateTime", () -> LocalDateTime.now(), LocalDateTime.class);
             }
         };

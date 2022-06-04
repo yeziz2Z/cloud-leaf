@@ -24,14 +24,12 @@ public class RoleController {
     ISysRoleService roleService;
 
     @GetMapping("/list")
-//    @PreAuthorize("hasAnyAuthority('system.user.list')")
     public Result list() {
         return Result.success(roleService.list());
     }
 
     @OperationLog(module = "角色管理", businessType = BusinessTypeEnum.SELECT)
     @GetMapping("/page")
-//    @PreAuthorize("hasAnyAuthority('system.role.list')")
     public Result page(Page page, RoleQueryParam queryParam) {
         LambdaQueryWrapper<SysRole> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(StrUtil.isNotEmpty(queryParam.getName()), SysRole::getName, queryParam.getName())
@@ -44,7 +42,6 @@ public class RoleController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-//    @PreAuthorize("hasAnyAuthority('system.role.add')")
     @OperationLog(module = "角色管理", businessType = BusinessTypeEnum.INSERT)
     public Result add(@RequestBody SysRole sysRole) {
         roleService.saveSysRole(sysRole);
@@ -58,7 +55,6 @@ public class RoleController {
 
     @OperationLog(module = "角色管理", businessType = BusinessTypeEnum.UPDATE)
     @PutMapping
-//    @PreAuthorize("hasAnyAuthority('system.role.edit')")
     public Result edit(@RequestBody SysRole sysRole) {
         roleService.updateSysRole(sysRole);
         return Result.success();
@@ -79,7 +75,6 @@ public class RoleController {
 
     @OperationLog(module = "角色管理", businessType = BusinessTypeEnum.GRANT)
     @PostMapping("/menus")
-//    @PreAuthorize("hasAnyAuthority('system.role.permission')")
     public Result roleMenus(@RequestBody RoleMenuDTO roleMenuDTO) {
         roleService.saveRoleMenu(roleMenuDTO);
         return Result.success();

@@ -1,5 +1,6 @@
 package com.leaf.oauth2.security.provider;
 
+import com.leaf.common.constant.SecurityConstant;
 import com.leaf.oauth2.config.AuthorizationServerConfig;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.core.Authentication;
@@ -30,9 +31,8 @@ public class PreAuthenticatedUserDetailsService<T extends Authentication> implem
 
     @Override
     public UserDetails loadUserDetails(Authentication token) throws UsernameNotFoundException {
-        String clientId = token.getName();
-
-        return userDetailsServiceMap.get(clientId).loadUserByUsername(token.getName());
+        // todo 此处写死了
+        return userDetailsServiceMap.get(SecurityConstant.ADMIN_CLIENT_ID).loadUserByUsername(token.getName());
     }
 
     @Override
