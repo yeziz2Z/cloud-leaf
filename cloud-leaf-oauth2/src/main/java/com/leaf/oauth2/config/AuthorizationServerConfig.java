@@ -112,7 +112,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         PreAuthenticatedAuthenticationProvider provider = new PreAuthenticatedAuthenticationProvider();
         provider.setPreAuthenticatedUserDetailsService(new PreAuthenticatedUserDetailsService<>(userDetailsServiceMap));
         tokenServices.setAuthenticationManager(new ProviderManager(Arrays.asList(provider)));
-       // 支持 RefreshToken 自动续期
+        // 支持 RefreshToken 自动续期
         tokenServices.setSupportRefreshToken(true);
 //        默认值 为true
 //        1.设为true时  调用刷新 token 时间原 refresh_token 过期时间不变
@@ -134,9 +134,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
             // TODO 利用设计模式 扩展该实现
             if (principal instanceof AdminUserDetails) {
                 AdminUserDetails userDetails = (AdminUserDetails) principal;
-                additionalInfo.put("userId", userDetails.getUserId());
-                additionalInfo.put("username", userDetails.getUsername());
-                additionalInfo.put("orgId", userDetails.getOrgId());
+                additionalInfo.put(SecurityConstant.JWT_USER_ID, userDetails.getUserId());
+                additionalInfo.put(SecurityConstant.JWT_USERNAME, userDetails.getUsername());
+                additionalInfo.put(SecurityConstant.JWT_ORG_ID, userDetails.getOrgId());
                 // 认证身份标识(username:用户名；)
                 /*if (StrUtil.isNotBlank(userDetails.getAuthenticationIdentity())) {
                     additionalInfo.put("authenticationIdentity", userDetails.getAuthenticationIdentity());

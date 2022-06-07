@@ -42,8 +42,10 @@ public class UserController {
     FileServiceApi fileServiceApi;
 
     @GetMapping("/info")
-    public Result<UserVO> info(Principal principal, HttpServletRequest request) {
+    public Result<UserVO> info() {
         SysUser sysUser = userService.getCurrentUser();
+        // 初始化 用户权限
+        userService.getUserPermissionUrlsById(sysUser.getId());
         UserVO userVO = new UserVO();
         BeanUtils.copyProperties(sysUser, userVO);
         userVO.setRoles(roleService.getRolesByUserId(sysUser.getId()));

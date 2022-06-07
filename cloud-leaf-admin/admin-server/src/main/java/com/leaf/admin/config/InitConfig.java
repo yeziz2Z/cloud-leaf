@@ -1,6 +1,7 @@
 package com.leaf.admin.config;
 
 import cn.hutool.extra.spring.SpringUtil;
+import com.leaf.admin.sys.service.ISysMenuService;
 import com.leaf.admin.sys.service.ISysRoleService;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +23,6 @@ public class InitConfig {
     @Order(value = 1)
     @Bean
     public ApplicationRunner initRolePermissionApplicationRunner() {
-        return args -> SpringUtil.getBean(ISysRoleService.class).refreshRolePermission();
+        return args -> SpringUtil.getBean(ISysMenuService.class).refreshRolePermission();
     }
 }

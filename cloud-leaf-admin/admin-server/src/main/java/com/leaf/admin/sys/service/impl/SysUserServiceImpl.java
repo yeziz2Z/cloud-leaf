@@ -18,6 +18,7 @@ import com.leaf.admin.sys.mapper.SysUserMapper;
 import com.leaf.admin.sys.service.ISysUserService;
 import com.leaf.admin.sys.vo.UserVO;
 import com.leaf.admin.utils.UserUtils;
+import com.leaf.common.constant.SecurityConstant;
 import com.leaf.common.exception.BusinessException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,6 +30,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -112,6 +114,25 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
+    public Set<String> getUserPermissionUrlsById(Long userId) {
+        String key = SecurityConstant.USER_PERM_URL_KEY + userId;
+        Set<String> permUrls = (Set<String>) redisTemplate.opsForValue().get(key);
+
+        if (CollUtil.isEmpty(permUrls)) {
+            List<SysMenu> sysMenus = this.getMenusByUserId(userId);
+            permUrls = sysMenus.stream().map(SysMenu::getPermissionUrl).collect(Collectors.toSet());
+            if (CollUtil.isNotEmpty(permUrls)) {
+                redisTemplate.opsForValue().set(key, permUrls, 1, TimeUnit.HOURS);
+            }
+        }
+        return permUrls;
+    }
+
+    private void clearUserPermissionUrls(Long userId) {
+        redisTemplate.delete(SecurityConstant.URL_PERM_ROLES_KEY + userId);
+    }
+
+    @Override
     public List<SysMenu> getCurrentUserNav() {
         SysUser currentUser = this.getCurrentUser();
         String key = USER_MENU_KEY + currentUser.getId();
@@ -145,6 +166,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         sysUsers.forEach(sysUser -> {
             this.clearUserAuthorities(sysUser.getUsername());
             this.clearUserMenuByUserId(sysUser.getId());
+            this.clearUserPermissionUrls(sysUser.getId());
         });
     }
 

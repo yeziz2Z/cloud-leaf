@@ -71,11 +71,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <dependency>
-                <groupId>com.leaf</groupId>
-                <artifactId>cloud-leaf-common</artifactId>
-                <version>${cloud.leaf.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>mysql</groupId>
@@ -125,6 +120,30 @@
                 <artifactId>jackson-datatype-jsr310</artifactId>
                 <version>${jackson.datatype.jsr310.version}</version>
             </dependency>
+
+
+            <dependency>
+                <groupId>com.leaf</groupId>
+                <artifactId>common-core</artifactId>
+                <version>${cloud.leaf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.leaf</groupId>
+                <artifactId>common-redis</artifactId>
+                <version>${cloud.leaf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.leaf</groupId>
+                <artifactId>common-web</artifactId>
+                <version>${cloud.leaf.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.leaf</groupId>
+                <artifactId>admin-api</artifactId>
+                <version>${cloud.leaf.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 </project>

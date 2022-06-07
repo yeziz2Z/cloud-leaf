@@ -30,4 +30,6 @@ public interface ISysMenuService extends IService<SysMenu> {
     void deleteByMenuIds(List<Long> menuIds);
 
     void deleteById(Long id);
+
+    void refreshRolePermission();
 }

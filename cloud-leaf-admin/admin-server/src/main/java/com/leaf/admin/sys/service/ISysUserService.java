@@ -10,6 +10,7 @@ import com.leaf.admin.sys.entity.SysUser;
 import com.leaf.admin.sys.vo.UserVO;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -34,6 +35,8 @@ public interface ISysUserService extends IService<SysUser> {
     String getUserAuthorities(Long userId);
 
     List<String> getUserAuthoritiesByUsername(String username);
+
+    Set<String> getUserPermissionUrlsById(Long userId);
 
     void clearUserAuthorities(String username);
 

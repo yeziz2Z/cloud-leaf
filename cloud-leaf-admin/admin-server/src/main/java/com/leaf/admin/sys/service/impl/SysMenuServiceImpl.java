@@ -5,18 +5,22 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.leaf.admin.common.AdminSystemConst;
 import com.leaf.admin.sys.dto.MenuQueryParam;
 import com.leaf.admin.sys.entity.SysMenu;
 import com.leaf.admin.sys.mapper.SysMenuMapper;
 import com.leaf.admin.sys.service.ISysMenuService;
+import com.leaf.admin.sys.vo.RolePermissions;
 import com.leaf.admin.sys.vo.SysMenuVO;
+import com.leaf.common.constant.SecurityConstant;
 import com.leaf.common.exception.BusinessException;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -27,8 +31,10 @@ import java.util.*;
  * @since 2021-08-04
  */
 @Service
-@Slf4j
 public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> implements ISysMenuService {
+
+    @Autowired
+    RedisTemplate redisTemplate;
 
     @Override
     public List<SysMenu> selectByUserId(Long userId) {
@@ -75,7 +81,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     @Override
     public void saveMenu(SysMenu sysMenu) {
         if (Objects.equals(sysMenu.getType(), "F")) {
-            sysMenu.setComponent(sysMenu.getHiddenHeaderContent() ? "RouteView" : "PageView");
+            sysMenu.setComponent(sysMenu.getHiddenHeaderContent() ? AdminSystemConst.ROUTE_VIEW : AdminSystemConst.PAGE_VIEW);
         }
         this.save(sysMenu);
     }
@@ -84,7 +90,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     @Override
     public void updateMenu(SysMenu sysMenu) {
         if (Objects.equals(sysMenu.getType(), "F")) {
-            sysMenu.setComponent(sysMenu.getHiddenHeaderContent() ? "RouteView" : "PageView");
+            sysMenu.setComponent(sysMenu.getHiddenHeaderContent() ? AdminSystemConst.ROUTE_VIEW : AdminSystemConst.PAGE_VIEW);
         }
         this.updateById(sysMenu);
     }
@@ -113,5 +119,19 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             throw new BusinessException(500, "菜单已分配，不允许删除");
         }
         super.removeById(id);
+    }
+
+    @Override
+    public void refreshRolePermission() {
+
+        redisTemplate.delete(SecurityConstant.URL_PERM_ROLES_KEY);
+        List<RolePermissions> rolePermissions = baseMapper.rolePermissions();
+        Map<String, Set<String>> map = rolePermissions
+                .stream()
+                .filter(role -> StrUtil.isNotBlank(role.getPermissionUrl()))
+                .collect(Collectors.groupingBy(RolePermissions::getPermissionUrl,
+                        Collectors.mapping(RolePermissions::getCode, Collectors.toSet())));
+
+        redisTemplate.opsForHash().putAll(SecurityConstant.URL_PERM_ROLES_KEY, map);
     }
 }

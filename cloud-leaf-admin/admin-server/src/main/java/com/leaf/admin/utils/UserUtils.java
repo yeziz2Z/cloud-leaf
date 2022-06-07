@@ -22,7 +22,7 @@ public class UserUtils {
         String username = null;
         JSONObject jwtPayload = JwtUtil.getJwtPayload();
         if (jwtPayload != null) {
-            username = jwtPayload.getStr(SecurityConstant.JWT_USER_NAME);
+            username = jwtPayload.getStr(SecurityConstant.JWT_USERNAME);
         }
         return username;
     }

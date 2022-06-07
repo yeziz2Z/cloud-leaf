@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.leaf.admin.sys.dto.RoleMenuDTO;
 import com.leaf.admin.sys.entity.SysRole;
 import com.leaf.admin.sys.mapper.SysRoleMapper;
+import com.leaf.admin.sys.service.ISysMenuService;
 import com.leaf.admin.sys.service.ISysRoleService;
 import com.leaf.admin.sys.service.ISysUserService;
 import com.leaf.common.exception.BusinessException;
@@ -27,6 +28,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
     @Autowired
     ISysUserService userService;
+    @Autowired
+    ISysMenuService menuService;
 
     @Override
     public List<SysRole> getRolesByUserId(Long userId) {
@@ -68,12 +71,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         baseMapper.insertRoleMenu(roleMenuDTO);
 
         userService.clearUserAuthoritiesByRoleId(roleMenuDTO.getRoleId());
+
+        menuService.refreshRolePermission();
     }
 
-
-    @Override
-    public boolean refreshRolePermission() {
-        // TODO 待实现
-        return false;
-    }
 }

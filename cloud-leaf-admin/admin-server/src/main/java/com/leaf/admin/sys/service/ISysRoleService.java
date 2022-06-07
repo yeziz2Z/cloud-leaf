@@ -27,5 +27,4 @@ public interface ISysRoleService extends IService<SysRole> {
 
     void saveRoleMenu(RoleMenuDTO roleMenuDTO);
 
-    boolean refreshRolePermission();
 }

@@ -42,7 +42,7 @@ public class SecurityGlobalFilter implements GlobalFilter {
         }
 
         try {
-            // token 会写至 request 请求头
+            // token 回写至 request 请求头
             token = StrUtil.replaceIgnoreCase(token, SecurityConstant.JWT_PREFIX, Strings.EMPTY);
 
             String payload = StrUtil.toString(JWSObject.parse(token).getPayload());

@@ -47,6 +47,21 @@
         WHERE ur.user_id = #{userId})
         and status = '1'
     </select>
+
+
+    <select id="listRolePermissions" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_sys_menu
+        where id in (SELECT DISTINCT
+        rm.menu_id
+        FROM
+        t_sys_user_role ur
+        LEFT JOIN t_sys_role_menu rm
+        ON ur.role_id = rm.role_id
+        WHERE status = 1
+    </select>
+
     <select id="selectUserPermissionsByUserId" resultType="java.lang.String">
         select permission
         from t_sys_menu
@@ -92,4 +107,23 @@
         from t_sys_role_menu
         where menu_id = #{menuId}
     </select>
+    <resultMap id="rolePermissionsResultMap" type="com.leaf.admin.sys.vo.RolePermissions">
+        <result column="code" property="code"/>
+        <result column="permission_url" property="permissionUrl"/>
+    </resultMap>
+
+    <select id="rolePermissions" resultMap="rolePermissionsResultMap">
+        SELECT
+            r.`code`,
+            m.`permission_url`
+        FROM
+            t_sys_role r,
+            t_sys_role_menu rm,
+            t_sys_menu m
+        WHERE r.`id` = rm.`role_id`
+          AND rm.`menu_id` = m.`id`
+          AND r.`status` = 1
+          AND m.`status` = 1
+    </select>
+
 </mapper>
