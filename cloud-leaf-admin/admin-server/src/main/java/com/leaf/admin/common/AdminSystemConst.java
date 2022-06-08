@@ -12,4 +12,9 @@ public interface AdminSystemConst {
 
 
     String ROUTE_VIEW = "RouteView";
+
+    /**
+     * 字典枚举缓存
+     */
+    String DICT_TYPE_CACHE = "admin:dict:";
 }
