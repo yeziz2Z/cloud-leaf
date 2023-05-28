@@ -20,12 +20,12 @@ import com.leaf.admin.sys.vo.UserVO;
 import com.leaf.admin.utils.UserUtils;
 import com.leaf.common.constant.SecurityConstant;
 import com.leaf.common.exception.BusinessException;
+import jakarta.annotation.Resource;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;

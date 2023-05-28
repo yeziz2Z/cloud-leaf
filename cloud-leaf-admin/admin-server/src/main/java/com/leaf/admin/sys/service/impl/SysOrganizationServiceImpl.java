@@ -13,10 +13,10 @@ import com.leaf.admin.sys.service.ISysOrganizationService;
 import com.leaf.admin.sys.vo.OrgTreeVO;
 import com.leaf.common.enums.YesOrNoEnum;
 import com.leaf.common.exception.BusinessException;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;

@@ -1,165 +1,116 @@
 package com.leaf.oauth2.config;
 
-import cn.hutool.core.map.MapUtil;
-import cn.hutool.json.JSONUtil;
-import com.leaf.common.constant.SecurityConstant;
-import com.leaf.common.result.Result;
-import com.leaf.oauth2.security.provider.CaptchaGranter;
-import com.leaf.oauth2.security.provider.ClientDetailsServiceImpl;
-import com.leaf.oauth2.security.provider.PreAuthenticatedUserDetailsService;
-import com.leaf.oauth2.security.userdetails.AdminUserDetails;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
-import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
-import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
-import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
-import org.springframework.security.oauth2.provider.CompositeTokenGranter;
-import org.springframework.security.oauth2.provider.TokenGranter;
-import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
-import org.springframework.security.oauth2.provider.token.TokenEnhancer;
-import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
-import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
-import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.core.oidc.OidcScopes;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.authorization.InMemoryOAuth2AuthorizationConsentService;
+import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
+import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
+import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
+import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
+import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
+import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import java.util.*;
+import java.util.UUID;
 
-@Configuration
-@EnableAuthorizationServer
-@Slf4j
-public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
+/**
+ * @author liuk
+ */
+@EnableWebSecurity
+@Configuration(proxyBeanMethods = false)
+public class AuthorizationServerConfig {
 
-    @Autowired
-    AuthenticationManager authenticationManager;
-    @Autowired
-    UserDetailsService sysUserDetailsServiceImpl;
-    @Autowired
-    PasswordEncoder passwordEncoder;
-    @Autowired
-    ClientDetailsServiceImpl clientDetailsService;
-    @Autowired
-    StringRedisTemplate redisTemplate;
+    private static final String CUSTOM_CONSENT_PAGE_URI = "/oauth2/consent";
 
+    @Bean
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
+        OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
+                new OAuth2AuthorizationServerConfigurer();
+        authorizationServerConfigurer
+                .authorizationEndpoint(authorizationEndpoint ->
+                        authorizationEndpoint.consentPage(CUSTOM_CONSENT_PAGE_URI))
+                .oidc(Customizer.withDefaults());	// Enable OpenID Connect 1.0
 
-    @Override
-    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+        RequestMatcher endpointsMatcher = authorizationServerConfigurer
+                .getEndpointsMatcher();
 
-        // 获取原有默认授权模式(授权码模式、密码模式、客户端模式、简化模式)的授权者
-        List<TokenGranter> granterList = new ArrayList<>(Arrays.asList(endpoints.getTokenGranter()));
-        // 添加验证码授权模式授权者
-        granterList.add(new CaptchaGranter(authenticationManager,
-                endpoints.getTokenServices(),
-                clientDetailsService,
-                endpoints.getOAuth2RequestFactory(),
-                redisTemplate));
-
-        CompositeTokenGranter compositeTokenGranter = new CompositeTokenGranter(granterList);
-        endpoints.authenticationManager(authenticationManager)
-//                .userDetailsService(sysUserDetailsServiceImpl)
-//                .tokenStore(jwtTokenStore())
-//                .accessTokenConverter(jwtAccessTokenConverter())
-                .tokenGranter(compositeTokenGranter)
-                .tokenServices(tokenServices());
+        http
+                .securityMatcher(endpointsMatcher)
+                .authorizeHttpRequests(authorize ->
+                        authorize.anyRequest().authenticated()
+                )
+                .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
+                .exceptionHandling(exceptions ->
+                        exceptions.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
+                )
+//                .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
+                .apply(authorizationServerConfigurer);
+        return http.build();
     }
 
-    @Override
-    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        clients.withClientDetails(clientDetailsService);
+    // @formatter:off
+    @Bean
+    public RegisteredClientRepository registeredClientRepository() {
+        RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
+                .clientId("messaging-client")
+                .clientSecret("{noop}secret")
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+                .redirectUri("http://127.0.0.1:8080/login/oauth2/code/messaging-client-oidc")
+                .redirectUri("http://127.0.0.1:8080/authorized")
+                .postLogoutRedirectUri("http://127.0.0.1:8080/logged-out")
+                .scope(OidcScopes.OPENID)
+                .scope(OidcScopes.PROFILE)
+                .scope("message.read")
+                .scope("message.write")
+                .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
+                .build();
+        return new InMemoryRegisteredClientRepository(registeredClient);
+    }
+    // @formatter:on
+
+    @Bean
+    public JWKSource<SecurityContext> jwkSource() {
+        /*RSAKey rsaKey = Jwks.generateRsa();
+        JWKSet jwkSet = new JWKSet(rsaKey);
+        return (jwkSelector, securityContext) -> jwkSelector.select(jwkSet);*/
+        return null;
     }
 
     @Bean
-    public TokenStore jwtTokenStore() {
-        return new JwtTokenStore(jwtAccessTokenConverter());
+    public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
+//        return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
+        return null;
     }
 
     @Bean
-    public JwtAccessTokenConverter jwtAccessTokenConverter() {
-        JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-//        converter.setKeyPair(keyPair());
-        converter.setSigningKey("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJhZG1pbiIsInNjb3BlIjpbImFsbCJdLCJkZXB0SWQiOjIsImV4cCI6MTY1MzAzNTYxOSwidXNlcklkIjoyLCJhdXRob3JpdGllcyI6WyJBRE1JTiJdLCJqdGkiOiI1ZGFhZDljZi04YzhiLTQ5NzItYjBiYi1lYjdiZjc3YjAxNWIiLCJjbGllbnRfaWQiOiJtYWxsLWFkbWluLXdlYiIsInVzZXJuYW1lIjoiYWRtaW4ifQ.YKu2Z8ZEBIVqJHdJhKpZvwg1k3BdsCe0g2LxI8iHrtg");
-        return converter;
+    public AuthorizationServerSettings authorizationServerSettings() {
+        return AuthorizationServerSettings.builder().build();
     }
-
-
-    public DefaultTokenServices tokenServices() {
-        TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
-        List<TokenEnhancer> tokenEnhancers = new ArrayList<>();
-        tokenEnhancers.add(tokenEnhancer());
-        tokenEnhancers.add(jwtAccessTokenConverter());
-        tokenEnhancerChain.setTokenEnhancers(tokenEnhancers);
-
-        DefaultTokenServices tokenServices = new DefaultTokenServices();
-        tokenServices.setClientDetailsService(clientDetailsService);
-        tokenServices.setTokenStore(jwtTokenStore());
-        tokenServices.setTokenEnhancer(tokenEnhancerChain);
-
-        Map<String, UserDetailsService> userDetailsServiceMap = new HashMap<>();
-        userDetailsServiceMap.put(SecurityConstant.ADMIN_CLIENT_ID, sysUserDetailsServiceImpl);
-        PreAuthenticatedAuthenticationProvider provider = new PreAuthenticatedAuthenticationProvider();
-        provider.setPreAuthenticatedUserDetailsService(new PreAuthenticatedUserDetailsService<>(userDetailsServiceMap));
-        tokenServices.setAuthenticationManager(new ProviderManager(Arrays.asList(provider)));
-        // 支持 RefreshToken 自动续期
-        tokenServices.setSupportRefreshToken(true);
-//        默认值 为true
-//        1.设为true时  调用刷新 token 时间原 refresh_token 过期时间不变
-//        2. 设为false 每次调用  重置 refresh_token 过期时间
-        tokenServices.setReuseRefreshToken(false);
-        return tokenServices;
-    }
-
-    /**
-     * token 内容扩展
-     *
-     * @return
-     */
-    @Bean
-    public TokenEnhancer tokenEnhancer() {
-        return (accessToken, authentication) -> {
-            Map<String, Object> additionalInfo = MapUtil.newHashMap();
-            Object principal = authentication.getUserAuthentication().getPrincipal();
-            // TODO 利用设计模式 扩展该实现
-            if (principal instanceof AdminUserDetails) {
-                AdminUserDetails userDetails = (AdminUserDetails) principal;
-                additionalInfo.put(SecurityConstant.JWT_USER_ID, userDetails.getUserId());
-                additionalInfo.put(SecurityConstant.JWT_USERNAME, userDetails.getUsername());
-                additionalInfo.put(SecurityConstant.JWT_ORG_ID, userDetails.getOrgId());
-                // 认证身份标识(username:用户名；)
-                /*if (StrUtil.isNotBlank(userDetails.getAuthenticationIdentity())) {
-                    additionalInfo.put("authenticationIdentity", userDetails.getAuthenticationIdentity());
-                }*/
-            }
-            ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInfo);
-            return accessToken;
-        };
-    }
-
 
     @Bean
-    public AuthenticationEntryPoint authenticationEntryPoint() {
-        return (request, response, e) -> {
-            log.error("认证失败: {}", e.getMessage(), e);
-            response.setStatus(HttpStatus.OK.value());
-            response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-            response.setHeader("Access-Control-Allow-Origin", "*");
-            response.setHeader("Cache-Control", "no-cache");
-            Result result = Result.fail("501");
-            response.getWriter().print(JSONUtil.toJsonStr(result));
-            response.getWriter().flush();
-        };
+    public OAuth2AuthorizationConsentService authorizationConsentService() {
+        // Will be used by the ConsentController
+        return new InMemoryOAuth2AuthorizationConsentService();
     }
 }
-

@@ -15,33 +15,36 @@
         <module>cloud-leaf-gateway</module>
         <module>cloud-leaf-auth</module>
         <module>cloud-leaf-oauth2</module>
+        <module>cloud-leaf-blog</module>
+        <module>cloud-leaf-feign-api</module>
     </modules>
     <packaging>pom</packaging>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.6.3</version>
+        <version>3.1.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.17</maven.compiler.source>
+        <maven.compiler.target>1.17</maven.compiler.target>
         <aliyun-spring-boot.version>1.0.0</aliyun-spring-boot.version>
-        <spring-boot.version>2.6.3</spring-boot.version>
-        <spring-cloud-alibaba.version>2021.0.1.0</spring-cloud-alibaba.version>
+        <spring-boot.version>3.1.0</spring-boot.version>
+        <spring-cloud-alibaba.version>2022.0.0.0-RC1</spring-cloud-alibaba.version>
         <!--        <spring-com-starter.version>3.1.2</spring-com-starter.version>-->
-        <spring-cloud.version>2021.0.1</spring-cloud.version>
+        <spring-cloud.version>2022.0.2</spring-cloud.version>
         <spring-cloud-starter.version>3.1.1</spring-cloud-starter.version>
         <log4j.version>1.2.17</log4j.version>
-        <lombok.version>1.16.18</lombok.version>
+        <servlet-api.version>6.0.0</servlet-api.version>
+        <lombok.version>1.18.26</lombok.version>
         <mysql.version>8.0.26</mysql.version>
-        <hutool-all.version>5.7.6</hutool-all.version>
+        <hutool-all.version>5.8.16</hutool-all.version>
         <druid.version>1.2.6</druid.version>
         <freemarker.version>2.3.31</freemarker.version>
-        <mybatis-plus-boot-starter.version>3.5.1</mybatis-plus-boot-starter.version>
+        <mybatis-plus-boot-starter.version>3.5.3.1</mybatis-plus-boot-starter.version>
         <mybatis.plus.generator.version>3.5.2</mybatis.plus.generator.version>
         <jackson.datatype.jsr310.version>2.13.2</jackson.datatype.jsr310.version>
         <cloud.leaf.version>1.0-SNAPSHOT</cloud.leaf.version>
@@ -55,6 +58,7 @@
     </dependencies>
 
     <dependencyManagement>
+
         <dependencies>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
@@ -70,6 +74,11 @@
                 <version>${spring-cloud-alibaba.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-oauth2-authorization-server</artifactId>
+                <version>${spring-boot.version}</version>
             </dependency>
 
             <dependency>
@@ -108,7 +117,11 @@
                 <artifactId>log4j</artifactId>
                 <version>${log4j.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>${servlet-api.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
@@ -120,7 +133,6 @@
                 <artifactId>jackson-datatype-jsr310</artifactId>
                 <version>${jackson.datatype.jsr310.version}</version>
             </dependency>
-
 
             <dependency>
                 <groupId>com.leaf</groupId>

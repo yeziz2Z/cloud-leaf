@@ -6,6 +6,7 @@ import com.leaf.admin.annotation.OperationLog;
 import com.leaf.admin.async.factory.LogTaskFactory;
 import com.leaf.admin.sys.entity.SysOperLog;
 import com.leaf.common.enums.YesOrNoEnum;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -18,7 +19,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.Arrays;
