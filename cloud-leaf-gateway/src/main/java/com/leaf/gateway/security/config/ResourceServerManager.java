@@ -38,7 +38,7 @@ public class ResourceServerManager implements ReactiveAuthorizationManager<Autho
         }
 
         PathMatcher pathMatcher = new AntPathMatcher();
-        String method = request.getMethodValue();
+        String method = request.getMethod().name();
         String path = request.getURI().getPath();
         String restfulPath = method + ":" + path;
 

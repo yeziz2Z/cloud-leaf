@@ -66,29 +66,6 @@ public class AuthorizationServerConfig {
         return http.build();
     }
 
-    // @formatter:off
-    @Bean
-    public RegisteredClientRepository registeredClientRepository() {
-        RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
-                .clientId("messaging-client")
-                .clientSecret("{noop}secret")
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                .redirectUri("http://127.0.0.1:8080/login/oauth2/code/messaging-client-oidc")
-                .redirectUri("http://127.0.0.1:8080/authorized")
-                .postLogoutRedirectUri("http://127.0.0.1:8080/logged-out")
-                .scope(OidcScopes.OPENID)
-                .scope(OidcScopes.PROFILE)
-                .scope("message.read")
-                .scope("message.write")
-                .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
-                .build();
-        return new InMemoryRegisteredClientRepository(registeredClient);
-    }
-    // @formatter:on
-
     @Bean
     public JWKSource<SecurityContext> jwkSource() {
         /*RSAKey rsaKey = Jwks.generateRsa();
@@ -103,14 +80,5 @@ public class AuthorizationServerConfig {
         return null;
     }
 
-    @Bean
-    public AuthorizationServerSettings authorizationServerSettings() {
-        return AuthorizationServerSettings.builder().build();
-    }
 
-    @Bean
-    public OAuth2AuthorizationConsentService authorizationConsentService() {
-        // Will be used by the ConsentController
-        return new InMemoryOAuth2AuthorizationConsentService();
-    }
 }

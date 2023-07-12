@@ -26,8 +26,16 @@ public class WebSecurityConfigTest {
 
     @Test
     public void test12() {
-        int[] arr = {7,7,7,8,5,7,5,5,5,8};
+        int[] arr = {7, 7, 7, 8, 5, 7, 5, 5, 5, 8};
         System.out.println(Arrays.toString(rearrangeBarcodes(arr)));
+        List<int[]> list = new ArrayList<>();
+        list.add(new int[]{1,1});
+        list.add(new int[]{2,1});
+        list.add(new int[]{2,3});
+
+        list.sort((a, b) -> a[1] == b[1] ? Integer.compare(a[0], b[0]) : Integer.compare(b[1], a[1]));
+
+        list.forEach(e -> System.out.println(Arrays.toString(e)));
     }
 
     public int[] rearrangeBarcodes(int[] barcodes) {
@@ -42,7 +50,7 @@ public class WebSecurityConfigTest {
             queue.offer(new Pair(key, cnt.get(key)));
         }
         List<Pair> list = new ArrayList<>();
-        while (!queue.isEmpty()){
+        while (!queue.isEmpty()) {
             list.add(queue.poll());
         }
 
