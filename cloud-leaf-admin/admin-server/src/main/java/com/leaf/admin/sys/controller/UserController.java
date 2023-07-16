@@ -5,6 +5,7 @@ import com.leaf.admin.annotation.OperationLog;
 import com.leaf.admin.api.FileServiceApi;
 import com.leaf.admin.sys.dto.SysUserDTO;
 import com.leaf.admin.sys.dto.UserQueryParam;
+import com.leaf.admin.sys.entity.SysRole;
 import com.leaf.admin.sys.entity.SysUser;
 import com.leaf.admin.sys.service.ISysMenuService;
 import com.leaf.admin.sys.service.ISysOrganizationService;
@@ -20,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -127,7 +127,7 @@ public class UserController {
     }
 
     @GetMapping("/loadByUsername")
-    public Result<AuthUser> loadByUsername(@RequestParam String username) {
+    public Result loadByUsername(@RequestParam String username) {
         SysUser sysUser = userService.getByUsername(username);
         if (sysUser == null) {
             return Result.fail("用户不存在");
@@ -138,7 +138,7 @@ public class UserController {
         user.setUsername(sysUser.getUsername());
         user.setPassword(sysUser.getPassword());
         user.setOrgId(sysUser.getOrgId());
-        user.setRoles(roleService.getRolesByUserId(sysUser.getId()).stream().map(sysRole -> sysRole.getCode()).collect(Collectors.toList()));
+        user.setRoles(roleService.getRolesByUserId(sysUser.getId()).stream().map(SysRole::getCode).collect(Collectors.toList()));
         return Result.success(user);
     }
 }

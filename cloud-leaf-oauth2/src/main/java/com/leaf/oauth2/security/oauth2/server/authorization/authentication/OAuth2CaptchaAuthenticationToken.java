@@ -16,23 +16,23 @@ import java.util.Map;
  */
 public class OAuth2CaptchaAuthenticationToken extends AbstractAuthenticationToken {
     private static final long serialVersionUID = SpringAuthorizationServerVersion.SERIAL_VERSION_UID;
-    private final String authorizationGrantType;
+    private final String clientId;
     private final Authentication clientPrincipal;
-    private final Map<String, Object> additionalParameters;
+    private final Map<String, String> additionalParameters;
 
     /**
      * Sub-class constructor.
      *
-     * @param authorizationGrantType the authorization grant type
+     * @param clientId the authorization grant type
      * @param clientPrincipal        the authenticated client principal
      * @param additionalParameters   the additional parameters
      */
-    public OAuth2CaptchaAuthenticationToken(String authorizationGrantType,
-                                                          Authentication clientPrincipal, @Nullable Map<String, Object> additionalParameters) {
+    public OAuth2CaptchaAuthenticationToken(String clientId,
+                                                          Authentication clientPrincipal, @Nullable Map<String, String> additionalParameters) {
         super(Collections.emptyList());
-        Assert.notNull(authorizationGrantType, "authorizationGrantType cannot be null");
+        Assert.notNull(clientId, "clientId cannot be null");
         Assert.notNull(clientPrincipal, "clientPrincipal cannot be null");
-        this.authorizationGrantType = authorizationGrantType;
+        this.clientId = clientId;
         this.clientPrincipal = clientPrincipal;
         this.additionalParameters = Collections.unmodifiableMap(
                 additionalParameters != null ?
@@ -40,14 +40,15 @@ public class OAuth2CaptchaAuthenticationToken extends AbstractAuthenticationToke
                         Collections.emptyMap());
     }
 
+    public String getClientId() {
+        return clientId;
+    }
+
     /**
      * Returns the authorization grant type.
      *
      * @return the authorization grant type
      */
-    public String getGrantType() {
-        return this.authorizationGrantType;
-    }
 
 
     @Override
@@ -65,7 +66,7 @@ public class OAuth2CaptchaAuthenticationToken extends AbstractAuthenticationToke
      *
      * @return the additional parameters
      */
-    public Map<String, Object> getAdditionalParameters() {
+    public Map<String, String> getAdditionalParameters() {
         return this.additionalParameters;
     }
 }

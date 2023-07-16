@@ -6,7 +6,7 @@ spring:
   cloud:
     nacos:
       config:
-        server-addr: 192.168.0.195:8080
+        server-addr: 192.168.0.124:8848
         file-extension: yml
       discovery:
         server-addr: ${spring.cloud.nacos.config.server-addr}
