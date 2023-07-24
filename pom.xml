@@ -41,7 +41,7 @@
         <servlet-api.version>6.0.0</servlet-api.version>
         <lombok.version>1.18.26</lombok.version>
         <mysql.version>8.0.33</mysql.version>
-        <hutool-all.version>5.8.16</hutool-all.version>
+        <hutool-all.version>5.8.20</hutool-all.version>
         <druid.version>1.2.6</druid.version>
         <freemarker.version>2.3.31</freemarker.version>
         <mybatis-plus-boot-starter.version>3.5.3.1</mybatis-plus-boot-starter.version>

@@ -3,6 +3,7 @@ package com.leaf.admin.utils;
 import cn.hutool.json.JSONObject;
 import com.leaf.common.constant.SecurityConstant;
 import com.leaf.common.web.utils.JwtUtil;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * 用户工具类
@@ -19,11 +20,12 @@ public class UserUtils {
     }
 
     public static String getCurrentUsername() {
-        String username = null;
+        /*String username = null;
+
         JSONObject jwtPayload = JwtUtil.getJwtPayload();
         if (jwtPayload != null) {
             username = jwtPayload.getStr(SecurityConstant.JWT_USERNAME);
-        }
-        return username;
+        }*/
+        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 }

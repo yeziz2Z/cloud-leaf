@@ -11,3 +11,6 @@ spring:
       discovery:
         server-addr: 192.168.0.124:8848
         ip: 192.168.0.124
+cloud:
+  jwk:
+    public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArjD+WmZ4LrGUkImPGgdiL6oK04Xdrr8s2uZVeQwtUtbPwWAMhl6cRw9/VqD1dvE1KTFmsuJjRWsyrCgoexfNyqSnPDctCN+s66Sl+zAhRXrM+nZtv4v6fpJsc+Vrwb1MHPV5h1zBKFL4WE/PSB782A/aS1WC3PoGOjC82MpcSXd8UVJA7CdJ0QpC/DCy3UFbkAYQj+h2Q1CzQYM7uudXIvYaK3vpM+SUXdhbbexypp3B8BeaNAIBmsg41EICselvIa5VRSNxjJYeRjrrPmqNvJT6J/eV8Q+22IIi3jQNDEQXeDHnGfIhWjdApT0j4WVGN1j7geSMRn0lewp+iIJMaQIDAQAB

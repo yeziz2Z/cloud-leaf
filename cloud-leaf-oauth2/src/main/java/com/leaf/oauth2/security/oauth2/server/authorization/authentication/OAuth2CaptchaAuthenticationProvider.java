@@ -15,9 +15,13 @@
  */
 package com.leaf.oauth2.security.oauth2.server.authorization.authentication;
 
+import cn.hutool.core.util.StrUtil;
+import com.leaf.common.constant.SecurityConstant;
 import com.leaf.oauth2.security.userdetails.OAuth2ClientUserDetailsService;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -49,6 +53,8 @@ public final class OAuth2CaptchaAuthenticationProvider implements Authentication
 
     private final List<OAuth2ClientUserDetailsService> userDetailsServices;
     private final OAuth2AuthorizationService authorizationService;
+
+    private final StringRedisTemplate redisTemplate;
     private final OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator;
 
     /**
@@ -59,9 +65,11 @@ public final class OAuth2CaptchaAuthenticationProvider implements Authentication
     public OAuth2CaptchaAuthenticationProvider(
             OAuth2AuthorizationService authorizationService,
             List<OAuth2ClientUserDetailsService> userDetailsServices,
+            StringRedisTemplate redisTemplate,
             OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator) {
         this.authorizationService = authorizationService;
         this.userDetailsServices = userDetailsServices;
+        this.redisTemplate = redisTemplate;
         this.tokenGenerator = tokenGenerator;
         this.passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
@@ -83,11 +91,31 @@ public final class OAuth2CaptchaAuthenticationProvider implements Authentication
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         OAuth2CaptchaAuthenticationToken clientAuthentication =
                 (OAuth2CaptchaAuthenticationToken) authentication;
-
         OAuth2ClientAuthenticationToken principal = (OAuth2ClientAuthenticationToken) clientAuthentication.getPrincipal();
         RegisteredClient registeredClient = principal.getRegisteredClient();
 
-        String clientId = registeredClient.getClientId();
+        String clientId = clientAuthentication.getClientId();
+
+        Map<String, String> parameters = clientAuthentication.getAdditionalParameters();
+        String username = parameters.get("username");
+        String inputPassword = parameters.get("password");
+        String captcha = parameters.get("captcha");
+        String uid = parameters.get("uid");
+        if (StrUtil.isEmpty(captcha)) {
+            OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.INVALID_GRANT,
+                    "验证码不能为空.", "");
+            throw new OAuth2AuthenticationException(error);
+        }
+        String validCaptchaKey = SecurityConstant.VALID_CODE + uid;
+
+        String captchaCode = redisTemplate.opsForValue().get(validCaptchaKey);
+        redisTemplate.delete(validCaptchaKey);
+        if (!StrUtil.equalsIgnoreCase(captcha, captchaCode)) {
+            OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.INVALID_GRANT,
+                    "验证码有误.", "");
+            throw new OAuth2AuthenticationException(error);
+        }
+
         OAuth2ClientUserDetailsService userDetailsService = null;
         for (OAuth2ClientUserDetailsService service : this.userDetailsServices) {
             if (service.support(clientId)) {
@@ -98,9 +126,6 @@ public final class OAuth2CaptchaAuthenticationProvider implements Authentication
         if (Objects.isNull(userDetailsService)) {
             throwInvalidClient(clientId);
         }
-        Map<String, String> parameters = clientAuthentication.getAdditionalParameters();
-        String inputPassword = parameters.get("password");
-        String username = parameters.get("username");
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
@@ -118,11 +143,13 @@ public final class OAuth2CaptchaAuthenticationProvider implements Authentication
             authorizedScopes = new LinkedHashSet<>(registeredClient.getScopes());
         }
 
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, userDetails.getAuthorities());
+
         AuthorizationGrantType captchaGrantType = new AuthorizationGrantType("captcha");
 
         DefaultOAuth2TokenContext.Builder tokenContextBuilder = DefaultOAuth2TokenContext.builder()
                 .registeredClient(registeredClient)
-                .principal(principal)
+                .principal(authenticationToken)
                 .authorizationServerContext(AuthorizationServerContextHolder.getContext())
                 .authorizedScopes(authorizedScopes)
                 .tokenType(OAuth2TokenType.ACCESS_TOKEN)
@@ -187,15 +214,4 @@ public final class OAuth2CaptchaAuthenticationProvider implements Authentication
         throw new OAuth2AuthenticationException(error);
     }
 
-
-    private static OAuth2ClientAuthenticationToken getAuthenticatedClientElseThrowInvalidClient(Authentication authentication) {
-        OAuth2ClientAuthenticationToken clientPrincipal = null;
-        if (OAuth2ClientAuthenticationToken.class.isAssignableFrom(authentication.getPrincipal().getClass())) {
-            clientPrincipal = (OAuth2ClientAuthenticationToken) authentication.getPrincipal();
-        }
-        if (clientPrincipal != null && clientPrincipal.isAuthenticated()) {
-            return clientPrincipal;
-        }
-        throw new OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_CLIENT);
-    }
 }

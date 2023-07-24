@@ -1,3 +1,4 @@
+/*
 package com.leaf.gateway.security.jwt;
 
 import com.leaf.common.constant.SecurityConstant;
@@ -8,9 +9,11 @@ import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
 import org.springframework.security.oauth2.jwt.Jwt;
 
+*/
 /**
  * jwt 类型校验
- */
+ *//*
+
 public class JwtValidator implements OAuth2TokenValidator<Jwt> {
 
     private RedisTemplate redisTemplate;
@@ -38,3 +41,4 @@ public class JwtValidator implements OAuth2TokenValidator<Jwt> {
                 null);
     }
 }
+*/

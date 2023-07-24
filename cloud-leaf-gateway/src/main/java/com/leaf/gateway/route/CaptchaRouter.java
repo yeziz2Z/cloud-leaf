@@ -16,6 +16,6 @@ public class CaptchaRouter {
     public RouterFunction<ServerResponse> routerFunction(CaptchaHandler captchaHandler) {
         return RouterFunctions.route(RequestPredicates.GET("/captcha")
                         .and(RequestPredicates.accept(MediaType.TEXT_PLAIN)),
-                captchaHandler::handle);
+                captchaHandler);
     }
 }

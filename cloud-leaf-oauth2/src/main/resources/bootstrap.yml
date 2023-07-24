@@ -1,3 +1,5 @@
+server:
+  port: 7005
 spring:
   profiles:
     active: dev
@@ -16,8 +18,8 @@ spring:
       matching-strategy: ant_path_matcher
   data:
     redis:
-      host: 192.168.0.177
-      port: 5000
+      host: 192.168.0.158
+      port: 6379
       password: redis123
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -50,3 +52,7 @@ spring:
 #logging:
 #  level:
 #    org.springframework.security.oauth2: debug
+cloud:
+  jwk:
+    private-key: MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCuMP5aZngusZSQiY8aB2IvqgrThd2uvyza5lV5DC1S1s/BYAyGXpxHD39WoPV28TUpMWay4mNFazKsKCh7F83KpKc8Ny0I36zrpKX7MCFFesz6dm2/i/p+kmxz5WvBvUwc9XmHXMEoUvhYT89IHvzYD9pLVYLc+gY6MLzYylxJd3xRUkDsJ0nRCkL8MLLdQVuQBhCP6HZDULNBgzu651ci9hore+kz5JRd2Ftt7HKmncHwF5o0AgGayDjUQgKx6W8hrlVFI3GMlh5GOus+ao28lPon95XxD7bYgiLeNA0MRBd4MecZ8iFaN0ClPSPhZUY3WPuB5IxGfSV7Cn6IgkxpAgMBAAECggEADlBtXm1kO+YQ4M3FCi0IJwWQrTAndugz3esmo/NZuCB54xiq/tHAguBlpO9GLJeGuFNcbp/G65nzCI2mQfNDUH82VO7tzvheg+C8WQdr/IMqW/ymaSKuG3+Z1O5J7BpLqmeLrJF1OASVbuBkFrehLHolBKLKxbDwGREPO7tpWQoLE6OzXBGIhWW2GSZAfmC3C6QPR8aPr72XESKXMcdUpnjn+1C7AkLFZW+XaqrrRQcDWWOmT6xTyVQZa2tSCIfS9Is4HbFZbbcSU50e38ovAqd9axtaiLCssrDkZRyOtvA0OSGkChMFIxt1jZ+pmgEFb3Rxrv6umrp5YHemi6TmXwKBgQDxUzeena8KP1lM6UiYlaOhf0gOgd459CmCQI8khUW5XcfDHg+7pIqFyJtojvvyt9fSnBrnq7l6pDBfj5ZHEpri9KsYPNEsWRCCkTpvQ5lNq77NwJDWm41/CbPiPM3vjCLBwCpQ0DDehAA4Gn4cY3QxlDkWzr8p2rApjUnnqMHjtwKBgQC4yK9rM1snEW4++bhe4/Lv4cXIo+zumUtsGlRnnwoBssItHbF3+fu9bkigJcZEkGEABHwbBdcuimioiz+8S3xM+/jSFTR73Q4+6Omk73o/Ma7uCIhAvwC2zdnGj27SibZfkQKENu2f/9nhfO1RVGn9J/F4A4jAcx4M1IidwKqQ3wKBgQCR68vZ8WcCP0P0Katn+DO1V41umECTsnvW8sqbPqrmZzp/VRIWWGwacS7njm3yWg/6ncH3C/NfoSBO6DfqSem2ClPamAuzUTeWe9JlrO5p9MuvBh2OZwisJGXNCw9LJeVuWpA7xWeHZTHsurg+2jRMNmA+1kzpNf8HYROrLHPxCQKBgGULMIlhSt4BNRTwvvX8ljLAdcPyh7QtVUXm2/LRz8n/8xhynUHrC9KZRNN19IY3oSM+UJMCTZmgi/xmMNMJQA5k1roiaFG3HnweJu1PGr0FsQ9u0Pr+tyg/Rm/CrSoprfVyOTsNQkF0ybL4+li33UFWnz8uR5BdIriHW7FP0rVnAoGBAMZJ3gd9xDqhaCO17huHiu5hxR2dTI7kEHzeG7uKGejz+Z7MMVqv8Fz1RMaxk4QrvFC08h56EGw+WZfZFgFUNazzS+bioGV8zkbdjSxXH/lHKUEqpSll4ILisu/h/RzRNuHeIMvqUhI8A8KdMcoNmSr9dOeHTZ675oUBFGGNdr44
+    public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArjD+WmZ4LrGUkImPGgdiL6oK04Xdrr8s2uZVeQwtUtbPwWAMhl6cRw9/VqD1dvE1KTFmsuJjRWsyrCgoexfNyqSnPDctCN+s66Sl+zAhRXrM+nZtv4v6fpJsc+Vrwb1MHPV5h1zBKFL4WE/PSB782A/aS1WC3PoGOjC82MpcSXd8UVJA7CdJ0QpC/DCy3UFbkAYQj+h2Q1CzQYM7uudXIvYaK3vpM+SUXdhbbexypp3B8BeaNAIBmsg41EICselvIa5VRSNxjJYeRjrrPmqNvJT6J/eV8Q+22IIi3jQNDEQXeDHnGfIhWjdApT0j4WVGN1j7geSMRn0lewp+iIJMaQIDAQAB

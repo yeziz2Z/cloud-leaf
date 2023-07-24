@@ -250,7 +250,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public SysUser getCurrentUser() {
-        return getById(UserUtils.getCurrentUserId());
+        return getByUsername(UserUtils.getCurrentUsername());
     }
 
 }

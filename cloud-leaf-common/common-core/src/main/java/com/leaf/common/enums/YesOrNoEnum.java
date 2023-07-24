@@ -5,9 +5,9 @@ public enum YesOrNoEnum {
     NO(0, "否");
 
 
-    private Integer code;
+    private final Integer code;
 
-    private String desc;
+    private final String desc;
 
     YesOrNoEnum(Integer code, String desc) {
         this.code = code;

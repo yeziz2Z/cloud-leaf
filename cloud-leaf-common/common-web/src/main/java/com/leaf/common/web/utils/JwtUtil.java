@@ -21,11 +21,7 @@ public class JwtUtil {
         JSONObject jsonObject = null;
         String payload = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader(SecurityConstant.JWT_PAYLOAD_KEY);
         if (StrUtil.isNotBlank(payload)) {
-            try {
-                jsonObject = JSONUtil.parseObj(URLDecoder.decode(payload, StandardCharsets.UTF_8.name()));
-            } catch (UnsupportedEncodingException e) {
-                ExceptionUtil.wrapRuntimeAndThrow("parse jwt payload error!");
-            }
+            jsonObject = JSONUtil.parseObj(URLDecoder.decode(payload, StandardCharsets.UTF_8));
         }
         return jsonObject;
     }
