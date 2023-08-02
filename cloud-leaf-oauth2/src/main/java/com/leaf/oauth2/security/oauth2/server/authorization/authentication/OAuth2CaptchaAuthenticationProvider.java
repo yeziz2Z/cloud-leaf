@@ -130,7 +130,9 @@ public final class OAuth2CaptchaAuthenticationProvider implements Authentication
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
         if (!this.passwordEncoder.matches(inputPassword, userDetails.getPassword())) {
-            throw new BadCredentialsException("密码有误！");
+            OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.INVALID_GRANT,
+                    "用户名或者密码有误.", "");
+            throw new OAuth2AuthenticationException(error);
         }
 
         Set<String> authorizedScopes = Collections.emptySet();

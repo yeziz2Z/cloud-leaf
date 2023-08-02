@@ -26,7 +26,6 @@ public class WebConfig {
     /**
      * LocalDate LocalDateTime 支持
      *
-     * @return
      */
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {

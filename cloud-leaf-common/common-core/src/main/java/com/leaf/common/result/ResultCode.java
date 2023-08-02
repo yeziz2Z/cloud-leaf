@@ -4,11 +4,16 @@ public enum ResultCode implements IResultCode {
     SUCCESS(200, "ok"),
 
     ERROR(500, "系统异常"),
-    ;
+    INVALID_TOKEN(23001, "token无效或已过期"),
+    TOKEN_ACCESS_FORBIDDEN(23002, "token已被禁止访问"),
 
-    private int code;
+    AUTHORIZED_ERROR(24001, "访问权限异常"),
+    ACCESS_UNAUTHORIZED(24002, "访问未授权");
 
-    private String msg;
+
+    private final int code;
+
+    private final String msg;
 
     ResultCode(int code, String msg) {
         this.code = code;

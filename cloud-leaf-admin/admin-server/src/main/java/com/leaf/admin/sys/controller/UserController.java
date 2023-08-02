@@ -37,8 +37,8 @@ public class UserController {
     ISysMenuService menuService;
     @Autowired
     ISysOrganizationService organizationService;
-    @Autowired
-    FileServiceApi fileServiceApi;
+    /*@Autowired
+    FileServiceApi fileServiceApi;*/
 
     @GetMapping("/info")
     public Result<UserVO> info() {
@@ -111,7 +111,8 @@ public class UserController {
     @PostMapping("/avatar")
     public Result avatar(@RequestParam("file") MultipartFile file) {
         try {
-            Result<String> res = fileServiceApi.upload(file, "avatar");
+//            Result<String> res = fileServiceApi.upload(file, "avatar");
+            Result<String> res = Result.success();
             String url = res.getData();
             SysUser user = userService.getCurrentUser();
             user.setAvatar(url);

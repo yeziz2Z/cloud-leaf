@@ -13,12 +13,11 @@ import org.springframework.core.annotation.Order;
  *
  * @author liuk
  */
-@Configuration
+//@Configuration
 public class InitConfig {
 
     /**
      * 刷新角色权限
-     * @return
      */
     @Order(value = 1)
     @Bean

@@ -78,9 +78,9 @@ public class OperationLogAspectj {
     }
 
     private String getParams(Object[] paramsArray) {
-        StringBuffer res = new StringBuffer();
+        StringBuilder res = new StringBuilder();
         if (paramsArray != null && paramsArray.length != 0) {
-            res.append(Arrays.stream(paramsArray).filter(o -> !Objects.isNull(o)).map(o -> JSONUtil.toJsonStr(o)).collect(Collectors.joining(" ")));
+            res.append(Arrays.stream(paramsArray).filter(o -> !Objects.isNull(o)).map(JSONUtil::toJsonStr).collect(Collectors.joining(" ")));
         }
         return res.toString().trim();
     }

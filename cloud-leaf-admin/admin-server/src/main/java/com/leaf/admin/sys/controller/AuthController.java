@@ -28,13 +28,13 @@ import java.util.concurrent.TimeUnit;
 public class AuthController {
 
     @Autowired
-    RedisTemplate redisTemplate;
+    RedisTemplate<String, String> redisTemplate;
     @Autowired
     JwtUtil jwtUtils;
 
     @OperationLog(module = "系统登录-验证码", businessType = BusinessTypeEnum.SELECT)
     @GetMapping("/captcha")
-    public Result captcha() {
+    public Result<Map<Object, Object>> captcha() {
         LineCaptcha captcha = CaptchaUtil.createLineCaptcha(100, 40, 5, 70);
 
         String code = captcha.getCode();
@@ -53,7 +53,6 @@ public class AuthController {
      * 刷新 访问 token
      *
      * @param refreshToken
-     * @return
      */
     @GetMapping("/refreshToken")
     public Result refreshToken(@RequestParam(value = "refreshToken", required = false) String refreshToken) {

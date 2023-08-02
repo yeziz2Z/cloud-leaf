@@ -13,13 +13,11 @@ public @interface OperationLog {
     /**
      * 模块
      *
-     * @return
      */
     String module() default "";
 
     /**
      * 操作类型
-     * @return
      */
     BusinessTypeEnum businessType() default BusinessTypeEnum.OTHER;
 }

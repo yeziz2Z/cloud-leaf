@@ -1,7 +1,11 @@
 package com.leaf.oauth2.config;
 
+import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.crypto.KeyUtil;
 import cn.hutool.crypto.asymmetric.RSA;
+import cn.hutool.json.JSONUtil;
+import com.leaf.common.result.Result;
 import com.leaf.oauth2.security.oauth2.server.authorization.authentication.OAuth2CaptchaAuthenticationProvider;
 import com.leaf.oauth2.security.oauth2.server.authorization.web.authentication.CaptchaAuthenticationConverter;
 import com.leaf.oauth2.security.userdetails.OAuth2ClientUserDetailsService;
@@ -10,23 +14,29 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import jakarta.servlet.ServletOutputStream;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
+import org.springframework.security.oauth2.core.OAuth2RefreshToken;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
+import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AccessTokenAuthenticationToken;
 import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
@@ -36,17 +46,20 @@ import org.springframework.security.oauth2.server.authorization.token.*;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @EnableWebSecurity
 @Configuration(proxyBeanMethods = false)
+@Slf4j
 public class WebSecurityConfig {
 
     @Autowired
@@ -75,7 +88,35 @@ public class WebSecurityConfig {
                                         new CaptchaAuthenticationConverter())
                                 .authenticationProvider(
                                         new OAuth2CaptchaAuthenticationProvider(
-                                                authorizationService, userDetailsServices, redisTemplate, tokenGenerator)));
+                                                authorizationService, userDetailsServices, redisTemplate, tokenGenerator))
+                                // 认证成功处理器
+                                .accessTokenResponseHandler((request, response, authentication) -> {
+                                    OAuth2AccessTokenAuthenticationToken accessTokenAuthentication =
+                                            (OAuth2AccessTokenAuthenticationToken) authentication;
+
+                                    OAuth2AccessToken accessToken = accessTokenAuthentication.getAccessToken();
+                                    OAuth2RefreshToken refreshToken = accessTokenAuthentication.getRefreshToken();
+
+                                    // TODO 临时处理
+                                    Map<Object, Object> data = MapUtil.builder().put("access_token", accessToken.getTokenValue())
+                                            .put("token_type", accessToken.getTokenType().getValue())
+                                            .put("refresh_token", refreshToken.getTokenValue()).build();
+
+                                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                                    ServletOutputStream outputStream = response.getOutputStream();
+                                    outputStream.write(JSONUtil.toJsonStr(Result.success(data)).getBytes(StandardCharsets.UTF_8));
+                                    outputStream.flush();
+                                    outputStream.close();
+                                })
+                                // 认证失败处理器
+                                .errorResponseHandler((request, response, exception) -> {
+                                    log.error("认证失败",exception);
+                                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                                    ServletOutputStream outputStream = response.getOutputStream();
+                                    outputStream.write(JSONUtil.toJsonStr(Result.fail(exception.getMessage())).getBytes(StandardCharsets.UTF_8));
+                                    outputStream.flush();
+                                    outputStream.close();
+                                }));
         RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
 
         http
@@ -105,7 +146,8 @@ public class WebSecurityConfig {
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize ->
-                        authorize
+                        authorize.requestMatchers("/oauth2/token")
+                                .permitAll()
                                 .anyRequest()
                                 .authenticated()
                 ).formLogin(AbstractHttpConfigurer::disable);
@@ -136,8 +178,8 @@ public class WebSecurityConfig {
                 JwtClaimsSet.Builder claims = context.getClaims();
                 // 用户认证
                 Authentication principal = context.getPrincipal();
-
-                claims.claim("username", principal.getName());
+                claims.id(IdUtil.fastUUID())
+                        .claim("username", principal.getName());
                 // 用户权限
                 Set<String> authorities = principal.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
                 authorities.addAll(context.getAuthorizedScopes());
