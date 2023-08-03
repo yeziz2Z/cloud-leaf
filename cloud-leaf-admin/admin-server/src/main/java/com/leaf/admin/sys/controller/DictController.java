@@ -1,6 +1,5 @@
 package com.leaf.admin.sys.controller;
 
-import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -11,12 +10,17 @@ import com.leaf.admin.sys.service.ISysDictDataService;
 import com.leaf.admin.sys.service.ISysDictTypeService;
 import com.leaf.common.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author liuk
@@ -36,7 +40,7 @@ public class DictController {
     }
 
     @GetMapping("/type/page")
-    public Result<Page<SysDictType>> page(Page page, String name, String type) {
+    public Result<Page<SysDictType>> page(Page<SysDictType> page, String name, String type) {
         LambdaQueryWrapper<SysDictType> wrapper = new LambdaQueryWrapper<>();
         wrapper.like(StrUtil.isNotBlank(name), SysDictType::getName, name)
                 .eq(StrUtil.isNotBlank(type), SysDictType::getType, type)
@@ -46,19 +50,19 @@ public class DictController {
     }
 
     @PostMapping("/type")
-    public Result addDictType(@RequestBody SysDictType sysDictType) {
+    public Result<Void> addDictType(@RequestBody SysDictType sysDictType) {
         dictTypeService.save(sysDictType);
         return Result.success();
     }
 
     @PutMapping("/type")
-    public Result editDictType(@RequestBody SysDictType sysDictType) {
+    public Result<Void> editDictType(@RequestBody SysDictType sysDictType) {
         dictTypeService.updateById(sysDictType);
         return Result.success();
     }
 
     @DeleteMapping("/type/{dictTypeIds}")
-    public Result deleteByDictTypeIds(@PathVariable("dictTypeIds") List<Long> dictTypeIds) {
+    public Result<Void> deleteByDictTypeIds(@PathVariable("dictTypeIds") List<Long> dictTypeIds) {
         dictTypeService.removeByIds(dictTypeIds);
         return Result.success();
     }
@@ -76,19 +80,19 @@ public class DictController {
     }
 
     @PostMapping("/data")
-    public Result addDictData(@RequestBody SysDictData sysDictData) {
+    public Result<Void> addDictData(@RequestBody SysDictData sysDictData) {
         dictDataService.save(sysDictData);
         return Result.success();
     }
 
     @PutMapping("/data")
-    public Result editDictData(@RequestBody SysDictData sysDictData) {
+    public Result<Void> editDictData(@RequestBody SysDictData sysDictData) {
         dictDataService.updateById(sysDictData);
         return Result.success();
     }
 
     @DeleteMapping("/data/{dictDataId}")
-    public Result deleteByDictDataIds(@PathVariable("dictDataId") Long dictDataId) {
+    public Result<Void> deleteByDictDataIds(@PathVariable("dictDataId") Long dictDataId) {
         dictDataService.removeById(dictDataId);
         return Result.success();
     }

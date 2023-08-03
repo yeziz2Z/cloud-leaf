@@ -87,8 +87,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public String getUserAuthorities(Long userId) {
         SysUser sysUser = this.getById(userId);
         List<String> authorities = this.getUserAuthoritiesByUsername(sysUser.getUsername());
-        String grantedAuthority = authorities.stream().collect(Collectors.joining(","));
-        return grantedAuthority;
+        return String.join(",", authorities);
     }
 
     @Override
@@ -104,9 +103,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
             List<SysMenu> menuList = this.getMenusByUserId(userId);
             authorities.addAll(menuList.stream()
-                    .filter(sysMenu -> StrUtil.isNotEmpty(sysMenu.getPermission()))
                     .map(SysMenu::getPermission)
-                    .collect(Collectors.toList()));
+                    .filter(StrUtil::isNotEmpty)
+                    .toList());
             redisTemplate.opsForValue().set(key, authorities, 60 * 60, TimeUnit.SECONDS);
         }
         return authorities;
@@ -126,6 +125,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             }
         }
         return permUrls;
+    }
+
+    @Override
+    public Set<String> getUserPermissionsByUsername(String username) {
+        String key = SecurityConstant.USER_PERMS_KEY + username;
+        Set<String> perms = (Set<String>) redisTemplate.opsForValue().get(key);
+        if (CollUtil.isEmpty(perms)) {
+            SysUser sysUser = this.getByUsername(username);
+            perms = this.menuMapper.selectUserPermissionsByUserId(sysUser.getId());
+            redisTemplate.opsForValue().set(key, perms, 1, TimeUnit.HOURS);
+        }
+        return perms;
     }
 
     private void clearUserPermissionUrls(Long userId) {
@@ -186,7 +197,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
-    public Page<UserVO> selectSysUserVOPage(Page page, UserQueryParam queryParam) {
+    public Page<UserVO> selectSysUserVOPage(Page<UserVO> page, UserQueryParam queryParam) {
         return baseMapper.selectUserList(page, queryParam);
     }
 

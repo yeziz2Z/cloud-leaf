@@ -4,12 +4,15 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.leaf.admin.sys.dto.OperLogQueryParam;
-import com.leaf.admin.sys.entity.SysLoginLog;
 import com.leaf.admin.sys.entity.SysOperLog;
 import com.leaf.admin.sys.service.ISysOperLogService;
 import com.leaf.common.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -23,7 +26,7 @@ public class OperLogController {
     ISysOperLogService sysOperLogService;
 
     @GetMapping("/page")
-    public Result page(Page page, OperLogQueryParam queryParam) {
+    public Result<Page<SysOperLog>> page(Page<SysOperLog> page, OperLogQueryParam queryParam) {
         LambdaQueryWrapper<SysOperLog> wrapper = new LambdaQueryWrapper<>();
 
         wrapper.like(StrUtil.isNotEmpty(queryParam.getModule()), SysOperLog::getModule, queryParam.getModule())
@@ -40,7 +43,7 @@ public class OperLogController {
     }
 
     @DeleteMapping("/{ids}")
-    public Result delete(@PathVariable("ids") List<Long> ids) {
+    public Result<Void> delete(@PathVariable("ids") List<Long> ids) {
         return Result.success();
     }
 }

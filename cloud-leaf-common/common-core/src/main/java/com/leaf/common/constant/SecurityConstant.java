@@ -71,4 +71,10 @@ public interface SecurityConstant {
      * cloud-leaf-admin 用户权限列表
      */
     String USER_PERM_URL_KEY = "system:user_perm_urls:";
+
+
+    /**
+     * 用户权限key 前缀
+     */
+    String USER_PERMS_KEY = "system:user_perms:";
 }

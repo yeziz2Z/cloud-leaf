@@ -2,9 +2,9 @@ package com.leaf.admin.sys.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.leaf.admin.annotation.OperationLog;
-import com.leaf.admin.api.FileServiceApi;
 import com.leaf.admin.sys.dto.SysUserDTO;
 import com.leaf.admin.sys.dto.UserQueryParam;
+import com.leaf.admin.sys.entity.SysMenu;
 import com.leaf.admin.sys.entity.SysRole;
 import com.leaf.admin.sys.entity.SysUser;
 import com.leaf.admin.sys.service.ISysMenuService;
@@ -18,7 +18,16 @@ import com.leaf.common.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -54,33 +63,35 @@ public class UserController {
 
 
     @GetMapping("/nav")
-    public Result nav() {
+    public Result<List<SysMenu>> nav() {
         return Result.success(userService.getCurrentUserNav());
     }
 
     @OperationLog(module = "用户管理", businessType = BusinessTypeEnum.SELECT)
     @GetMapping("/page")
-    public Result list(Page page, UserQueryParam queryParam) {
+    @PreAuthorize("@pms.hasPermission('system.user.list')")
+    public Result<Page<UserVO>> list(Page<UserVO> page, UserQueryParam queryParam) {
         return Result.success(userService.selectSysUserVOPage(page, queryParam));
     }
 
     @PostMapping
     @OperationLog(module = "用户管理", businessType = BusinessTypeEnum.INSERT)
-    public Result add(@RequestBody SysUserDTO sysUser) {
+    @PreAuthorize("@pms.hasPermission('system.user.add')")
+    public Result<Void> add(@RequestBody SysUserDTO sysUser) {
         userService.saveUser(sysUser);
         return Result.success();
     }
 
     @PutMapping
     @OperationLog(module = "用户管理", businessType = BusinessTypeEnum.UPDATE)
-    public Result edit(@RequestBody SysUserDTO sysUser) {
+    @PreAuthorize("@pms.hasPermission('system.user.edit')")
+    public Result<Void> edit(@RequestBody SysUserDTO sysUser) {
         userService.updateUser(sysUser);
         return Result.success();
     }
 
     @PutMapping("/resetPassword")
-    public Result resetPassword(@RequestBody SysUserDTO sysUser) {
-
+    public Result<Void> resetPassword(@RequestBody SysUserDTO sysUser) {
         return Result.success();
     }
 
@@ -96,20 +107,21 @@ public class UserController {
 
     @DeleteMapping("/{userIds}")
     @OperationLog(module = "用户管理", businessType = BusinessTypeEnum.DELETE)
-    public Result deleteByUserIds(@PathVariable("userIds") List<Long> userIds) {
+    @PreAuthorize("@pms.hasPermission('system.user.delete')")
+    public Result<Void> deleteByUserIds(@PathVariable("userIds") List<Long> userIds) {
         userService.removeByUserIds(userIds);
         return Result.success();
     }
 
 
     @PutMapping("/profile")
-    public Result profile(@RequestBody SysUser sysUser) {
+    public Result<Void> profile(@RequestBody SysUser sysUser) {
         userService.updateById(sysUser);
         return Result.success();
     }
 
     @PostMapping("/avatar")
-    public Result avatar(@RequestParam("file") MultipartFile file) {
+    public Result<String> avatar(@RequestParam("file") MultipartFile file) {
         try {
 //            Result<String> res = fileServiceApi.upload(file, "avatar");
             Result<String> res = Result.success();
@@ -128,7 +140,7 @@ public class UserController {
     }
 
     @GetMapping("/loadByUsername")
-    public Result loadByUsername(@RequestParam String username) {
+    public Result<AuthUser> loadByUsername(@RequestParam String username) {
         SysUser sysUser = userService.getByUsername(username);
         if (sysUser == null) {
             return Result.fail("用户不存在");

@@ -38,6 +38,8 @@ public interface ISysUserService extends IService<SysUser> {
 
     Set<String> getUserPermissionUrlsById(Long userId);
 
+    Set<String> getUserPermissionsByUsername(String username);
+
     void clearUserAuthorities(String username);
 
     void clearUserAuthoritiesByRoleId(Long roleId);
@@ -48,7 +50,7 @@ public interface ISysUserService extends IService<SysUser> {
 
     void clearUserById(Long id);
 
-    Page<UserVO> selectSysUserVOPage(Page page, UserQueryParam queryParam);
+    Page<UserVO> selectSysUserVOPage(Page<UserVO> page, UserQueryParam queryParam);
 
     void deleteByUserIds(List<Long> userIds);
 

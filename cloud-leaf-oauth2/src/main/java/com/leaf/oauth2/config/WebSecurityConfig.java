@@ -53,6 +53,7 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -100,7 +101,7 @@ public class WebSecurityConfig {
                                     // TODO 临时处理
                                     Map<Object, Object> data = MapUtil.builder().put("access_token", accessToken.getTokenValue())
                                             .put("token_type", accessToken.getTokenType().getValue())
-                                            .put("refresh_token", refreshToken.getTokenValue()).build();
+                                            .put("refresh_token", Objects.requireNonNull(refreshToken).getTokenValue()).build();
 
                                     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                                     ServletOutputStream outputStream = response.getOutputStream();
@@ -110,7 +111,7 @@ public class WebSecurityConfig {
                                 })
                                 // 认证失败处理器
                                 .errorResponseHandler((request, response, exception) -> {
-                                    log.error("认证失败",exception);
+                                    log.error("认证失败", exception);
                                     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                                     ServletOutputStream outputStream = response.getOutputStream();
                                     outputStream.write(JSONUtil.toJsonStr(Result.fail(exception.getMessage())).getBytes(StandardCharsets.UTF_8));

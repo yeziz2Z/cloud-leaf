@@ -22,42 +22,42 @@ public class Result<T> {
         this.msg = msg;
     }
 
-    public static Result result(IResultCode resultCode) {
-        return new Result(resultCode.getCode(), resultCode.getMsg());
+    public static <T> Result<T> result(IResultCode resultCode) {
+        return new Result<>(resultCode.getCode(), resultCode.getMsg());
     }
 
-    public static Result success() {
-        Result result = new Result();
+    public static <T> Result<T> success() {
+        Result<T> result = new Result<>();
         result.setCode(ResultCode.SUCCESS.getCode());
         result.setMsg(ResultCode.SUCCESS.getMsg());
         return result;
     }
 
-    public static Result success(String msg) {
-        Result result = new Result();
+    public static <T> Result<T> success(String msg) {
+        Result<T> result = new Result<>();
         result.setCode(ResultCode.SUCCESS.getCode());
         result.setMsg(msg);
         return result;
     }
 
     public static <T> Result<T> success(T data) {
-        Result result = new Result();
+        Result<T> result = new Result<>();
         result.setCode(ResultCode.SUCCESS.getCode());
         result.setMsg(ResultCode.SUCCESS.getMsg());
         result.setData(data);
         return result;
     }
 
-    public static Result fail(int code, String msg) {
-        Result result = new Result();
+    public static Result<Void> fail(int code, String msg) {
+        Result<Void> result = new Result<>();
         result.setCode(code);
         result.setMsg(msg);
         return result;
 
     }
 
-    public static Result fail(String msg) {
-        Result result = new Result();
+    public static <T> Result<T> fail(String msg) {
+        Result<T> result = new Result<>();
         result.setCode(ResultCode.ERROR.getCode());
         result.setMsg(msg);
         return result;

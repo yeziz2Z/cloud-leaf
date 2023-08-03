@@ -24,13 +24,13 @@ public class RoleController {
     ISysRoleService roleService;
 
     @GetMapping("/list")
-    public Result list() {
+    public Result<List<SysRole>> list() {
         return Result.success(roleService.list());
     }
 
     @OperationLog(module = "角色管理", businessType = BusinessTypeEnum.SELECT)
     @GetMapping("/page")
-    public Result page(Page page, RoleQueryParam queryParam) {
+    public Result<Page<SysRole>> page(Page<SysRole> page, RoleQueryParam queryParam) {
         LambdaQueryWrapper<SysRole> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(StrUtil.isNotEmpty(queryParam.getName()), SysRole::getName, queryParam.getName())
                 .eq(StrUtil.isNotEmpty(queryParam.getCode()), SysRole::getCode, queryParam.getCode())
@@ -43,7 +43,7 @@ public class RoleController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @OperationLog(module = "角色管理", businessType = BusinessTypeEnum.INSERT)
-    public Result add(@RequestBody SysRole sysRole) {
+    public Result<Void> add(@RequestBody SysRole sysRole) {
         roleService.saveSysRole(sysRole);
         return Result.success();
     }
@@ -55,7 +55,7 @@ public class RoleController {
 
     @OperationLog(module = "角色管理", businessType = BusinessTypeEnum.UPDATE)
     @PutMapping
-    public Result edit(@RequestBody SysRole sysRole) {
+    public Result<Void> edit(@RequestBody SysRole sysRole) {
         roleService.updateSysRole(sysRole);
         return Result.success();
     }
@@ -63,7 +63,7 @@ public class RoleController {
     @OperationLog(module = "角色管理", businessType = BusinessTypeEnum.DELETE)
     @DeleteMapping("/{roleIds}")
 //    @PreAuthorize("hasAnyAuthority('system.role.delete')")
-    public Result delete(@PathVariable("roleIds") List<Long> roleIds) {
+    public Result<Void> delete(@PathVariable("roleIds") List<Long> roleIds) {
         roleService.removeBatchByIds(roleIds);
         return Result.success();
     }
@@ -75,7 +75,7 @@ public class RoleController {
 
     @OperationLog(module = "角色管理", businessType = BusinessTypeEnum.GRANT)
     @PostMapping("/menus")
-    public Result roleMenus(@RequestBody RoleMenuDTO roleMenuDTO) {
+    public Result<Void> roleMenus(@RequestBody RoleMenuDTO roleMenuDTO) {
         roleService.saveRoleMenu(roleMenuDTO);
         return Result.success();
     }

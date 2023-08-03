@@ -30,8 +30,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id
-        , name, title, parent_id, component, path, hidden, redirect, hide_children_in_menu, type, order_no, icon, hidden_header_content, keep_alive, permission, permission_url, new_window, create_by, create_time, update_by, update_time, remark
+        id, name, title, parent_id, component, path, hidden, redirect, hide_children_in_menu, type, order_no, icon, hidden_header_content, keep_alive, permission, permission_url, new_window, create_by, create_time, update_by, update_time, remark
     </sql>
 
     <select id="selectByUserId" resultMap="BaseResultMap">
