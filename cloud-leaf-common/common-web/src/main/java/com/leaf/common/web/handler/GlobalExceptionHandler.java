@@ -20,26 +20,26 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = RuntimeException.class)
-    public Result runtimeExceptionHandler(RuntimeException e) {
+    public Result<Void> runtimeExceptionHandler(RuntimeException e) {
         log.error("运行时异常:", e);
         return Result.fail(e.getMessage());
     }
 
     @ExceptionHandler(value = Exception.class)
-    public Result exceptionHandler(Exception e) {
+    public Result<Void> exceptionHandler(Exception e) {
         log.error("系统异常:", e);
         return Result.fail(e.getMessage());
     }
 
     @ExceptionHandler(value = BusinessException.class)
-    public Result businessExceptionHandler(BusinessException e) {
+    public Result<Void> businessExceptionHandler(BusinessException e) {
         log.warn("自定义业务异常 :{}", e.getMessage());
         return Result.fail(e.getCode(), e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    public Result methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e) {
+    public Result<Void> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e) {
         BindingResult bindingResult = e.getBindingResult();
         ObjectError error = bindingResult.getAllErrors().stream().findFirst().get();
         String errorMessage = error.getDefaultMessage();
@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = IllegalArgumentException.class)
-    public Result illegalArgumentExceptionHandler(IllegalArgumentException e) {
+    public Result<Void> illegalArgumentExceptionHandler(IllegalArgumentException e) {
         log.warn("实体参数校验失败:{}", e.getMessage());
         return Result.fail(e.getMessage());
     }
@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
      * 请求方式不支持
      */
     @ExceptionHandler({HttpRequestMethodNotSupportedException.class})
-    public Result handleException(HttpRequestMethodNotSupportedException e, HttpServletRequest request) {
+    public Result<Void> handleException(HttpRequestMethodNotSupportedException e, HttpServletRequest request) {
         String requestURI = request.getRequestURI();
         String msg = String.format("访问的URL[%s]不支持%s请求", requestURI, e.getMethod());
         log.warn(msg);

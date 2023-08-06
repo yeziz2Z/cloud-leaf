@@ -6,9 +6,9 @@ public enum AuthorizationErrorEnum implements IResultCode {
 
     REFRESH_TOKEN_EXPIRED(400003, "REFRESH_TOKEN已过期!");
 
-    private int code;
+    private final int code;
 
-    private String msg;
+    private final String msg;
 
     AuthorizationErrorEnum(int code, String msg) {
         this.code = code;

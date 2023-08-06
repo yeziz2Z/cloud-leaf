@@ -42,7 +42,11 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
-import org.springframework.security.oauth2.server.authorization.token.*;
+import org.springframework.security.oauth2.server.authorization.token.DelegatingOAuth2TokenGenerator;
+import org.springframework.security.oauth2.server.authorization.token.JwtGenerator;
+import org.springframework.security.oauth2.server.authorization.token.OAuth2AccessTokenGenerator;
+import org.springframework.security.oauth2.server.authorization.token.OAuth2RefreshTokenGenerator;
+import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -179,12 +183,12 @@ public class WebSecurityConfig {
                 JwtClaimsSet.Builder claims = context.getClaims();
                 // 用户认证
                 Authentication principal = context.getPrincipal();
-                claims.id(IdUtil.fastUUID())
-                        .claim("username", principal.getName());
+                claims.id(IdUtil.fastUUID());
                 // 用户权限
                 Set<String> authorities = principal.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
                 authorities.addAll(context.getAuthorizedScopes());
                 claims.claim("authorities", authorities);
+
             }
         });
         OAuth2AccessTokenGenerator accessTokenGenerator = new OAuth2AccessTokenGenerator();
@@ -218,24 +222,6 @@ public class WebSecurityConfig {
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
         return AuthorizationServerSettings.builder().build();
-    }
-
-
-    @Bean
-    public OAuth2TokenCustomizer<OAuth2TokenClaimsContext> jwtCustomizer() {
-        return context -> {
-            if (OAuth2TokenType.ACCESS_TOKEN.equals(context.getTokenType())) {
-
-                // JWT 构建器
-                OAuth2TokenClaimsSet.Builder claims = context.getClaims();
-
-                // 用户认证
-                Authentication principal = context.getPrincipal();
-
-                System.out.println(principal);
-
-            }
-        };
     }
 }
 

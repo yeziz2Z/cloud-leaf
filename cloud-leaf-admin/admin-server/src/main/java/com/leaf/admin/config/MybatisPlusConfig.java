@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import java.time.LocalDateTime;
 
 @Configuration
-@MapperScan("com.leaf.admin.sys.mapper")
+@MapperScan("com.leaf.admin.mapper")
 @Slf4j
 public class MybatisPlusConfig {
 

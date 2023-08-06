@@ -1,11 +1,9 @@
 package com.leaf.admin.config;
 
 import cn.hutool.extra.spring.SpringUtil;
-import com.leaf.admin.sys.service.ISysMenuService;
-import com.leaf.admin.sys.service.ISysRoleService;
+import com.leaf.admin.service.ISysMenuService;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 
 /**

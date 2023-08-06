@@ -4,7 +4,7 @@ package com.leaf.admin.aspectj;
 import cn.hutool.json.JSONUtil;
 import com.leaf.admin.annotation.OperationLog;
 import com.leaf.admin.async.factory.LogTaskFactory;
-import com.leaf.admin.sys.entity.SysOperLog;
+import com.leaf.admin.entity.SysOperLog;
 import com.leaf.common.enums.YesOrNoEnum;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;

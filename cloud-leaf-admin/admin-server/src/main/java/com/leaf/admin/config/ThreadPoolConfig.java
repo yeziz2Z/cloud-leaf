@@ -28,7 +28,7 @@ public class ThreadPoolConfig {
         executor.setMaxPoolSize(maxPoolSize);
         executor.setQueueCapacity(queueCapacity);
         executor.setKeepAliveSeconds(keepAliveSeconds);
-        executor.setThreadNamePrefix("系统记录日志线程");
+        executor.setThreadNamePrefix("系统记录日志线程: ");
         // 队列堆积达到阈值时拒绝策略
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         return executor;

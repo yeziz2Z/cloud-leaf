@@ -42,6 +42,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
@@ -49,6 +50,16 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jsqlparser</artifactId>
+                    <groupId>com.github.jsqlparser</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <artifactId>jsqlparser</artifactId>
+            <groupId>com.github.jsqlparser</groupId>
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
@@ -76,6 +87,10 @@
         <dependency>
             <groupId>com.leaf</groupId>
             <artifactId>common-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.leaf</groupId>
+            <artifactId>common-validation</artifactId>
         </dependency>
         <dependency>
             <groupId>com.leaf</groupId>

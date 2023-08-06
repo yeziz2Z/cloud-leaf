@@ -1,6 +1,6 @@
 package com.leaf.admin.security;
 
-import com.leaf.admin.sys.service.ISysUserService;
+import com.leaf.admin.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;

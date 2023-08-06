@@ -1,10 +1,10 @@
 package com.leaf.admin.async.factory;
 
 import cn.hutool.extra.spring.SpringUtil;
-import com.leaf.admin.sys.entity.SysLoginLog;
-import com.leaf.admin.sys.entity.SysOperLog;
-import com.leaf.admin.sys.service.ISysLoginLogService;
-import com.leaf.admin.sys.service.ISysOperLogService;
+import com.leaf.admin.entity.SysLoginLog;
+import com.leaf.admin.entity.SysOperLog;
+import com.leaf.admin.service.ISysLoginLogService;
+import com.leaf.admin.service.ISysOperLogService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

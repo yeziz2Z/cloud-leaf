@@ -21,18 +21,17 @@ public class WebConfig {
         return new BCryptPasswordEncoder();
     }
 
-    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
-
     /**
      * LocalDate LocalDateTime 支持
-     *
      */
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
         return builder -> {
-            builder.simpleDateFormat(DATE_TIME_FORMAT);
+            builder.simpleDateFormat(DatePattern.NORM_DATETIME_PATTERN);
             builder.serializers(new LocalDateSerializer(DateTimeFormatter.ofPattern(DatePattern.NORM_DATE_PATTERN)));
             builder.serializers(new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DatePattern.NORM_DATETIME_PATTERN)));
         };
     }
+
+
 }
