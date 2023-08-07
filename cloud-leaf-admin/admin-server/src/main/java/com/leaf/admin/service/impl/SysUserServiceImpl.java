@@ -7,7 +7,7 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.leaf.admin.dto.SysUserDTO;
+import com.leaf.admin.dto.SysUserForm;
 import com.leaf.admin.dto.UserQueryParam;
 import com.leaf.admin.entity.SysMenu;
 import com.leaf.admin.entity.SysRole;
@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -212,40 +211,40 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     @Transactional
-    public void saveUser(SysUserDTO sysUserDTO) {
+    public void saveUser(SysUserForm sysUserForm) {
         SysUser user = new SysUser();
-        BeanUtil.copyProperties(sysUserDTO, user, "id");
+        BeanUtil.copyProperties(sysUserForm, user, "id");
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         System.out.println("===========================hello before ===============================================");
         // 入库
         this.save(user);
         System.out.println("===========================hello after ===============================================");
-        if (CollectionUtil.isNotEmpty(sysUserDTO.getRoleIds())) {
+        if (CollectionUtil.isNotEmpty(sysUserForm.getRoleIds())) {
             // 保存用户角色
-            baseMapper.insertUserRole(user.getId(), sysUserDTO.getRoleIds());
+            baseMapper.insertUserRole(user.getId(), sysUserForm.getRoleIds());
         }
     }
 
     @Override
-    public int resetPassword(SysUserDTO sysUserDTO) {
+    public int resetPassword(SysUserForm sysUserForm) {
         SysUser user = new SysUser();
-        user.setId(sysUserDTO.getId());
-        user.setPassword(passwordEncoder.encode(sysUserDTO.getPassword()));
+        user.setId(sysUserForm.getId());
+        user.setPassword(passwordEncoder.encode(sysUserForm.getPassword()));
         return baseMapper.updateById(user);
     }
 
     @Transactional
     @Override
-    public void updateUser(SysUserDTO sysUserDTO) {
+    public void updateUser(SysUserForm sysUserForm) {
         SysUser user = new SysUser();
-        BeanUtil.copyProperties(sysUserDTO, user);
+        BeanUtil.copyProperties(sysUserForm, user);
 
         this.updateById(user);
         baseMapper.deleteUserRoleByUserIds(Collections.singletonList(user.getId()));
 
-        if (CollectionUtil.isNotEmpty(sysUserDTO.getRoleIds())) {
+        if (CollectionUtil.isNotEmpty(sysUserForm.getRoleIds())) {
             // 保存用户角色
-            baseMapper.insertUserRole(user.getId(), sysUserDTO.getRoleIds());
+            baseMapper.insertUserRole(user.getId(), sysUserForm.getRoleIds());
         }
 
     }

@@ -2,7 +2,7 @@ package com.leaf.admin.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.leaf.admin.dto.SysUserDTO;
+import com.leaf.admin.dto.SysUserForm;
 import com.leaf.admin.dto.UserQueryParam;
 import com.leaf.admin.entity.SysMenu;
 import com.leaf.admin.entity.SysRole;
@@ -54,11 +54,11 @@ public interface ISysUserService extends IService<SysUser> {
 
     void deleteByUserIds(List<Long> userIds);
 
-    void saveUser(SysUserDTO sysUserDTO);
+    void saveUser(SysUserForm sysUserForm);
 
-    int resetPassword(SysUserDTO sysUserDTO);
+    int resetPassword(SysUserForm sysUserForm);
 
-    void updateUser(SysUserDTO sysUserDTO);
+    void updateUser(SysUserForm sysUserForm);
 
     void removeByUserIds(List<Long> userIds);
 }

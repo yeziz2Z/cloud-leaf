@@ -2,7 +2,7 @@ package com.leaf.admin.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.leaf.admin.annotation.OperationLog;
-import com.leaf.admin.dto.SysUserDTO;
+import com.leaf.admin.dto.SysUserForm;
 import com.leaf.admin.dto.UserQueryParam;
 import com.leaf.admin.entity.SysMenu;
 import com.leaf.admin.entity.SysRole;
@@ -17,7 +17,6 @@ import com.leaf.common.pojo.auth.AuthUser;
 import com.leaf.common.result.Result;
 import com.leaf.common.validation.group.Create;
 import com.leaf.common.validation.group.Update;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -81,7 +80,7 @@ public class UserController {
     @PostMapping
     @OperationLog(module = "用户管理", businessType = BusinessTypeEnum.INSERT)
     @PreAuthorize("@pms.hasPermission('system.user.add')")
-    public Result<Void> add(@RequestBody SysUserDTO sysUser) {
+    public Result<Void> add(@Validated(Create.class) @RequestBody SysUserForm sysUser) {
         userService.saveUser(sysUser);
         return Result.success();
     }
@@ -89,13 +88,13 @@ public class UserController {
     @PutMapping
     @OperationLog(module = "用户管理", businessType = BusinessTypeEnum.UPDATE)
     @PreAuthorize("@pms.hasPermission('system.user.edit')")
-    public Result<Void> edit(SysUserDTO sysUser) {
+    public Result<Void> edit(@Validated(Update.class) @RequestBody SysUserForm sysUser) {
         userService.updateUser(sysUser);
         return Result.success();
     }
 
     @PutMapping("/resetPassword")
-    public Result<Void> resetPassword(@RequestBody SysUserDTO sysUser) {
+    public Result<Void> resetPassword(@RequestBody SysUserForm sysUser) {
         return Result.success();
     }
 
