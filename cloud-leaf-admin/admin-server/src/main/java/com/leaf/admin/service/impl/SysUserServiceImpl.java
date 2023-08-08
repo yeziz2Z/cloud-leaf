@@ -7,6 +7,7 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.leaf.admin.common.enums.AdminErrorResultEnum;
 import com.leaf.admin.dto.SysUserForm;
 import com.leaf.admin.dto.UserQueryParam;
 import com.leaf.admin.entity.SysMenu;
@@ -16,8 +17,8 @@ import com.leaf.admin.mapper.SysMenuMapper;
 import com.leaf.admin.mapper.SysRoleMapper;
 import com.leaf.admin.mapper.SysUserMapper;
 import com.leaf.admin.service.ISysUserService;
-import com.leaf.admin.vo.UserVO;
 import com.leaf.admin.utils.UserUtils;
+import com.leaf.admin.vo.UserVO;
 import com.leaf.common.constant.SecurityConstant;
 import com.leaf.common.exception.BusinessException;
 import jakarta.annotation.Resource;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -192,6 +194,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
+    public void clearUserByIds(Collection<Long> ids) {
+        ids.forEach(this::clearUserById);
+    }
+
+    @Override
     public void clearUserMenuByUserId(Long userId) {
         redisTemplate.delete(USER_MENU_KEY + userId);
     }
@@ -212,15 +219,17 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     @Transactional
     public void saveUser(SysUserForm sysUserForm) {
+        long count = this.count(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, sysUserForm.getUsername()));
+        if (count > 0) {
+            throw new BusinessException(AdminErrorResultEnum.USER_CODE_EXISTS);
+        }
         SysUser user = new SysUser();
         BeanUtil.copyProperties(sysUserForm, user, "id");
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         // 入库
         this.save(user);
-        if (CollectionUtil.isNotEmpty(sysUserForm.getRoleIds())) {
-            // 保存用户角色
-            baseMapper.insertUserRole(user.getId(), sysUserForm.getRoleIds());
-        }
+        // 保存用户角色
+        baseMapper.insertUserRole(user.getId(), sysUserForm.getRoleIds());
     }
 
     @Override
@@ -234,15 +243,23 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Transactional
     @Override
     public void updateUser(SysUserForm sysUserForm) {
+        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<SysUser>()
+                .eq(SysUser::getUsername, sysUserForm.getUsername())
+                .ne(SysUser::getId, sysUserForm.getId());
+        long count = this.count(queryWrapper);
+        if (count > 0) {
+            throw new BusinessException(AdminErrorResultEnum.USER_CODE_EXISTS);
+        }
+
         SysUser user = new SysUser();
         BeanUtil.copyProperties(sysUserForm, user);
+        // 清缓存
+        this.clearUserById(user.getId());
+
         this.updateById(user);
         baseMapper.deleteUserRoleByUserIds(Collections.singletonList(user.getId()));
-
-        if (CollectionUtil.isNotEmpty(sysUserForm.getRoleIds())) {
-            // 保存用户角色
-            baseMapper.insertUserRole(user.getId(), sysUserForm.getRoleIds());
-        }
+        // 保存用户角色
+        baseMapper.insertUserRole(user.getId(), sysUserForm.getRoleIds());
 
     }
 
@@ -251,8 +268,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public void removeByUserIds(List<Long> userIds) {
         SysUser sysUser = this.getCurrentUser();
         if (CollectionUtil.contains(userIds, sysUser.getId())) {
-            throw new BusinessException(500, "不能删除当前用户");
+            throw new BusinessException(AdminErrorResultEnum.CANT_DELETE_CURRENT_USER);
         }
+
+        this.clearUserByIds(userIds);
+
         baseMapper.deleteUserRoleByUserIds(userIds);
 
         baseMapper.deleteBatchIds(userIds);

@@ -4,7 +4,11 @@ import com.leaf.common.result.IResultCode;
 
 public enum AdminErrorResultEnum implements IResultCode {
 
-    USER_CODE_EXISTS(10001,"用户已存在");
+    USER_CODE_EXISTS(10001,"用户已存在"),
+    CANT_DELETE_CURRENT_USER(10002,"不能删除当前用户"),
+
+    ROLE_CODE_EXISTS(10021,"角色编码已存在"),
+    ;
 
     private final int code;
 

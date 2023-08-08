@@ -52,6 +52,7 @@ public class SysUserForm {
     /**
      * 手机号码
      */
+    @NotNull(message = "手机号不能为空")
     @Size(min = 11, max = 11, message = "手机号格式错误")
     @Pattern(regexp = "^1([34578])\\d{9}$", groups = {Create.class, Update.class}, message = "手机号格式错误")
     private String mobilePhone;

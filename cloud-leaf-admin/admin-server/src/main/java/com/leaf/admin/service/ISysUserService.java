@@ -9,6 +9,7 @@ import com.leaf.admin.entity.SysRole;
 import com.leaf.admin.entity.SysUser;
 import com.leaf.admin.vo.UserVO;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -49,6 +50,8 @@ public interface ISysUserService extends IService<SysUser> {
     void clearUserByName(String name);
 
     void clearUserById(Long id);
+
+    void clearUserByIds(Collection<Long> ids);
 
     Page<UserVO> selectSysUserVOPage(Page<UserVO> page, UserQueryParam queryParam);
 

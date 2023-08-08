@@ -27,8 +27,9 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id
-        , org_id, username, nick_name, user_type, email, mobile_phone, gender, avatar, password, status, del_flag, login_ip, login_time, create_by, create_time, update_by, update_time, remark
+        id, org_id, username, nick_name, user_type, email, mobile_phone, gender,
+            avatar, password, status, del_flag, login_ip, login_time, create_by,
+            create_time, update_by, update_time, remark
     </sql>
     <!-- 通用查询映射结果 -->
 
@@ -55,9 +56,7 @@
             <result property="name" column="orgName"/>
         </association>
 
-        <collection property="roles" ofType="com.leaf.admin.entity.SysRole">
-            <id property="id" column="roleId"/>
-            <result property="name" column="name"/>
+        <collection property="roles" column="id" ofType="com.leaf.admin.entity.SysRole" select="selectRole">
         </collection>
     </resultMap>
 
@@ -96,18 +95,12 @@
         u.create_time,
         u.update_by,
         u.update_time,
-        r.id roleId,
-        r.name,
         u.org_id,
         org.name orgName
         FROM
         t_sys_user u
         left join t_sys_organization org
         on u.org_id = org.id
-        LEFT JOIN t_sys_user_role ur
-        ON u.id = ur.user_id
-        LEFT JOIN t_sys_role r
-        ON ur.role_id = r.id
         where 1 = 1
         <if test="query.orgId != null and query.orgId != ''">
             and u.org_id = #{query.orgId}
@@ -122,6 +115,16 @@
             and u.status = #{query.status}
         </if>
         order by u.id asc
+    </select>
+
+    <select id="selectRole" resultType="com.leaf.admin.entity.SysRole">
+        select
+            r.id, r.code, r.name
+            from  t_sys_user_role tsur
+            left join t_sys_role r on tsur.role_id = r.id
+            left join t_sys_user tsu on tsur.user_id = tsu.id
+        where tsu.id = #{id}
+          and r.status = '1'
     </select>
 
 </mapper>

@@ -3,6 +3,7 @@ package com.leaf.admin.service.impl;
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.leaf.admin.common.enums.AdminErrorResultEnum;
 import com.leaf.admin.dto.RoleMenuDTO;
 import com.leaf.admin.entity.SysRole;
 import com.leaf.admin.mapper.SysRoleMapper;
@@ -47,7 +48,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     public boolean saveSysRole(SysRole sysRole) {
         long count = this.count(new LambdaQueryWrapper<SysRole>().eq(SysRole::getCode, sysRole.getCode()));
         if (count > 0) {
-            throw new BusinessException(500, "角色编码已存在");
+            throw new BusinessException(AdminErrorResultEnum.ROLE_CODE_EXISTS);
         }
         return this.save(sysRole);
     }
@@ -59,7 +60,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
                 .ne(SysRole::getId, sysRole.getId());
         long count = this.count(queryWrapper);
         if (count > 0) {
-            throw new BusinessException(500, "角色编码已存在");
+            throw new BusinessException(AdminErrorResultEnum.ROLE_CODE_EXISTS);
         }
         return this.updateById(sysRole);
     }
