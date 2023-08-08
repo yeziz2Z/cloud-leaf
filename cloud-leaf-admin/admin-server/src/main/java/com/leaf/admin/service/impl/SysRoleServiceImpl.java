@@ -1,5 +1,6 @@
 package com.leaf.admin.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.leaf.admin.dto.RoleMenuDTO;
@@ -9,10 +10,13 @@ import com.leaf.admin.service.ISysMenuService;
 import com.leaf.admin.service.ISysRoleService;
 import com.leaf.admin.service.ISysUserService;
 import com.leaf.common.exception.BusinessException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -24,16 +28,18 @@ import java.util.List;
  * @since 2021-08-04
  */
 @Service
+@RequiredArgsConstructor
 public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> implements ISysRoleService {
 
-    @Autowired
-    ISysUserService userService;
-    @Autowired
-    ISysMenuService menuService;
+    private final ISysUserService userService;
+    private final ISysMenuService menuService;
 
     @Override
     public List<SysRole> getRolesByUserId(Long userId) {
         List<Long> roleIds = baseMapper.selectRoleIdsByUserId(userId);
+        if (CollectionUtil.isEmpty(roleIds)) {
+            return Collections.emptyList();
+        }
         return this.listByIds(roleIds);
     }
 

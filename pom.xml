@@ -41,7 +41,6 @@
         <lombok.version>1.18.26</lombok.version>
         <mysql.version>8.0.33</mysql.version>
         <hutool-all.version>5.8.20</hutool-all.version>
-        <jsqlparser.version>4.6</jsqlparser.version>
         <druid.version>1.2.18</druid.version>
         <freemarker.version>2.3.31</freemarker.version>
         <mybatis-plus-boot-starter.version>3.5.3.1</mybatis-plus-boot-starter.version>
@@ -133,11 +132,6 @@
                 <groupId>com.leaf</groupId>
                 <artifactId>common-core</artifactId>
                 <version>${cloud.leaf.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>jsqlparser</artifactId>
-                <groupId>com.github.jsqlparser</groupId>
-                <version>${jsqlparser.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.leaf</groupId>

@@ -53,7 +53,7 @@ public class SysUserForm {
      * 手机号码
      */
     @Size(min = 11, max = 11, message = "手机号格式错误")
-    @Pattern(regexp = "^(((13[0-9])|(14[579])|(15([0-3]|[5-9]))|(16)|(17[0135678])|(18[0-9])|(19[89]))\\d{8})$", groups = {Create.class, Update.class}, message = "手机号格式错误")
+    @Pattern(regexp = "^1([34578])\\d{9}$", groups = {Create.class, Update.class}, message = "手机号格式错误")
     private String mobilePhone;
 
     /**
@@ -88,6 +88,7 @@ public class SysUserForm {
     /**
      * 角色id
      */
+    @NotEmpty(message = "请至少赋予用户一个角色", groups = {Create.class, Update.class})
     private List<Long> roleIds;
 
 }

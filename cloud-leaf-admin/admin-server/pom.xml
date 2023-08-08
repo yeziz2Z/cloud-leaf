@@ -50,16 +50,6 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>jsqlparser</artifactId>
-                    <groupId>com.github.jsqlparser</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <artifactId>jsqlparser</artifactId>
-            <groupId>com.github.jsqlparser</groupId>
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>

@@ -215,10 +215,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         SysUser user = new SysUser();
         BeanUtil.copyProperties(sysUserForm, user, "id");
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        System.out.println("===========================hello before ===============================================");
         // 入库
         this.save(user);
-        System.out.println("===========================hello after ===============================================");
         if (CollectionUtil.isNotEmpty(sysUserForm.getRoleIds())) {
             // 保存用户角色
             baseMapper.insertUserRole(user.getId(), sysUserForm.getRoleIds());
@@ -238,7 +236,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public void updateUser(SysUserForm sysUserForm) {
         SysUser user = new SysUser();
         BeanUtil.copyProperties(sysUserForm, user);
-
         this.updateById(user);
         baseMapper.deleteUserRoleByUserIds(Collections.singletonList(user.getId()));
 

@@ -103,6 +103,7 @@ public class UserController {
         SysUser sysUser = userService.getById(userId);
         UserVO userVO = new UserVO();
         BeanUtils.copyProperties(sysUser, userVO);
+
         userVO.setRoles(roleService.getRolesByUserId(sysUser.getId()));
         userVO.setOrganization(organizationService.getById(sysUser.getOrgId()));
         return Result.success(userVO);
