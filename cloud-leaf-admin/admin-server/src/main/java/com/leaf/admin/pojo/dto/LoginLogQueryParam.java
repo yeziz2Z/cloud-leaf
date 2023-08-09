@@ -1,4 +1,4 @@
-package com.leaf.admin.dto;
+package com.leaf.admin.pojo.dto;
 
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;

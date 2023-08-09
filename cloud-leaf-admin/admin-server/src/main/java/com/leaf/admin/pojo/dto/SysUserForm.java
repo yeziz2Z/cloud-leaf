@@ -1,4 +1,4 @@
-package com.leaf.admin.dto;
+package com.leaf.admin.pojo.dto;
 
 import com.leaf.common.validation.constraints.StringLimitScope;
 import com.leaf.common.validation.group.Create;

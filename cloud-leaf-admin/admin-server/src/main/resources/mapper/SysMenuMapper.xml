@@ -106,12 +106,12 @@
         from t_sys_role_menu
         where menu_id = #{menuId}
     </select>
-    <resultMap id="rolePermissionsResultMap" type="com.leaf.admin.vo.RolePermissions">
+    <resultMap id="rolePermissionsResultMap" type="com.leaf.admin.pojo.vo.RolePermissionsVO">
         <result column="code" property="code"/>
         <result column="permission_url" property="permissionUrl"/>
     </resultMap>
 
-    <select id="rolePermissions" resultMap="rolePermissionsResultMap">
+    <select id="rolePermissionVOS" resultMap="rolePermissionsResultMap">
         SELECT
             r.`code`,
             m.`permission_url`

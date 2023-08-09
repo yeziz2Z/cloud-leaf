@@ -3,9 +3,9 @@ package com.leaf.admin.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.leaf.admin.dto.UserQueryParam;
+import com.leaf.admin.pojo.dto.UserQueryParam;
 import com.leaf.admin.entity.SysUser;
-import com.leaf.admin.vo.UserVO;
+import com.leaf.admin.pojo.vo.UserVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

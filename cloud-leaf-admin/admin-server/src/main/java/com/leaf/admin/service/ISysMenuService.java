@@ -1,9 +1,9 @@
 package com.leaf.admin.service;
 
-import com.leaf.admin.dto.MenuQueryParam;
+import com.leaf.admin.pojo.dto.MenuQueryParam;
 import com.leaf.admin.entity.SysMenu;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.leaf.admin.vo.SysMenuVO;
+import com.leaf.admin.pojo.vo.SysMenuVO;
 
 import java.util.List;
 import java.util.Set;

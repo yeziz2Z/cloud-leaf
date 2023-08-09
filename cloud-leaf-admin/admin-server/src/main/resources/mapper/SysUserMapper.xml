@@ -33,7 +33,7 @@
     </sql>
     <!-- 通用查询映射结果 -->
 
-    <resultMap id="SysUserVOResultMap" type="com.leaf.admin.vo.UserVO">
+    <resultMap id="SysUserVOResultMap" type="com.leaf.admin.pojo.vo.UserVO">
         <id column="id" property="id"/>
         <result column="username" property="username"/>
         <result column="nick_name" property="nickName"/>

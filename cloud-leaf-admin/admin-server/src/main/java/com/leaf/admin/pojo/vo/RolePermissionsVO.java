@@ -1,4 +1,4 @@
-package com.leaf.admin.vo;
+package com.leaf.admin.pojo.vo;
 
 import lombok.Data;
 import lombok.ToString;
@@ -8,7 +8,7 @@ import lombok.ToString;
  */
 @Data
 @ToString
-public class RolePermissions {
+public class RolePermissionsVO {
 
     /**
      * 角色编码

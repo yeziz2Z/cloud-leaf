@@ -1,6 +1,6 @@
 package com.leaf.admin.service;
 
-import com.leaf.admin.dto.RoleMenuDTO;
+import com.leaf.admin.pojo.dto.RoleMenuDTO;
 import com.leaf.admin.entity.SysRole;
 import com.baomidou.mybatisplus.extension.service.IService;
 

@@ -2,12 +2,12 @@ package com.leaf.admin.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.leaf.admin.dto.SysUserForm;
-import com.leaf.admin.dto.UserQueryParam;
+import com.leaf.admin.pojo.dto.SysUserForm;
+import com.leaf.admin.pojo.dto.UserQueryParam;
 import com.leaf.admin.entity.SysMenu;
 import com.leaf.admin.entity.SysRole;
 import com.leaf.admin.entity.SysUser;
-import com.leaf.admin.vo.UserVO;
+import com.leaf.admin.pojo.vo.UserVO;
 
 import java.util.Collection;
 import java.util.List;

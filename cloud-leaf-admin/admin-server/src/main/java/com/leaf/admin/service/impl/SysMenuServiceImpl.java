@@ -6,12 +6,12 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.leaf.admin.common.AdminSystemConst;
-import com.leaf.admin.dto.MenuQueryParam;
+import com.leaf.admin.pojo.dto.MenuQueryParam;
 import com.leaf.admin.entity.SysMenu;
 import com.leaf.admin.mapper.SysMenuMapper;
 import com.leaf.admin.service.ISysMenuService;
-import com.leaf.admin.vo.RolePermissions;
-import com.leaf.admin.vo.SysMenuVO;
+import com.leaf.admin.pojo.vo.RolePermissionsVO;
+import com.leaf.admin.pojo.vo.SysMenuVO;
 import com.leaf.common.constant.SecurityConstant;
 import com.leaf.common.exception.BusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,12 +125,12 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     public void refreshRolePermission() {
 
         redisTemplate.delete(SecurityConstant.URL_PERM_ROLES_KEY);
-        List<RolePermissions> rolePermissions = baseMapper.rolePermissions();
-        Map<String, Set<String>> map = rolePermissions
+        List<RolePermissionsVO> rolePermissionVOS = baseMapper.rolePermissions();
+        Map<String, Set<String>> map = rolePermissionVOS
                 .stream()
                 .filter(role -> StrUtil.isNotBlank(role.getPermissionUrl()))
-                .collect(Collectors.groupingBy(RolePermissions::getPermissionUrl,
-                        Collectors.mapping(RolePermissions::getCode, Collectors.toSet())));
+                .collect(Collectors.groupingBy(RolePermissionsVO::getPermissionUrl,
+                        Collectors.mapping(RolePermissionsVO::getCode, Collectors.toSet())));
 
         redisTemplate.opsForHash().putAll(SecurityConstant.URL_PERM_ROLES_KEY, map);
     }

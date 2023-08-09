@@ -4,7 +4,7 @@ import cn.hutool.core.lang.tree.Tree;
 import com.leaf.admin.annotation.OperationLog;
 import com.leaf.admin.entity.SysOrganization;
 import com.leaf.admin.service.ISysOrganizationService;
-import com.leaf.admin.vo.OrgTreeVO;
+import com.leaf.admin.pojo.vo.OrgTreeVO;
 import com.leaf.common.enums.BusinessTypeEnum;
 import com.leaf.common.result.Result;
 import lombok.extern.slf4j.Slf4j;

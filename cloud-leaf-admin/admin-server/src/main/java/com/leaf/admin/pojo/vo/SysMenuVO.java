@@ -1,4 +1,4 @@
-package com.leaf.admin.vo;
+package com.leaf.admin.pojo.vo;
 
 import lombok.Data;
 

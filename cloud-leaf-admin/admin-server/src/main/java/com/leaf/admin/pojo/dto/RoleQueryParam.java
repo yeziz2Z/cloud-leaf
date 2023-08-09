@@ -1,17 +1,15 @@
-package com.leaf.admin.dto;
+package com.leaf.admin.pojo.dto;
 
 import lombok.Data;
 import lombok.ToString;
 
 @Data
 @ToString
-public class UserQueryParam {
-
-    private Long orgId;
+public class RoleQueryParam {
 
     private String name;
 
-    private String phone;
+    private String code;
 
     private String status;
 

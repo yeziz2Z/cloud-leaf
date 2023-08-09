@@ -10,7 +10,7 @@ import com.leaf.admin.entity.SysUser;
 import com.leaf.admin.mapper.SysOrganizationMapper;
 import com.leaf.admin.mapper.SysUserMapper;
 import com.leaf.admin.service.ISysOrganizationService;
-import com.leaf.admin.vo.OrgTreeVO;
+import com.leaf.admin.pojo.vo.OrgTreeVO;
 import com.leaf.common.enums.YesOrNoEnum;
 import com.leaf.common.exception.BusinessException;
 import jakarta.annotation.Resource;

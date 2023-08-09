@@ -1,10 +1,10 @@
 package com.leaf.admin.controller;
 
 import com.leaf.admin.annotation.OperationLog;
-import com.leaf.admin.dto.MenuQueryParam;
+import com.leaf.admin.pojo.dto.MenuQueryParam;
 import com.leaf.admin.entity.SysMenu;
 import com.leaf.admin.service.ISysMenuService;
-import com.leaf.admin.vo.SysMenuVO;
+import com.leaf.admin.pojo.vo.SysMenuVO;
 import com.leaf.common.enums.BusinessTypeEnum;
 import com.leaf.common.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;

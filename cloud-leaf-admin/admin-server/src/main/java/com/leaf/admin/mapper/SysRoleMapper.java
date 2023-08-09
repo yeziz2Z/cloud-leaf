@@ -1,6 +1,6 @@
 package com.leaf.admin.mapper;
 
-import com.leaf.admin.dto.RoleMenuDTO;
+import com.leaf.admin.pojo.dto.RoleMenuDTO;
 import com.leaf.admin.entity.SysRole;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Delete;

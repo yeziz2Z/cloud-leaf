@@ -2,7 +2,7 @@ package com.leaf.admin.mapper;
 
 import com.leaf.admin.entity.SysMenu;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.leaf.admin.vo.RolePermissions;
+import com.leaf.admin.pojo.vo.RolePermissionsVO;
 
 import java.util.List;
 import java.util.Set;
@@ -29,5 +29,5 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
 
     int countRoleMenuByMenuId(Long menuId);
 
-    List<RolePermissions> rolePermissions();
+    List<RolePermissionsVO> rolePermissions();
 }

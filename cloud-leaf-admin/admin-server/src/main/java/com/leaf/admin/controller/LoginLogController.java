@@ -3,7 +3,7 @@ package com.leaf.admin.controller;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.leaf.admin.dto.LoginLogQueryParam;
+import com.leaf.admin.pojo.dto.LoginLogQueryParam;
 import com.leaf.admin.entity.SysLoginLog;
 import com.leaf.admin.service.ISysLoginLogService;
 import com.leaf.common.result.Result;
