@@ -2,6 +2,7 @@ package com.leaf.admin.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.leaf.admin.pojo.dto.ResetPasswordDTO;
 import com.leaf.admin.pojo.dto.SysUserForm;
 import com.leaf.admin.pojo.dto.UserQueryParam;
 import com.leaf.admin.entity.SysMenu;
@@ -59,7 +60,7 @@ public interface ISysUserService extends IService<SysUser> {
 
     void saveUser(SysUserForm sysUserForm);
 
-    int resetPassword(SysUserForm sysUserForm);
+    boolean resetPassword(ResetPasswordDTO resetPasswordDTO);
 
     void updateUser(SysUserForm sysUserForm);
 

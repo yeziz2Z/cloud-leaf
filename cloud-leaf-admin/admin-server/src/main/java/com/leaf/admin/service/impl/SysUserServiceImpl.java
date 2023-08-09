@@ -5,23 +5,27 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.leaf.admin.common.enums.AdminErrorResultEnum;
-import com.leaf.admin.pojo.dto.SysUserForm;
-import com.leaf.admin.pojo.dto.UserQueryParam;
 import com.leaf.admin.entity.SysMenu;
 import com.leaf.admin.entity.SysRole;
 import com.leaf.admin.entity.SysUser;
 import com.leaf.admin.mapper.SysMenuMapper;
 import com.leaf.admin.mapper.SysRoleMapper;
 import com.leaf.admin.mapper.SysUserMapper;
+import com.leaf.admin.pojo.dto.ResetPasswordDTO;
+import com.leaf.admin.pojo.dto.SysUserForm;
+import com.leaf.admin.pojo.dto.UserQueryParam;
+import com.leaf.admin.pojo.vo.UserVO;
 import com.leaf.admin.service.ISysUserService;
 import com.leaf.admin.utils.UserUtils;
-import com.leaf.admin.pojo.vo.UserVO;
 import com.leaf.common.constant.SecurityConstant;
 import com.leaf.common.exception.BusinessException;
 import jakarta.annotation.Resource;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -45,18 +49,16 @@ import java.util.stream.Collectors;
  * @since 2021-08-04
  */
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements ISysUserService {
 
-    @Resource
-    RedisTemplate redisTemplate;
+    private final RedisTemplate redisTemplate;
 
-    @Resource
-    SysRoleMapper roleMapper;
-    @Resource
-    SysMenuMapper menuMapper;
+    private final SysRoleMapper roleMapper;
+    private final SysMenuMapper menuMapper;
 
-    @Resource
-    PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     private static final String AUTHORITIES_KEY = "authorities:username:";
     private static final String USERNAME_KEY = "sys:username:";
@@ -233,11 +235,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
-    public int resetPassword(SysUserForm sysUserForm) {
-        SysUser user = new SysUser();
-        user.setId(sysUserForm.getId());
-        user.setPassword(passwordEncoder.encode(sysUserForm.getPassword()));
-        return baseMapper.updateById(user);
+    public boolean resetPassword(ResetPasswordDTO resetPasswordDTO) {
+        SysUser sysUser = this.getById(resetPasswordDTO.getUserId());
+        if(Objects.isNull(sysUser)){
+            throw new BusinessException(AdminErrorResultEnum.USER_NOT_EXISTS);
+        }
+        sysUser.setPassword(passwordEncoder.encode(resetPasswordDTO.getPassword()));
+        boolean updated = this.updateById(sysUser);
+        if (updated) {
+            //TODO 待实现 异步通知 发送邮件&短信
+            log.info("重置密码成功.. ");
+        }
+        return updated;
     }
 
     @Transactional

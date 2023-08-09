@@ -2,16 +2,17 @@ package com.leaf.admin.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.leaf.admin.annotation.OperationLog;
-import com.leaf.admin.pojo.dto.SysUserForm;
-import com.leaf.admin.pojo.dto.UserQueryParam;
 import com.leaf.admin.entity.SysMenu;
 import com.leaf.admin.entity.SysRole;
 import com.leaf.admin.entity.SysUser;
+import com.leaf.admin.pojo.dto.ResetPasswordDTO;
+import com.leaf.admin.pojo.dto.SysUserForm;
+import com.leaf.admin.pojo.dto.UserQueryParam;
+import com.leaf.admin.pojo.vo.UserVO;
 import com.leaf.admin.service.ISysMenuService;
 import com.leaf.admin.service.ISysOrganizationService;
 import com.leaf.admin.service.ISysRoleService;
 import com.leaf.admin.service.ISysUserService;
-import com.leaf.admin.pojo.vo.UserVO;
 import com.leaf.common.enums.BusinessTypeEnum;
 import com.leaf.common.pojo.auth.AuthUser;
 import com.leaf.common.result.Result;
@@ -49,8 +50,6 @@ public class UserController {
     private final ISysMenuService menuService;
 
     private final ISysOrganizationService organizationService;
-    /*@Autowired
-    FileServiceApi fileServiceApi;*/
 
     @GetMapping("/info")
     public Result<UserVO> info() {
@@ -94,7 +93,8 @@ public class UserController {
     }
 
     @PutMapping("/resetPassword")
-    public Result<Void> resetPassword(@RequestBody SysUserForm sysUser) {
+    public Result<Void> resetPassword(@Validated @RequestBody ResetPasswordDTO passwordDTO) {
+        userService.resetPassword(passwordDTO);
         return Result.success();
     }
 
