@@ -154,6 +154,11 @@
                 <artifactId>admin-api</artifactId>
                 <version>${cloud.leaf.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.leaf</groupId>
+                <artifactId>admin-api2</artifactId>
+                <version>${cloud.leaf.version}</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>

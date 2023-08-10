@@ -9,6 +9,15 @@ public enum AdminErrorResultEnum implements IResultCode {
     CANT_DELETE_CURRENT_USER(10003,"不能删除当前用户"),
 
     ROLE_CODE_EXISTS(10021,"角色编码已存在"),
+
+
+
+    IMG_CAPTCHA_EXPIRED(10041,"验证码已过期"),
+    IMG_CAPTCHA_ERROR(10042,"验证码不正确"),
+    ACCOUNT_OR_PASSWORD_ERROR(10043,"用户名或者密码错误"),
+
+    ACCOUNT_DISABLED(10044,"账户已停用"),
+
     ;
 
     private final int code;

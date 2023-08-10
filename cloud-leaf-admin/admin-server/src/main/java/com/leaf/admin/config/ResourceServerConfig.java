@@ -31,12 +31,11 @@ public class ResourceServerConfig {
     @Value("${cloud.jwk.public-key}")
     private String publicKey;
 
-
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/user/loadByUsername")
+                        .requestMatchers("/auth/**")
                         .permitAll()
                         .anyRequest()
                         .authenticated())

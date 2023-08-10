@@ -10,12 +10,15 @@ import cn.hutool.jwt.JWT;
 import com.leaf.admin.annotation.OperationLog;
 import com.leaf.admin.common.SystemConst;
 import com.leaf.admin.common.enums.TokenErrorEnum;
+import com.leaf.admin.pojo.bo.CloudLeafAdminUserBO;
+import com.leaf.admin.pojo.dto.CloudLeafAdminUsernamePasswordCaptchaDTO;
+import com.leaf.admin.service.ISysUserService;
 import com.leaf.admin.utils.JwtUtil;
 import com.leaf.common.enums.BusinessTypeEnum;
 import com.leaf.common.result.Result;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,6 +34,8 @@ import java.util.concurrent.TimeUnit;
 public class AuthController {
 
     private final RedisTemplate<String, String> redisTemplate;
+
+    private final ISysUserService sysUserService;
     private final JwtUtil jwtUtils;
 
     @OperationLog(module = "系统登录-验证码", businessType = BusinessTypeEnum.SELECT)
@@ -54,6 +59,11 @@ public class AuthController {
                 .build());
     }
 
+
+    @GetMapping("getUserAuthorities")
+    public Result<CloudLeafAdminUserBO> getUserAuthorities(@Validated CloudLeafAdminUsernamePasswordCaptchaDTO usernamePasswordCaptchaDTO) {
+        return Result.success(sysUserService.getUserAuthorities(usernamePasswordCaptchaDTO));
+    }
 
 
     /**

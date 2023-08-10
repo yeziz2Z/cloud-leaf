@@ -1,14 +1,6 @@
 package com.leaf.oauth2.security.userdetails.impl;
 
-import com.leaf.admin.api.UserFeignClient;
-import com.leaf.common.pojo.auth.AuthUser;
-import com.leaf.common.result.Result;
-import com.leaf.oauth2.security.userdetails.AdminUserDetails;
 import com.leaf.oauth2.security.userdetails.OAuth2ClientUserDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AccountExpiredException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
@@ -19,13 +11,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class AdminUserDetailsServiceImpl implements OAuth2ClientUserDetailsService {
 
-    private final UserFeignClient userFeignClient;
 
-    @Autowired
-    public AdminUserDetailsServiceImpl(UserFeignClient userFeignClient) {
-        this.userFeignClient = userFeignClient;
-    }
-
+    /* @Autowired
+     public AdminUserDetailsServiceImpl(UserFeignClient userFeignClient) {
+         this.userFeignClient = userFeignClient;
+     }
+ */
     private final static String CLIENT_ID = "cloud-leaf-admin";
 
     @Override
@@ -35,7 +26,7 @@ public class AdminUserDetailsServiceImpl implements OAuth2ClientUserDetailsServi
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AdminUserDetails userDetails = null;
+        /*AdminUserDetails userDetails = null;
         Result<AuthUser> result = userFeignClient.loadByUsername(username);
         if (result.getCode() == Result.success().getCode()) {
             AuthUser authUser = result.getData();
@@ -50,6 +41,7 @@ public class AdminUserDetailsServiceImpl implements OAuth2ClientUserDetailsServi
         } else if (!userDetails.isAccountNonExpired()) {
             throw new AccountExpiredException("该账号已过期!");
         }
-        return userDetails;
+        return userDetails;*/
+        return null;
     }
 }

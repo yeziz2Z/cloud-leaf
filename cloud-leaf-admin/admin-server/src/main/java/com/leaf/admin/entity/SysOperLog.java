@@ -110,7 +110,7 @@ public class SysOperLog implements Serializable {
     /**
      * 操作状态（0正常 1异常）
      */
-    private Integer status;
+    private String status;
 
     /**
      * 错误消息

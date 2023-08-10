@@ -1,6 +1,6 @@
 package com.leaf.oauth2.security.oauth2.server.authorization.web.authentication;
 
-import com.leaf.oauth2.security.oauth2.server.authorization.authentication.OAuth2CaptchaAuthenticationToken;
+import com.leaf.oauth2.security.oauth2.server.authorization.authentication.OAuth2CloudLeafAdminCaptchaAuthenticationToken;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
@@ -41,7 +41,7 @@ public class CaptchaAuthenticationConverter implements AuthenticationConverter {
             }
         });
 
-        return new OAuth2CaptchaAuthenticationToken(clientId, clientPrincipal, additionalParameters);
+        return new OAuth2CloudLeafAdminCaptchaAuthenticationToken(clientId, clientPrincipal, additionalParameters);
     }
 
     private static MultiValueMap<String, String> getParameters(HttpServletRequest request) {

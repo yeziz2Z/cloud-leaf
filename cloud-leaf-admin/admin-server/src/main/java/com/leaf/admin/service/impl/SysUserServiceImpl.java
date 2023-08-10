@@ -4,10 +4,11 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.spring.SpringUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.leaf.admin.common.SystemConst;
 import com.leaf.admin.common.enums.AdminErrorResultEnum;
 import com.leaf.admin.entity.SysMenu;
 import com.leaf.admin.entity.SysRole;
@@ -15,6 +16,8 @@ import com.leaf.admin.entity.SysUser;
 import com.leaf.admin.mapper.SysMenuMapper;
 import com.leaf.admin.mapper.SysRoleMapper;
 import com.leaf.admin.mapper.SysUserMapper;
+import com.leaf.admin.pojo.bo.CloudLeafAdminUserBO;
+import com.leaf.admin.pojo.dto.CloudLeafAdminUsernamePasswordCaptchaDTO;
 import com.leaf.admin.pojo.dto.ResetPasswordDTO;
 import com.leaf.admin.pojo.dto.SysUserForm;
 import com.leaf.admin.pojo.dto.UserQueryParam;
@@ -22,8 +25,8 @@ import com.leaf.admin.pojo.vo.UserVO;
 import com.leaf.admin.service.ISysUserService;
 import com.leaf.admin.utils.UserUtils;
 import com.leaf.common.constant.SecurityConstant;
+import com.leaf.common.enums.YesOrNoEnum;
 import com.leaf.common.exception.BusinessException;
-import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -237,7 +240,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public boolean resetPassword(ResetPasswordDTO resetPasswordDTO) {
         SysUser sysUser = this.getById(resetPasswordDTO.getUserId());
-        if(Objects.isNull(sysUser)){
+        if (Objects.isNull(sysUser)) {
             throw new BusinessException(AdminErrorResultEnum.USER_NOT_EXISTS);
         }
         sysUser.setPassword(passwordEncoder.encode(resetPasswordDTO.getPassword()));
@@ -245,6 +248,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (updated) {
             //TODO 待实现 异步通知 发送邮件&短信
             log.info("重置密码成功.. ");
+
+            this.clearUserById(sysUser.getId());
         }
         return updated;
     }
@@ -292,4 +297,30 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return getByUsername(UserUtils.getCurrentUsername());
     }
 
+    @Override
+    public CloudLeafAdminUserBO getUserAuthorities(CloudLeafAdminUsernamePasswordCaptchaDTO usernamePasswordCaptchaDTO) {
+        String uid = usernamePasswordCaptchaDTO.getUid();
+        String captcha = (String) redisTemplate
+                .opsForValue()
+                .getAndDelete(String.format(SystemConst.CAPTCHA_KEY, SpringUtil.getApplicationName(), uid));
+
+        if (StrUtil.isBlank(captcha)) {
+            throw new BusinessException(AdminErrorResultEnum.IMG_CAPTCHA_EXPIRED);
+        }
+        if (StrUtil.equals(captcha, usernamePasswordCaptchaDTO.getCaptchaCode())) {
+            throw new BusinessException(AdminErrorResultEnum.IMG_CAPTCHA_EXPIRED);
+        }
+        SysUser sysUser = this.getByUsername(usernamePasswordCaptchaDTO.getUsername());
+        if (Objects.isNull(sysUser)
+                || StrUtil.equals(YesOrNoEnum.YES.getCode(), sysUser.getDelFlag())
+                || !StrUtil.equals(sysUser.getPassword(), passwordEncoder.encode(usernamePasswordCaptchaDTO.getPassword()))) {
+            throw new BusinessException(AdminErrorResultEnum.ACCOUNT_OR_PASSWORD_ERROR);
+        }
+        if (!sysUser.getStatus()) {
+            throw new BusinessException(AdminErrorResultEnum.ACCOUNT_OR_PASSWORD_ERROR);
+        }
+        List<SysRole> sysRoles = roleMapper.selectByUserId(sysUser.getId());
+        List<String> roles = sysRoles.stream().map(SysRole::getCode).toList();
+        return new CloudLeafAdminUserBO(sysUser.getId(), sysUser.getUsername(), roles);
+    }
 }

@@ -1,6 +1,6 @@
 package com.leaf.oauth2.security.userdetails;
 
-import com.leaf.admin.api.UserFeignClient;
+//import com.leaf.admin.api.UserFeignClient;
 import com.leaf.common.pojo.auth.AuthUser;
 import com.leaf.common.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +18,13 @@ public class SysUserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     PasswordEncoder passwordEncoder;
-    @Autowired
-    UserFeignClient userFeignClient;
+   /* @Autowired
+    UserFeignClient userFeignClient;*/
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         AdminUserDetails userDetails = null;
-        Result<AuthUser> result = userFeignClient.loadByUsername(username);
+        /*Result<AuthUser> result = userFeignClient.loadByUsername(username);
         if (result.getCode() == Result.success().getCode()) {
             AuthUser authUser = result.getData();
             userDetails =  new AdminUserDetails(authUser);
@@ -37,7 +37,7 @@ public class SysUserDetailsServiceImpl implements UserDetailsService {
             throw new LockedException("该账号已被锁定!");
         } else if (!userDetails.isAccountNonExpired()) {
             throw new AccountExpiredException("该账号已过期!");
-        }
+        }*/
         return userDetails;
     }
 }

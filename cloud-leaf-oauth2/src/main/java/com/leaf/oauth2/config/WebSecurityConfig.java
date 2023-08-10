@@ -5,10 +5,10 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.crypto.KeyUtil;
 import cn.hutool.crypto.asymmetric.RSA;
 import cn.hutool.json.JSONUtil;
+import com.leaf.admin.api.CloudLeafAdminUserFeignClient;
 import com.leaf.common.result.Result;
 import com.leaf.oauth2.security.oauth2.server.authorization.authentication.OAuth2CaptchaAuthenticationProvider;
 import com.leaf.oauth2.security.oauth2.server.authorization.web.authentication.CaptchaAuthenticationConverter;
-import com.leaf.oauth2.security.userdetails.OAuth2ClientUserDetailsService;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
@@ -16,11 +16,9 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import jakarta.servlet.ServletOutputStream;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -55,7 +53,6 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -67,12 +64,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class WebSecurityConfig {
 
-    @Autowired
-    private List<OAuth2ClientUserDetailsService> userDetailsServices;
-
-    @Autowired
-    private StringRedisTemplate redisTemplate;
-
     @Value("${cloud.jwk.public-key}")
     private String publicKey;
     @Value("${cloud.jwk.private-key}")
@@ -80,6 +71,7 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http,
+                                                                      CloudLeafAdminUserFeignClient cloudLeafAdminUserFeignClient,
                                                                       OAuth2AuthorizationService authorizationService,
                                                                       OAuth2TokenGenerator<?> tokenGenerator) throws Exception {
 
@@ -93,7 +85,7 @@ public class WebSecurityConfig {
                                         new CaptchaAuthenticationConverter())
                                 .authenticationProvider(
                                         new OAuth2CaptchaAuthenticationProvider(
-                                                authorizationService, userDetailsServices, redisTemplate, tokenGenerator))
+                                                authorizationService, cloudLeafAdminUserFeignClient, tokenGenerator))
                                 // 认证成功处理器
                                 .accessTokenResponseHandler((request, response, authentication) -> {
                                     OAuth2AccessTokenAuthenticationToken accessTokenAuthentication =

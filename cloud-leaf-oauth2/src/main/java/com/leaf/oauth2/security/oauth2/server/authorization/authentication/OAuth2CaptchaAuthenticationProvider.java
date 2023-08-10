@@ -15,19 +15,26 @@
  */
 package com.leaf.oauth2.security.oauth2.server.authorization.authentication;
 
-import cn.hutool.core.util.StrUtil;
-import com.leaf.common.constant.SecurityConstant;
-import com.leaf.oauth2.security.userdetails.OAuth2ClientUserDetailsService;
+import com.leaf.admin.api.CloudLeafAdminUserFeignClient;
+import com.leaf.admin.pojo.bo.CloudLeafAdminUserBO;
+import com.leaf.admin.pojo.dto.CloudLeafAdminUsernamePasswordCaptchaDTO;
+import com.leaf.common.result.Result;
+import com.leaf.common.result.ResultCode;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.core.*;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClaimAccessor;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.security.oauth2.core.OAuth2ErrorCodes;
+import org.springframework.security.oauth2.core.OAuth2RefreshToken;
+import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
@@ -37,10 +44,13 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.context.AuthorizationServerContextHolder;
 import org.springframework.security.oauth2.server.authorization.token.DefaultOAuth2TokenContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
-import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -49,12 +59,10 @@ import java.util.*;
  * @author liuk
  */
 public final class OAuth2CaptchaAuthenticationProvider implements AuthenticationProvider {
-    private PasswordEncoder passwordEncoder;
 
-    private final List<OAuth2ClientUserDetailsService> userDetailsServices;
+    private final CloudLeafAdminUserFeignClient cloudLeafAdminUserFeignClient;
     private final OAuth2AuthorizationService authorizationService;
 
-    private final StringRedisTemplate redisTemplate;
     private final OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator;
 
     /**
@@ -64,77 +72,40 @@ public final class OAuth2CaptchaAuthenticationProvider implements Authentication
      */
     public OAuth2CaptchaAuthenticationProvider(
             OAuth2AuthorizationService authorizationService,
-            List<OAuth2ClientUserDetailsService> userDetailsServices,
-            StringRedisTemplate redisTemplate,
+            CloudLeafAdminUserFeignClient cloudLeafAdminUserFeignClient,
             OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator) {
         this.authorizationService = authorizationService;
-        this.userDetailsServices = userDetailsServices;
-        this.redisTemplate = redisTemplate;
+        this.cloudLeafAdminUserFeignClient = cloudLeafAdminUserFeignClient;
         this.tokenGenerator = tokenGenerator;
-        this.passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-    /**
-     * Sets the {@link PasswordEncoder} used to validate
-     * the {@link RegisteredClient#getClientSecret() client secret}.
-     * If not set, the client secret will be compared using
-     * {@link PasswordEncoderFactories#createDelegatingPasswordEncoder()}.
-     *
-     * @param passwordEncoder the {@link PasswordEncoder} used to validate the client secret
-     */
-    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
-        Assert.notNull(passwordEncoder, "passwordEncoder cannot be null");
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        OAuth2CaptchaAuthenticationToken clientAuthentication =
-                (OAuth2CaptchaAuthenticationToken) authentication;
+        OAuth2CloudLeafAdminCaptchaAuthenticationToken clientAuthentication =
+                (OAuth2CloudLeafAdminCaptchaAuthenticationToken) authentication;
         OAuth2ClientAuthenticationToken principal = (OAuth2ClientAuthenticationToken) clientAuthentication.getPrincipal();
         RegisteredClient registeredClient = principal.getRegisteredClient();
 
-        String clientId = clientAuthentication.getClientId();
 
         Map<String, String> parameters = clientAuthentication.getAdditionalParameters();
         String username = parameters.get("username");
-        String inputPassword = parameters.get("password");
+        String password = parameters.get("password");
         String captcha = parameters.get("captcha");
         String uid = parameters.get("uid");
-        if (StrUtil.isEmpty(captcha)) {
+
+        CloudLeafAdminUsernamePasswordCaptchaDTO adminDTO =
+                new CloudLeafAdminUsernamePasswordCaptchaDTO(username, password, uid, captcha);
+
+        Result<CloudLeafAdminUserBO> userBOResult = this.cloudLeafAdminUserFeignClient.getUserAuthorities(adminDTO);
+        if (userBOResult.getCode() != ResultCode.SUCCESS.getCode()) {
             OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.INVALID_GRANT,
-                    "验证码不能为空.", "");
+                    userBOResult.getMsg(), "");
             throw new OAuth2AuthenticationException(error);
         }
-        String validCaptchaKey = SecurityConstant.VALID_CODE + uid;
+        CloudLeafAdminUserBO adminUserBO = userBOResult.getData();
 
-        String captchaCode = redisTemplate.opsForValue().get(validCaptchaKey);
-        redisTemplate.delete(validCaptchaKey);
-        if (!StrUtil.equalsIgnoreCase(captcha, captchaCode)) {
-            OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.INVALID_GRANT,
-                    "验证码有误.", "");
-            throw new OAuth2AuthenticationException(error);
-        }
-
-        OAuth2ClientUserDetailsService userDetailsService = null;
-        for (OAuth2ClientUserDetailsService service : this.userDetailsServices) {
-            if (service.support(clientId)) {
-                userDetailsService = service;
-                break;
-            }
-        }
-        if (Objects.isNull(userDetailsService)) {
-            throwInvalidClient(clientId);
-        }
-
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-        if (!this.passwordEncoder.matches(inputPassword, userDetails.getPassword())) {
-            OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.INVALID_GRANT,
-                    "用户名或者密码有误.", "");
-            throw new OAuth2AuthenticationException(error);
-        }
-
+        List<SimpleGrantedAuthority> authorities = adminUserBO.getAuthorities().stream().map(SimpleGrantedAuthority::new).toList();
         Set<String> authorizedScopes = Collections.emptySet();
         if (!CollectionUtils.isEmpty(registeredClient.getScopes())) {
             for (String requestedScope : registeredClient.getScopes()) {
@@ -145,7 +116,7 @@ public final class OAuth2CaptchaAuthenticationProvider implements Authentication
             authorizedScopes = new LinkedHashSet<>(registeredClient.getScopes());
         }
 
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, userDetails.getAuthorities());
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
 
         AuthorizationGrantType captchaGrantType = new AuthorizationGrantType("captcha");
 
@@ -205,7 +176,7 @@ public final class OAuth2CaptchaAuthenticationProvider implements Authentication
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return OAuth2CaptchaAuthenticationToken.class.isAssignableFrom(authentication);
+        return OAuth2CloudLeafAdminCaptchaAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
     private static void throwInvalidClient(String parameterName) {

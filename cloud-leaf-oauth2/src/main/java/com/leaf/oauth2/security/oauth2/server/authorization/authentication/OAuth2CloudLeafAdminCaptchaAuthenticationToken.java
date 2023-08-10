@@ -3,7 +3,6 @@ package com.leaf.oauth2.security.oauth2.server.authorization.authentication;
 import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.server.authorization.util.SpringAuthorizationServerVersion;
 import org.springframework.util.Assert;
 
@@ -14,7 +13,7 @@ import java.util.Map;
 /**
  * @author liuk
  */
-public class OAuth2CaptchaAuthenticationToken extends AbstractAuthenticationToken {
+public class OAuth2CloudLeafAdminCaptchaAuthenticationToken extends AbstractAuthenticationToken {
     private static final long serialVersionUID = SpringAuthorizationServerVersion.SERIAL_VERSION_UID;
     private final String clientId;
     private final Authentication clientPrincipal;
@@ -27,7 +26,7 @@ public class OAuth2CaptchaAuthenticationToken extends AbstractAuthenticationToke
      * @param clientPrincipal        the authenticated client principal
      * @param additionalParameters   the additional parameters
      */
-    public OAuth2CaptchaAuthenticationToken(String clientId,
+    public OAuth2CloudLeafAdminCaptchaAuthenticationToken(String clientId,
                                                           Authentication clientPrincipal, @Nullable Map<String, String> additionalParameters) {
         super(Collections.emptyList());
         Assert.notNull(clientId, "clientId cannot be null");

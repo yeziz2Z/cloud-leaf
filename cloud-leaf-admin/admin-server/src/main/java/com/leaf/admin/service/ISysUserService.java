@@ -2,6 +2,8 @@ package com.leaf.admin.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.leaf.admin.pojo.bo.CloudLeafAdminUserBO;
+import com.leaf.admin.pojo.dto.CloudLeafAdminUsernamePasswordCaptchaDTO;
 import com.leaf.admin.pojo.dto.ResetPasswordDTO;
 import com.leaf.admin.pojo.dto.SysUserForm;
 import com.leaf.admin.pojo.dto.UserQueryParam;
@@ -65,4 +67,6 @@ public interface ISysUserService extends IService<SysUser> {
     void updateUser(SysUserForm sysUserForm);
 
     void removeByUserIds(List<Long> userIds);
+
+    CloudLeafAdminUserBO getUserAuthorities(CloudLeafAdminUsernamePasswordCaptchaDTO usernamePasswordCaptchaDTO);
 }

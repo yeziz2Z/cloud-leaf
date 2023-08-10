@@ -86,6 +86,10 @@
             <groupId>com.leaf</groupId>
             <artifactId>common-redis</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.leaf</groupId>
+            <artifactId>admin-api2</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
