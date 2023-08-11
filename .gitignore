@@ -27,3 +27,5 @@
 /cloud-leaf-feign-api/admin-api2/admin-api2.iml
 /cloud-leaf-feign-api/admin-api2/target/
 /cloud-leaf-common/common-validation/target/
+/cloud-leaf-common/common-openfeign/target/
+/cloud-leaf-common/common-minio/target/

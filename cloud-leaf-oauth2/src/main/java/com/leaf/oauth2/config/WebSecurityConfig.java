@@ -7,8 +7,9 @@ import cn.hutool.crypto.asymmetric.RSA;
 import cn.hutool.json.JSONUtil;
 import com.leaf.admin.api.CloudLeafAdminUserFeignClient;
 import com.leaf.common.result.Result;
-import com.leaf.oauth2.security.oauth2.server.authorization.authentication.OAuth2CaptchaAuthenticationProvider;
-import com.leaf.oauth2.security.oauth2.server.authorization.web.authentication.CaptchaAuthenticationConverter;
+import com.leaf.oauth2.security.oauth2.authentication.CloudLeafAdminUserAuthenticationToken;
+import com.leaf.oauth2.security.oauth2.convert.CaptchaAuthenticationConverter;
+import com.leaf.oauth2.security.oauth2.provider.OAuth2CaptchaAuthenticationProvider;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
@@ -180,6 +181,10 @@ public class WebSecurityConfig {
                 Set<String> authorities = principal.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
                 authorities.addAll(context.getAuthorizedScopes());
                 claims.claim("authorities", authorities);
+
+                if (principal instanceof CloudLeafAdminUserAuthenticationToken token) {
+                    claims.claim("userId", token.getUserId());
+                }
 
             }
         });

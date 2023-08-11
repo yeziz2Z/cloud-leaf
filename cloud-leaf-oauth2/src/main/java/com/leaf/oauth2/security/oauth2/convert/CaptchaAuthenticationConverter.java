@@ -1,6 +1,6 @@
-package com.leaf.oauth2.security.oauth2.server.authorization.web.authentication;
+package com.leaf.oauth2.security.oauth2.convert;
 
-import com.leaf.oauth2.security.oauth2.server.authorization.authentication.OAuth2CloudLeafAdminCaptchaAuthenticationToken;
+import com.leaf.oauth2.security.oauth2.authentication.OAuth2CloudLeafAdminCaptchaAuthenticationToken;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;

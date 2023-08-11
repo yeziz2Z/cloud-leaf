@@ -56,7 +56,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements ISysUserService {
 
-    private final RedisTemplate redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     private final SysRoleMapper roleMapper;
     private final SysMenuMapper menuMapper;
@@ -307,13 +307,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (StrUtil.isBlank(captcha)) {
             throw new BusinessException(AdminErrorResultEnum.IMG_CAPTCHA_EXPIRED);
         }
-        if (StrUtil.equals(captcha, usernamePasswordCaptchaDTO.getCaptchaCode())) {
-            throw new BusinessException(AdminErrorResultEnum.IMG_CAPTCHA_EXPIRED);
+        if (!StrUtil.equals(captcha, usernamePasswordCaptchaDTO.getCaptchaCode())) {
+            throw new BusinessException(AdminErrorResultEnum.IMG_CAPTCHA_ERROR);
         }
         SysUser sysUser = this.getByUsername(usernamePasswordCaptchaDTO.getUsername());
         if (Objects.isNull(sysUser)
                 || StrUtil.equals(YesOrNoEnum.YES.getCode(), sysUser.getDelFlag())
-                || !StrUtil.equals(sysUser.getPassword(), passwordEncoder.encode(usernamePasswordCaptchaDTO.getPassword()))) {
+                || !passwordEncoder.matches(usernamePasswordCaptchaDTO.getPassword(), sysUser.getPassword())) {
             throw new BusinessException(AdminErrorResultEnum.ACCOUNT_OR_PASSWORD_ERROR);
         }
         if (!sysUser.getStatus()) {

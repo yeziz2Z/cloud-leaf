@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.leaf.oauth2.security.oauth2.server.authorization.authentication;
+package com.leaf.oauth2.security.oauth2.provider;
 
 import com.leaf.admin.api.CloudLeafAdminUserFeignClient;
 import com.leaf.admin.pojo.bo.CloudLeafAdminUserBO;
 import com.leaf.admin.pojo.dto.CloudLeafAdminUsernamePasswordCaptchaDTO;
 import com.leaf.common.result.Result;
 import com.leaf.common.result.ResultCode;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import com.leaf.oauth2.security.oauth2.authentication.CloudLeafAdminUserAuthenticationToken;
+import com.leaf.oauth2.security.oauth2.authentication.OAuth2CloudLeafAdminCaptchaAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -116,7 +117,7 @@ public final class OAuth2CaptchaAuthenticationProvider implements Authentication
             authorizedScopes = new LinkedHashSet<>(registeredClient.getScopes());
         }
 
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
+        Authentication authenticationToken = new CloudLeafAdminUserAuthenticationToken(username, adminUserBO.getUserId(), null, authorities);
 
         AuthorizationGrantType captchaGrantType = new AuthorizationGrantType("captcha");
 

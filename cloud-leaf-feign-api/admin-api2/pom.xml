@@ -15,5 +15,20 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
-
+    <dependencies>
+        <dependency>
+            <groupId>com.leaf</groupId>
+            <artifactId>common-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.leaf</groupId>
+            <artifactId>common-validation</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.leaf</groupId>
+            <artifactId>common-openfeign</artifactId>
+        </dependency>
+    </dependencies>
 </project>

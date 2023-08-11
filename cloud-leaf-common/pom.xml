@@ -15,8 +15,9 @@
         <module>common-web</module>
         <module>common-core</module>
         <module>common-redis</module>
-        <module>commom-minio</module>
+        <module>common-minio</module>
         <module>common-validation</module>
+        <module>common-openfeign</module>
     </modules>
 
     <dependencies>

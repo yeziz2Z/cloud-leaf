@@ -34,7 +34,6 @@
         <aliyun-spring-boot.version>1.0.0</aliyun-spring-boot.version>
         <spring-boot.version>3.1.2</spring-boot.version>
         <spring-cloud-alibaba.version>2022.0.0.0</spring-cloud-alibaba.version>
-        <!--        <spring-com-starter.version>3.1.2</spring-com-starter.version>-->
         <spring-cloud.version>2022.0.3</spring-cloud.version>
         <log4j.version>1.2.17</log4j.version>
         <servlet-api.version>6.0.0</servlet-api.version>
@@ -46,6 +45,7 @@
         <mybatis-plus-boot-starter.version>3.5.3.1</mybatis-plus-boot-starter.version>
         <mybatis.plus.generator.version>3.5.2</mybatis.plus.generator.version>
         <jackson.datatype.jsr310.version>2.13.2</jackson.datatype.jsr310.version>
+        <feign-hc5.version>12.4</feign-hc5.version>
         <cloud.leaf.version>1.0-SNAPSHOT</cloud.leaf.version>
     </properties>
 
@@ -76,8 +76,8 @@
             </dependency>
 
             <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
+                <groupId>com.mysql</groupId>
+                <artifactId>mysql-connector-j</artifactId>
                 <version>${mysql.version}</version>
             </dependency>
             <dependency>
@@ -99,6 +99,16 @@
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
                 <version>${hutool-all.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.openfeign</groupId>
+                <artifactId>feign-httpclient</artifactId>
+                <version>${feign-hc5.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.openfeign</groupId>
+                <artifactId>feign-hc5</artifactId>
+                <version>${feign-hc5.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.freemarker</groupId>
@@ -148,7 +158,11 @@
                 <artifactId>common-web</artifactId>
                 <version>${cloud.leaf.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>com.leaf</groupId>
+                <artifactId>common-openfeign</artifactId>
+                <version>${cloud.leaf.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.leaf</groupId>
                 <artifactId>admin-api</artifactId>

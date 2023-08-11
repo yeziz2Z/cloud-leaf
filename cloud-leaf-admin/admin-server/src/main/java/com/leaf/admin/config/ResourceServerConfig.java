@@ -46,7 +46,7 @@ public class ResourceServerConfig {
                                     .withPublicKey(rsaPublicKey)
                                     .jwtProcessorCustomizer(jwtProcessor -> {
                                         jwtProcessor.setJWTClaimsSetVerifier(((jwtClaimsSet, securityContext) -> {
-//                                            log.info("jwtClaimsSet ：{}", jwtClaimsSet);
+                                            log.info("jwtClaimsSet ：{}", jwtClaimsSet);
                                         }));
                                     });
                             NimbusJwtDecoder nimbusJwtDecoder = publicKeyJwtDecoderBuilder.build();
