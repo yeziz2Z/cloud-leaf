@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.leaf.oauth2.security.oauth2.provider;
+package com.leaf.oauth2.security.provider;
 
 import com.leaf.admin.api.CloudLeafAdminUserFeignClient;
 import com.leaf.admin.pojo.bo.CloudLeafAdminUserBO;
 import com.leaf.admin.pojo.dto.CloudLeafAdminUsernamePasswordCaptchaDTO;
 import com.leaf.common.result.Result;
 import com.leaf.common.result.ResultCode;
-import com.leaf.oauth2.security.oauth2.authentication.CloudLeafAdminUserAuthenticationToken;
-import com.leaf.oauth2.security.oauth2.authentication.OAuth2CloudLeafAdminCaptchaAuthenticationToken;
+import com.leaf.oauth2.security.authentication.CloudLeafAdminUserAuthenticationToken;
+import com.leaf.oauth2.security.authentication.OAuth2CloudLeafAdminCaptchaAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

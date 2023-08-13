@@ -41,9 +41,9 @@
         <mysql.version>8.0.33</mysql.version>
         <hutool-all.version>5.8.20</hutool-all.version>
         <druid.version>1.2.18</druid.version>
-        <freemarker.version>2.3.31</freemarker.version>
+<!--        <freemarker.version>2.3.31</freemarker.version>-->
         <mybatis-plus-boot-starter.version>3.5.3.1</mybatis-plus-boot-starter.version>
-        <mybatis.plus.generator.version>3.5.2</mybatis.plus.generator.version>
+<!--        <mybatis.plus.generator.version>3.5.2</mybatis.plus.generator.version>-->
         <jackson.datatype.jsr310.version>2.13.2</jackson.datatype.jsr310.version>
         <feign-hc5.version>12.4</feign-hc5.version>
         <cloud.leaf.version>1.0-SNAPSHOT</cloud.leaf.version>
@@ -85,11 +85,11 @@
                 <artifactId>mybatis-plus-boot-starter</artifactId>
                 <version>${mybatis-plus-boot-starter.version}</version>
             </dependency>
-            <dependency>
+            <!--<dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-generator</artifactId>
                 <version>${mybatis.plus.generator.version}</version>
-            </dependency>
+            </dependency>-->
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>druid</artifactId>
@@ -110,11 +110,11 @@
                 <artifactId>feign-hc5</artifactId>
                 <version>${feign-hc5.version}</version>
             </dependency>
-            <dependency>
+            <!--<dependency>
                 <groupId>org.freemarker</groupId>
                 <artifactId>freemarker</artifactId>
                 <version>${freemarker.version}</version>
-            </dependency>
+            </dependency>-->
 
             <dependency>
                 <groupId>log4j</groupId>

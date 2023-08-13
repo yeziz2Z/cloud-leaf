@@ -4,6 +4,9 @@ public enum ResultCode implements IResultCode {
     SUCCESS(200, "ok"),
 
     ERROR(500, "系统异常"),
+
+    FEIGN_DEGRADATION(30000, "feign接口调用降级"),
+    BAD_REQUEST_ERROR(40000, "请求参数校验失败"),
     INVALID_TOKEN(23001, "token无效或已过期"),
     TOKEN_ACCESS_FORBIDDEN(23002, "token已被禁止访问"),
 

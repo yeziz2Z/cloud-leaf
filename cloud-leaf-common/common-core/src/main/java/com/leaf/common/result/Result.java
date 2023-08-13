@@ -27,33 +27,21 @@ public class Result<T> {
     }
 
     public static <T> Result<T> success() {
-        Result<T> result = new Result<>();
-        result.setCode(ResultCode.SUCCESS.getCode());
-        result.setMsg(ResultCode.SUCCESS.getMsg());
-        return result;
+        return Result.success(ResultCode.SUCCESS.getMsg());
     }
 
     public static <T> Result<T> success(String msg) {
-        Result<T> result = new Result<>();
-        result.setCode(ResultCode.SUCCESS.getCode());
-        result.setMsg(msg);
-        return result;
+        return new Result<>(ResultCode.SUCCESS.getCode(), msg);
     }
 
     public static <T> Result<T> success(T data) {
-        Result<T> result = new Result<>();
-        result.setCode(ResultCode.SUCCESS.getCode());
-        result.setMsg(ResultCode.SUCCESS.getMsg());
+        Result<T> result = Result.success();
         result.setData(data);
         return result;
     }
 
     public static Result<Void> fail(int code, String msg) {
-        Result<Void> result = new Result<>();
-        result.setCode(code);
-        result.setMsg(msg);
-        return result;
-
+        return new Result<>(code, msg);
     }
 
     public static <T> Result<T> fail(String msg) {

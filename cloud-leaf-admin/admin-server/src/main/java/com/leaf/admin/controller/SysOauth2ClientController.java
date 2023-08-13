@@ -40,20 +40,20 @@ public class SysOauth2ClientController {
     }
 
     @GetMapping("/page")
-    public Result<Page> page(Page page, String clientId) {
+    public Result<Page<SysOauth2Client>> page(Page<SysOauth2Client> page, String clientId) {
         LambdaQueryWrapper<SysOauth2Client> wrapper = new LambdaQueryWrapper<SysOauth2Client>().eq(StrUtil.isNotEmpty(clientId), SysOauth2Client::getClientId, clientId);
         return Result.success(oauth2ClientService.page(page, wrapper));
     }
 
     @PostMapping
-    public Result save(@RequestBody SysOauth2Client client) {
+    public Result<Void> save(@RequestBody SysOauth2Client client) {
         log.debug("client param: {}", client);
         oauth2ClientService.save(client);
         return Result.success();
     }
 
     @PutMapping
-    public Result edit(@RequestBody SysOauth2Client client) {
+    public Result<Void> edit(@RequestBody SysOauth2Client client) {
         oauth2ClientService.updateById(client);
         return Result.success();
     }

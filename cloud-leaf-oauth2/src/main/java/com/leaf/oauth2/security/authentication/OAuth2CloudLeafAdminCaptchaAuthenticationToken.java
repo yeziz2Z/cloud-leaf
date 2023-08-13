@@ -1,4 +1,4 @@
-package com.leaf.oauth2.security.oauth2.authentication;
+package com.leaf.oauth2.security.authentication;
 
 import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.AbstractAuthenticationToken;

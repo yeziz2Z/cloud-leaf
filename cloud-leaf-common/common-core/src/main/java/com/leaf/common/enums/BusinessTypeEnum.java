@@ -11,9 +11,9 @@ public enum BusinessTypeEnum {
     IMPORT(6, "导入"),
     EXPORT(7, "导出");
 
-    private Integer code;
+    private final Integer code;
 
-    private String desc;
+    private final String desc;
 
     BusinessTypeEnum(Integer code, String desc) {
         this.code = code;

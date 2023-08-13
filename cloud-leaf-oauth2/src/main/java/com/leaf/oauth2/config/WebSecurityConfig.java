@@ -7,9 +7,9 @@ import cn.hutool.crypto.asymmetric.RSA;
 import cn.hutool.json.JSONUtil;
 import com.leaf.admin.api.CloudLeafAdminUserFeignClient;
 import com.leaf.common.result.Result;
-import com.leaf.oauth2.security.oauth2.authentication.CloudLeafAdminUserAuthenticationToken;
-import com.leaf.oauth2.security.oauth2.convert.CaptchaAuthenticationConverter;
-import com.leaf.oauth2.security.oauth2.provider.OAuth2CaptchaAuthenticationProvider;
+import com.leaf.oauth2.security.authentication.CloudLeafAdminUserAuthenticationToken;
+import com.leaf.oauth2.security.convert.CaptchaAuthenticationConverter;
+import com.leaf.oauth2.security.provider.OAuth2CaptchaAuthenticationProvider;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
@@ -123,6 +123,13 @@ public class WebSecurityConfig {
                         authorize
                                 .anyRequest().authenticated()
                 )
+                .exceptionHandling(customizer -> {
+                    customizer.accessDeniedHandler((request, response, accessDeniedException) -> {
+                        log.error("===============================accessDeniedException ", accessDeniedException);
+                    }).authenticationEntryPoint((request, response, authException) -> {
+                        log.error("===============================authException ", authException);
+                    });
+                })
                 .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
                 .apply(authorizationServerConfigurer);
 
@@ -148,7 +155,15 @@ public class WebSecurityConfig {
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()
-                ).formLogin(AbstractHttpConfigurer::disable);
+                )
+                .exceptionHandling(customizer -> {
+                    customizer.accessDeniedHandler((request, response, accessDeniedException) -> {
+                        log.error("===============================accessDeniedException ", accessDeniedException);
+                    }).authenticationEntryPoint((request, response, authException) -> {
+                        log.error("===============================authException ", authException);
+                    });
+                })
+                .formLogin(AbstractHttpConfigurer::disable);
 
         return http.build();
     }

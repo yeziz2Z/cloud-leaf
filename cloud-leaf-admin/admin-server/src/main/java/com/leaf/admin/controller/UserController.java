@@ -34,7 +34,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.stream.Collectors;
 
 @RequestMapping("/user")
@@ -158,4 +160,5 @@ public class UserController {
         user.setRoles(roleService.getRolesByUserId(sysUser.getId()).stream().map(SysRole::getCode).collect(Collectors.toList()));
         return Result.success(user);
     }
+
 }

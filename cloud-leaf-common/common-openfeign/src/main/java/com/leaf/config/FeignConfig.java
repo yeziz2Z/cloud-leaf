@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @Slf4j
+@EnableFeignClients
 public class FeignConfig {
     @Bean
     public CloseableHttpClient httpClient5() {
