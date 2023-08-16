@@ -1,2 +1,2 @@
-com.leaf.common.web.handler.GlobalExceptionHandler
+com.leaf.common.web.advice.GlobalExceptionHandler
 com.leaf.common.web.config.WebConfig

@@ -5,6 +5,8 @@ public enum ResultCode implements IResultCode {
 
     ERROR(500, "系统异常"),
 
+
+    DECODE_PARAM_ERROR(100000,"解码参数异常"),
     FEIGN_DEGRADATION(30000, "feign接口调用降级"),
     BAD_REQUEST_ERROR(40000, "请求参数校验失败"),
     INVALID_TOKEN(23001, "token无效或已过期"),

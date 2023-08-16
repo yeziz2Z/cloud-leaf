@@ -1,4 +1,4 @@
-package com.leaf.common.web.handler;
+package com.leaf.common.web.advice;
 
 
 import com.leaf.common.exception.BusinessException;
