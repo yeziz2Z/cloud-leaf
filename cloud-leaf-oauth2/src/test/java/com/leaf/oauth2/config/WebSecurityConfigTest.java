@@ -1,11 +1,23 @@
 package com.leaf.oauth2.config;
 
 
+import cn.hutool.crypto.KeyUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.*;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Set;
 
 //@SpringBootTest(classes = CloudLeafOauth2Application.class)
 @Slf4j
@@ -19,6 +31,20 @@ public class WebSecurityConfigTest {
 //        log.info("889527 {}", passwordEncoder.encode("889527"));
         String hello = "hello";
         System.out.println(hello.substring(2));
+    }
+
+
+    @Test
+    public void generateRsaKey() throws NoSuchAlgorithmException {
+        KeyPair keyPair;
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+        keyPairGenerator.initialize(2048);
+        keyPair = keyPairGenerator.generateKeyPair();
+        System.out.println("-------------------------------------------------------------------------------------------");
+        System.out.println("privateKey : [" + KeyUtil.toBase64(keyPair.getPrivate()) + "]");
+        System.out.println("publicKey : [" + KeyUtil.toBase64(keyPair.getPublic()) + "]");
+        System.out.println("-------------------------------------------------------------------------------------------");
+
     }
 
     @Test

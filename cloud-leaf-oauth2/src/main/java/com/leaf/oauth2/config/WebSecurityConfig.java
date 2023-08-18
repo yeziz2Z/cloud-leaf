@@ -210,22 +210,6 @@ public class WebSecurityConfig {
                 jwtGenerator, accessTokenGenerator, refreshTokenGenerator);
     }
 
-    private static KeyPair generateRsaKey() {
-        KeyPair keyPair;
-        try {
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-            keyPairGenerator.initialize(2048);
-            keyPair = keyPairGenerator.generateKeyPair();
-            System.out.println("-------------------------------------------------------------------------------------------");
-            System.out.println("privateKey : [" + KeyUtil.toBase64(keyPair.getPrivate()) + "]");
-            System.out.println("publicKey : [" + KeyUtil.toBase64(keyPair.getPublic()) + "]");
-            System.out.println("-------------------------------------------------------------------------------------------");
-        } catch (Exception ex) {
-            throw new IllegalStateException(ex);
-        }
-        return keyPair;
-    }
-
     @Bean
     public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
         return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);

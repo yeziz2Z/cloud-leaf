@@ -1,6 +1,4 @@
-package com.leaf.common.web.annotation;
-
-import cn.hutool.core.util.DesensitizedUtil;
+package com.leaf.common.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -9,14 +7,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 字段脱敏
- *
- * @author liuk
+ * 加密
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface DesensitizedField {
+public @interface EncryptField {
 
-    DesensitizedUtil.DesensitizedType desensitizedType();
 }

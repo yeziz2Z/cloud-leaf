@@ -1,6 +1,6 @@
 package com.leaf.admin.pojo.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import com.leaf.common.annotation.DecryptField;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,6 +18,7 @@ public class CloudLeafAdminUsernamePasswordCaptchaDTO {
     @NotNull(message = "用户名不能为空")
     private String username;
 
+    @DecryptField
     @NotNull(message = "用户密码不能为空")
     private String password;
 

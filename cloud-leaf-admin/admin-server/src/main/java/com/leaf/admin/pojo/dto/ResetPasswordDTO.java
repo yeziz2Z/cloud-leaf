@@ -1,6 +1,6 @@
 package com.leaf.admin.pojo.dto;
 
-import jakarta.validation.constraints.NotEmpty;
+import com.leaf.common.annotation.DecryptField;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
@@ -16,5 +16,6 @@ public class ResetPasswordDTO {
 
     @NotNull(message = "密码不能为空")
     @Length(min = 6, max = 16, message = "密码长度为6至16位")
+    @DecryptField
     private String password;
 }

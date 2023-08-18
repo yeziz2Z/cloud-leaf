@@ -1,8 +1,10 @@
 package com.leaf.admin.pojo.vo;
 
 
+import cn.hutool.core.util.DesensitizedUtil;
 import com.leaf.admin.entity.SysOrganization;
 import com.leaf.admin.entity.SysRole;
+import com.leaf.common.annotation.DesensitizedField;
 import lombok.Data;
 import lombok.ToString;
 
@@ -37,11 +39,13 @@ public class UserVO {
     /**
      * 用户邮箱
      */
+    @DesensitizedField(desensitizedType = DesensitizedUtil.DesensitizedType.EMAIL)
     private String email;
 
     /**
      * 手机号码
      */
+    @DesensitizedField(desensitizedType = DesensitizedUtil.DesensitizedType.MOBILE_PHONE)
     private String mobilePhone;
 
     /**
