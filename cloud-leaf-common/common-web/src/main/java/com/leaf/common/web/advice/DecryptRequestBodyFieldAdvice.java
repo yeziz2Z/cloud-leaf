@@ -1,6 +1,9 @@
 package com.leaf.common.web.advice;
 
+import cn.hutool.crypto.CryptoException;
 import com.leaf.common.annotation.DecryptField;
+import com.leaf.common.exception.BusinessException;
+import com.leaf.common.result.ResultCode;
 import com.leaf.common.utils.ReflectionUtils;
 import com.leaf.common.web.utils.SecureUtils;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +50,8 @@ public class DecryptRequestBodyFieldAdvice extends RequestBodyAdviceAdapter {
                     field.set(obj, this.secureUtils.decode(field.get(obj).toString()));
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
+                } catch (CryptoException exception) {
+                    throw new BusinessException(ResultCode.INVALID_PASSWORD);
                 }
             }, DecryptField.class);
         } catch (IllegalAccessException e) {
