@@ -24,10 +24,10 @@ public class CloudLeafAdminUserAuthenticationToken extends AbstractAuthenticatio
     /**
      * cloud-leaf-admin  Authentication token
      *
-     * @param principal
-     * @param userId
-     * @param credentials
-     * @param authorities
+     * @param principal   信息
+     * @param userId      用户id
+     * @param credentials 凭证
+     * @param authorities 权限
      */
     public CloudLeafAdminUserAuthenticationToken(Object principal, Long userId, Object credentials,
                                                  Collection<? extends GrantedAuthority> authorities) {

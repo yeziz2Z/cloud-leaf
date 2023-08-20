@@ -16,7 +16,7 @@ import java.nio.charset.StandardCharsets;
  * @author liuk
  */
 @Component
-@ConditionalOnProperty(name = "cloud.leaf.secure.rsa", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "cloud.leaf.secure.rsa", name = "private-key")
 @ConfigurationProperties(prefix = "cloud.leaf.secure.rsa")
 @Slf4j
 public class SecureUtils {

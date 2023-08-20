@@ -33,6 +33,13 @@ public class WebSecurityConfigTest {
         System.out.println(hello.substring(2));
     }
 
+    public static void main(String[] args) {
+        int i = 1;
+        double d = 2.5;
+
+        System.out.println(Math.floor(i/d));
+        System.out.println(Math.ceil(i/d));
+    }
 
     @Test
     public void generateRsaKey() throws NoSuchAlgorithmException {

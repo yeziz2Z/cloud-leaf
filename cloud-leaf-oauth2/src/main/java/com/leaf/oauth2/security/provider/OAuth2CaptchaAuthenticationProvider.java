@@ -46,6 +46,7 @@ import org.springframework.security.oauth2.server.authorization.token.DefaultOAu
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
 import org.springframework.util.CollectionUtils;
 
+import java.security.Principal;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -145,6 +146,7 @@ public final class OAuth2CaptchaAuthenticationProvider implements Authentication
         OAuth2Authorization.Builder authorizationBuilder = OAuth2Authorization.withRegisteredClient(registeredClient)
                 .principalName(username)
                 .authorizationGrantType(captchaGrantType)
+                .attribute(Principal.class.getName(), principal)
                 .authorizedScopes(authorizedScopes);
         if (generatedAccessToken instanceof ClaimAccessor) {
             authorizationBuilder.token(accessToken, (metadata) ->
