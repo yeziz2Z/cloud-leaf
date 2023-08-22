@@ -7,8 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.leaf.admin.api.CloudLeafAdminUserFeignClient;
 import com.leaf.oauth2.security.authentication.CloudLeafAdminUserAuthenticationToken;
 import com.leaf.oauth2.security.convert.CaptchaAuthenticationConverter;
-import com.leaf.oauth2.security.handler.CloudAuthenticationFailureHandler;
-import com.leaf.oauth2.security.handler.CloudAuthenticationSuccessHandler;
+import com.leaf.oauth2.security.jackson2.LongMixin;
+import com.leaf.oauth2.security.jackson2.OAuth2ClientAuthenticationTokenMixin;
 import com.leaf.oauth2.security.provider.OAuth2CaptchaAuthenticationProvider;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -33,6 +33,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
+import org.springframework.security.oauth2.server.authorization.authentication.OAuth2ClientAuthenticationToken;
 import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
@@ -45,6 +46,8 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Acce
 import org.springframework.security.oauth2.server.authorization.token.OAuth2RefreshTokenGenerator;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.security.interfaces.RSAPrivateKey;
@@ -65,9 +68,11 @@ public class WebSecurityConfig {
     @Value("${cloud.jwk.private-key}")
     private String privateKey;
 
-    private final CloudAuthenticationFailureHandler cloudAuthenticationFailureHandler;
+    private final AuthenticationFailureHandler cloudAuthenticationFailureHandler;
 
-    private final CloudAuthenticationSuccessHandler cloudAuthenticationSuccessHandler;
+    private final AuthenticationSuccessHandler cloudAuthenticationSuccessHandler;
+
+    private final AuthenticationSuccessHandler cloudLogoutAuthenticationSuccessHandler;
 
     @Bean
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http,
@@ -85,7 +90,7 @@ public class WebSecurityConfig {
                                 .authenticationProvider(new OAuth2CaptchaAuthenticationProvider(authorizationService, cloudLeafAdminUserFeignClient, tokenGenerator))
                                 .accessTokenResponseHandler(cloudAuthenticationSuccessHandler)
                                 .errorResponseHandler(cloudAuthenticationFailureHandler))
-                .tokenRevocationEndpoint(oAuth2TokenRevocationEndpointConfigurer -> oAuth2TokenRevocationEndpointConfigurer.revocationResponseHandler(null));
+                .tokenRevocationEndpoint(oAuth2TokenRevocationEndpointConfigurer -> oAuth2TokenRevocationEndpointConfigurer.revocationResponseHandler(cloudLogoutAuthenticationSuccessHandler));
         RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
 
         http
@@ -125,7 +130,8 @@ public class WebSecurityConfig {
         objectMapper.registerModule(new OAuth2AuthorizationServerJackson2Module());
         // You will need to write the Mixin for your class so Jackson can marshall it.
 //        objectMapper.addMixIn(UserPrincipal.class, UserPrincipalMixin.class);
-//        objectMapper.addMixIn(OAuth2ClientAuthenticationToken.class,);
+        objectMapper.addMixIn(OAuth2ClientAuthenticationToken.class, OAuth2ClientAuthenticationTokenMixin.class);
+        objectMapper.addMixIn(Long.class, LongMixin.class);
         rowMapper.setObjectMapper(objectMapper);
         authorizationService.setAuthorizationRowMapper(rowMapper);
         return authorizationService;

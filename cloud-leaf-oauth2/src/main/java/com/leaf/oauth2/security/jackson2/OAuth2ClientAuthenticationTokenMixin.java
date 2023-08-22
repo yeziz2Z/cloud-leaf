@@ -10,6 +10,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE,
         isGetterVisibility = JsonAutoDetect.Visibility.NONE)
 @JsonIgnoreProperties(ignoreUnknown = true)
-abstract class OAuth2ClientAuthenticationTokenMixin {
+public class OAuth2ClientAuthenticationTokenMixin {
 
 }

@@ -21,16 +21,13 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
-import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
-import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest.Builder;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2ClientAuthenticationToken;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
- *
  * @author Joe Grandja
  * @since 0.1.2
  */
@@ -46,11 +43,26 @@ final class OAuth2ClientAuthenticationTokenDeserializer extends JsonDeserializer
 
     private OAuth2ClientAuthenticationToken deserialize(JsonParser parser, ObjectMapper mapper, JsonNode root)
             throws JsonParseException {
-        /*OAuth2ClientAuthenticationToken token = new OAuth2ClientAuthenticationToken(
-                JsonNodeUtils.findStringValue(root, "clientId"),
 
-                );*/
-        return null;
+        String credentials = JsonNodeUtils.findStringValue(root, "credentials");
+        String clientId = JsonNodeUtils.findStringValue(root, "name");
+        Boolean authenticated = JsonNodeUtils.readJsonNode(root, "authenticated").asBoolean();
+        Map<String, Object> additionalParameters = JsonNodeUtils.findValue(root, "additionalParameters", JsonNodeUtils.STRING_OBJECT_MAP, mapper);
+        ClientAuthenticationMethod clientAuthenticationMethod = resolveClientAuthenticationMethod(JsonNodeUtils.findStringValue(JsonNodeUtils.findObjectNode(root, "clientAuthenticationMethod"), "value"));
+        OAuth2ClientAuthenticationToken token = new OAuth2ClientAuthenticationToken(clientId, clientAuthenticationMethod, credentials, additionalParameters);
+        token.setAuthenticated(authenticated);
+        return token;
+    }
+
+    private static ClientAuthenticationMethod resolveClientAuthenticationMethod(String clientAuthenticationMethod) {
+        if (ClientAuthenticationMethod.CLIENT_SECRET_BASIC.getValue().equals(clientAuthenticationMethod)) {
+            return ClientAuthenticationMethod.CLIENT_SECRET_BASIC;
+        } else if (ClientAuthenticationMethod.CLIENT_SECRET_POST.getValue().equals(clientAuthenticationMethod)) {
+            return ClientAuthenticationMethod.CLIENT_SECRET_POST;
+        } else if (ClientAuthenticationMethod.NONE.getValue().equals(clientAuthenticationMethod)) {
+            return ClientAuthenticationMethod.NONE;
+        }
+        return new ClientAuthenticationMethod(clientAuthenticationMethod);        // Custom client authentication method
     }
 
 }

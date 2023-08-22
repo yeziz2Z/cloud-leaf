@@ -61,11 +61,16 @@ public class AuthController {
     }
 
 
-    @PostMapping("getUserAuthorities")
+    @PostMapping("/getUserAuthorities")
     public Result<CloudLeafAdminUserBO> getUserAuthorities(@Validated @RequestBody CloudLeafAdminUsernamePasswordCaptchaDTO usernamePasswordCaptchaDTO) {
         return Result.success(sysUserService.getUserAuthorities(usernamePasswordCaptchaDTO));
     }
 
+    @GetMapping("/logout")
+    public Result<Void> logout(){
+        System.out.println("hello");
+        return Result.success();
+    }
 
     /**
      * 刷新 访问 token

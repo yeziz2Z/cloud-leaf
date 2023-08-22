@@ -18,6 +18,7 @@ package com.leaf.oauth2.security.jackson2;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.MissingNode;
 
 import java.util.Map;
 import java.util.Set;
@@ -61,4 +62,7 @@ abstract class JsonNodeUtils {
         return (value != null && value.isObject()) ? value : null;
     }
 
+    static JsonNode readJsonNode(JsonNode jsonNode, String field) {
+        return jsonNode.has(field) ? jsonNode.get(field) : MissingNode.getInstance();
+    }
 }
