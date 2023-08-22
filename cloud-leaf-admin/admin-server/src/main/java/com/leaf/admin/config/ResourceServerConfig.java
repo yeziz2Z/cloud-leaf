@@ -1,6 +1,7 @@
 package com.leaf.admin.config;
 
 import cn.hutool.crypto.asymmetric.RSA;
+import cn.hutool.extra.spring.SpringUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.leaf.common.result.Result;
 import com.leaf.common.result.ResultCode;
@@ -53,18 +54,13 @@ public class ResourceServerConfig {
                 .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer.jwt(jwtConfigurer -> {
                             RSAPublicKey rsaPublicKey = (RSAPublicKey) new RSA(null, this.publicKey).getPublicKey();
                             NimbusJwtDecoder.PublicKeyJwtDecoderBuilder publicKeyJwtDecoderBuilder = NimbusJwtDecoder
-                                    .withPublicKey(rsaPublicKey)
-                                    /*.jwtProcessorCustomizer(jwtProcessor -> {
-                                        jwtProcessor.setJWTClaimsSetVerifier(((jwtClaimsSet, securityContext) -> {
-                                            log.info("jwtClaimsSet ：{}", jwtClaimsSet);
-                                        }));
-                                    })*/;
+                                    .withPublicKey(rsaPublicKey);
                             NimbusJwtDecoder nimbusJwtDecoder = publicKeyJwtDecoderBuilder.build();
                             nimbusJwtDecoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(
                                     new JwtTimestampValidator(),
                                     token -> {
                                         String tokenId = token.getId();
-                                        if (Objects.nonNull(redisTemplate.opsForValue().get(tokenId))) {
+                                        if (Objects.nonNull(redisTemplate.opsForValue().get(String.format("%s:blackList:%s", SpringUtil.getApplicationName(), tokenId)))) {
                                             return OAuth2TokenValidatorResult.failure(
                                                     new OAuth2Error(String.valueOf(ResultCode.TOKEN_ACCESS_FORBIDDEN.getCode()))
                                             );
@@ -81,10 +77,10 @@ public class ResourceServerConfig {
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             ObjectMapper mapper = new ObjectMapper();
                             ResultCode tokenResultCode = ResultCode.INVALID_TOKEN;
-                            if (authException.getMessage().indexOf("Jwt expired") != -1){
+                            if (authException.getMessage().contains("Jwt expired")) {
                                 tokenResultCode = ResultCode.TOKEN_EXPIRED;
                             }
-                            if (authException.getMessage().indexOf(String.valueOf(ResultCode.TOKEN_ACCESS_FORBIDDEN.getCode())) != -1){
+                            if (authException.getMessage().contains(String.valueOf(ResultCode.TOKEN_ACCESS_FORBIDDEN.getCode()))) {
                                 tokenResultCode = ResultCode.TOKEN_ACCESS_FORBIDDEN;
                             }
                             mapper.writeValue(response.getOutputStream(), Result.result(tokenResultCode));
