@@ -18,6 +18,8 @@ import com.leaf.common.enums.BusinessTypeEnum;
 import com.leaf.common.result.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -67,8 +71,16 @@ public class AuthController {
     }
 
     @GetMapping("/logout")
-    public Result<Void> logout(){
-        System.out.println("hello");
+    public Result<Void> logout() {
+        // TODO 带抽取成工具类
+        Jwt principal = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Instant expiresAt = principal.getExpiresAt();
+        // 将注销token 放入黑名单，
+        redisTemplate.opsForValue().set(
+                String.format("%s:blackList:%s", SpringUtil.getApplicationName(), principal.getId()),
+                Boolean.TRUE,
+                Duration.between(Instant.now(), expiresAt).getSeconds()
+                , TimeUnit.SECONDS);
         return Result.success();
     }
 
