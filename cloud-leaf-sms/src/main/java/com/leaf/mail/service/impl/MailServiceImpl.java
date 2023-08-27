@@ -82,7 +82,7 @@ public class MailServiceImpl implements IMailService {
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-            helper.setFrom("xxxxx@163.com");//发件人  要和 spring.mail.username 一致
+            helper.setFrom("yezi12237@163.com");//发件人  要和 spring.mail.username 一致
             helper.setSentDate(new Date());
             helper.setSubject("光之国商城注册验证码");
             helper.setTo(to);

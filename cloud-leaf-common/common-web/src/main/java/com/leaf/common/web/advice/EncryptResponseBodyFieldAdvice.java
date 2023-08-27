@@ -1,5 +1,7 @@
 package com.leaf.common.web.advice;
 
+import com.leaf.common.annotation.ProcessResponse;
+import com.leaf.common.enums.ProcessResponseType;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.Ordered;
@@ -8,6 +10,8 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
+
+import java.util.Objects;
 
 /**
  * 对返回参数标注 {@code EncryptField} 类型的参数进行加密处理
@@ -22,7 +26,8 @@ public class EncryptResponseBodyFieldAdvice implements ResponseBodyAdvice, Order
 
     @Override
     public boolean supports(MethodParameter returnType, Class converterType) {
-        return true;
+        ProcessResponse methodAnnotation = returnType.getMethodAnnotation(ProcessResponse.class);
+        return Objects.nonNull(methodAnnotation) && Objects.equals(methodAnnotation.processResponseType(), ProcessResponseType.ENCRYPT);
     }
 
     @Override

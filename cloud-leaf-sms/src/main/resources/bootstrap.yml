@@ -4,14 +4,22 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 192.168.0.176:8848
+        server-addr: 192.168.0.124:8848
       config:
-        file-extension: yml
         server-addr: ${spring.cloud.nacos.discovery.server-addr}
+        file-extension: yml
         group: DEFAULT_GROUP
-  rabbitmq:
-    listener:
-      direct:
-        acknowledge-mode: manual
+#  rabbitmq:
+#    listener:
+#      direct:
+#        acknowledge-mode: manual
 #        name:
 #        shared-configs:
+  mail:
+    host: smtp.163.com
+    # 你的邮箱地址
+    username: yezi12237@163.com
+    # 你的邮箱授权码
+    password: RCPPLPNHWJZPXKYC
+server:
+  port: 5001

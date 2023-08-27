@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TestController {
 
-    @Value("${config.info}")
+    /*@Value("${config.info}")
     private String configInfo;
 
     @GetMapping("/getConfig")
     public String getConfig() {
         return this.configInfo;
-    }
+    }*/
 }

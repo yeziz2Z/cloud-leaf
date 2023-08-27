@@ -6,7 +6,6 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-//@SpringCloudApplication
 public class SmsApplication {
 
     public static void main(String[] args) {

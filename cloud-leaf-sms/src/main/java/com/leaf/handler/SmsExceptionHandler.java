@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class SmsExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
-    public Result handlerException(RuntimeException re) {
+    public Result<Void> handlerException(RuntimeException re) {
         log.info(re.getMessage(), re);
         return new Result(500, "系统运行时异常,请联系管理员!");
     }
 
     @ExceptionHandler(Exception.class)
-    public Result handlerException(Exception e) {
+    public Result<Void> handlerException(Exception e) {
         log.info(e.getMessage(), e);
         return new Result(500, "系统异常");
     }

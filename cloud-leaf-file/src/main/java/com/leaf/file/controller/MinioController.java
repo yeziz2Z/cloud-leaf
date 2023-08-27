@@ -19,11 +19,11 @@ public class MinioController {
     IFileService fileService;
 
     @PostMapping("/upload")
-    public Result upload(MultipartFile file, String basDir) {
+    public Result<String> upload(MultipartFile file, String basDir) {
 
         try {
             String url = fileService.upload(file, basDir);
-            Result success = Result.success();
+            Result<String> success = Result.success();
             success.setData(url);
             return success;
         } catch (Exception e) {

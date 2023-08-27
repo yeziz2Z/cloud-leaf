@@ -13,7 +13,9 @@ import com.leaf.admin.service.ISysMenuService;
 import com.leaf.admin.service.ISysOrganizationService;
 import com.leaf.admin.service.ISysRoleService;
 import com.leaf.admin.service.ISysUserService;
+import com.leaf.common.annotation.ProcessResponse;
 import com.leaf.common.enums.BusinessTypeEnum;
+import com.leaf.common.enums.ProcessResponseType;
 import com.leaf.common.pojo.auth.AuthUser;
 import com.leaf.common.result.Result;
 import com.leaf.common.validation.group.Create;
@@ -34,9 +36,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.PriorityQueue;
 import java.util.stream.Collectors;
 
 @RequestMapping("/user")
@@ -74,6 +74,7 @@ public class UserController {
     @OperationLog(module = "用户管理", businessType = BusinessTypeEnum.SELECT)
     @GetMapping("/page")
     @PreAuthorize("@pms.hasPermission('system.user.list')")
+    @ProcessResponse(processResponseType = ProcessResponseType.DESENSITIZATION)
     public Result<Page<UserVO>> list(Page<UserVO> page, UserQueryParam queryParam) {
         return Result.success(userService.selectSysUserVOPage(page, queryParam));
     }
@@ -101,6 +102,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
+    @ProcessResponse(processResponseType = ProcessResponseType.ENCRYPT)
     public Result<UserVO> getUserById(@PathVariable("userId") Long userId) {
         SysUser sysUser = userService.getById(userId);
         UserVO userVO = new UserVO();

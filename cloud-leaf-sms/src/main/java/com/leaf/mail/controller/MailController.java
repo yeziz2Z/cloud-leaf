@@ -15,7 +15,7 @@ public class MailController {
     private IMailService mailService;
 
     @PostMapping("send")
-    public Result send(String to, String code) {
+    public Result<Void> send(String to, String code) {
         mailService.send(to,code);
         return Result.success();
     }

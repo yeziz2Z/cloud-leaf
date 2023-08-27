@@ -4,15 +4,15 @@ alibaba:
     secret-key: your alibab cloud sk.
     access-key: your alibab cloud ak.
 spring:
-  rabbitmq:
-    host: 127.0.0.1
-    port: 5672
-    username: sms
-    password: sms
-    virtual-host: /sms
+#  rabbitmq:
+#    host: 127.0.0.1
+#    port: 5672
+#    username: sms
+#    password: sms
+#    virtual-host: /sms
   mail:
     host: smtp.163.com
     # 你的邮箱地址
-    username: xxxx@163.com
+    username: yezi12237@163.com
     # 你的邮箱授权码
-    password: xxxxxxxxx
+    password: RCPPLPNHWJZPXKYC

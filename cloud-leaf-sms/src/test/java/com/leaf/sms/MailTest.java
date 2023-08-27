@@ -1,5 +1,6 @@
 package com.leaf.sms;
 
+import com.leaf.mail.service.IMailService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,8 +13,8 @@ import java.util.Date;
 @SpringBootTest
 public class MailTest {
 
-    @Autowired
-    private MailSender mailSender;
+    /*@Autowired
+    private MailSender mailSender;*/
 
     @Test
     public void test() {
@@ -28,5 +29,21 @@ public class MailTest {
         System.out.println(message.toString());
 
 //        mailSender.send(message);
+    }
+
+    @Autowired
+    IMailService mailService;
+    @Test
+    public void sendMailTest(){
+        mailService.send("1223752287@qq.com","12345");
+    }
+
+    @Test
+    public void testStr(){
+        String s= "daabcbaabcbc";
+
+        System.out.println(s.contains("abc"));
+        String abc = s.replaceFirst("abc", "");
+        System.out.println(abc);
     }
 }

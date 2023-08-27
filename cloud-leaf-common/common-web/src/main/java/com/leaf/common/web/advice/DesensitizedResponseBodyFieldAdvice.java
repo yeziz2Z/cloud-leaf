@@ -3,6 +3,8 @@ package com.leaf.common.web.advice;
 import cn.hutool.core.annotation.AnnotationUtil;
 import cn.hutool.core.util.DesensitizedUtil;
 import com.leaf.common.annotation.DesensitizedField;
+import com.leaf.common.annotation.ProcessResponse;
+import com.leaf.common.enums.ProcessResponseType;
 import com.leaf.common.result.Result;
 import com.leaf.common.utils.ReflectionUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -30,7 +32,8 @@ public class DesensitizedResponseBodyFieldAdvice implements ResponseBodyAdvice, 
 
     @Override
     public boolean supports(MethodParameter returnType, Class converterType) {
-        return true;
+        ProcessResponse methodAnnotation = returnType.getMethodAnnotation(ProcessResponse.class);
+        return Objects.nonNull(methodAnnotation) && Objects.equals(methodAnnotation.processResponseType(), ProcessResponseType.DESENSITIZATION);
     }
 
     @Override
